@@ -42,12 +42,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
           displayName: username,
         });
 
-        // Store user in database
+        // Store user in PostgreSQL database
         const dbUser = await storage.createUser({
           firebaseUid: userRecord.uid,
           email,
           username,
         });
+
+        // Store user in Firestore
+        try {
+          const db = getFirestore();
+          await db.collection("users").doc(userRecord.uid).set({
+            id: dbUser.id,
+            firebaseUid: userRecord.uid,
+            email,
+            username,
+            createdAt: new Date().toISOString(),
+          });
+        } catch (firestoreError) {
+          console.warn("Failed to save user to Firestore:", firestoreError);
+          // Continue even if Firestore save fails
+        }
 
         res.status(201).json({
           id: dbUser.id,
@@ -95,6 +110,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const auth = admin.auth();
 
       try {
+        // Update user in Firestore on login
+        try {
+          const db = getFirestore();
+          await db.collection("users").doc(user.firebaseUid).set({
+            id: user.id,
+            firebaseUid: user.firebaseUid,
+            email: user.email,
+            username: user.username,
+            lastLogin: new Date().toISOString(),
+          }, { merge: true });
+        } catch (firestoreError) {
+          console.warn("Failed to update user in Firestore:", firestoreError);
+          // Continue even if Firestore update fails
+        }
+
         // Get custom token from Firebase
         const customToken = await auth.createCustomToken(user.firebaseUid);
 
