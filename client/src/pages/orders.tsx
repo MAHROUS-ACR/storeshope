@@ -37,18 +37,28 @@ export default function OrdersPage() {
         const status = await statusResponse.json();
         setFirebaseConfigured(status.configured);
 
-        // Fetch orders from server
-        const response = await fetch("/api/orders");
-        if (response.ok) {
-          const data = await response.json();
-          // Always use server data (even if empty array from Firebase)
-          setOrders(data || []);
-          // Save to localStorage as backup
-          if (data && data.length > 0) {
-            localStorage.setItem("orders", JSON.stringify(data));
+        // If Firebase is configured, fetch from server; otherwise use localStorage
+        if (status.configured) {
+          // Fetch orders from Firebase via server
+          const response = await fetch("/api/orders");
+          if (response.ok) {
+            const data = await response.json();
+            setOrders(data || []);
+            // Update localStorage with server data
+            if (data && data.length > 0) {
+              localStorage.setItem("orders", JSON.stringify(data));
+            }
+          } else {
+            // Fallback to localStorage on error
+            const savedOrders = localStorage.getItem("orders");
+            if (savedOrders) {
+              setOrders(JSON.parse(savedOrders));
+            } else {
+              setOrders([]);
+            }
           }
         } else {
-          // Fallback to localStorage on error
+          // Firebase not configured - use localStorage
           const savedOrders = localStorage.getItem("orders");
           if (savedOrders) {
             setOrders(JSON.parse(savedOrders));
