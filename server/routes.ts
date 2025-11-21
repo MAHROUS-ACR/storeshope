@@ -317,64 +317,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Payment Processing
   app.post("/api/payment/create-intent", async (req, res) => {
     try {
-      const { amount, currency, cardNumber, expiryDate, cvv, cardHolder, email } = req.body;
+      const { method, amount, currency, cardNumber, expiryDate, cvv, cardHolder, email } = req.body;
 
-      if (!amount || !cardNumber || !expiryDate || !cvv || !cardHolder || !email) {
-        return res.status(400).json({ 
-          message: "Missing required payment fields" 
-        });
-      }
-
-      // Basic card validation (in production, use Stripe API)
-      if (cardNumber.length !== 16) {
-        return res.status(400).json({ message: "Invalid card number" });
-      }
-
-      if (cvv.length !== 3) {
-        return res.status(400).json({ message: "Invalid CVV" });
-      }
-
-      const [expMonth, expYear] = expiryDate.split("/");
-      const now = new Date();
-      const currentYear = now.getFullYear() % 100;
-      const currentMonth = now.getMonth() + 1;
-
-      if (
-        parseInt(expYear) < currentYear ||
-        (parseInt(expYear) === currentYear && parseInt(expMonth) < currentMonth)
-      ) {
-        return res.status(400).json({ message: "Card has expired" });
-      }
-
-      // Simulate payment processing
-      // In production, integrate with Stripe
-      const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-      // Store payment record in Firebase if configured
-      if (isFirebaseConfigured()) {
-        try {
-          const db = getFirestore();
-          await db.collection("payments").doc(paymentId).set({
-            amount,
-            currency,
-            cardHolder,
-            email,
-            lastFourDigits: cardNumber.slice(-4),
-            status: "succeeded",
-            createdAt: new Date().toISOString(),
+      if (method === "card") {
+        if (!amount || !cardNumber || !expiryDate || !cvv || !cardHolder || !email) {
+          return res.status(400).json({ 
+            message: "Missing required payment fields" 
           });
-        } catch (dbError) {
-          console.warn("Failed to store payment record:", dbError);
         }
-      }
 
-      res.status(200).json({
-        id: paymentId,
-        amount,
-        currency,
-        status: "succeeded",
-        message: "Payment processed successfully",
-      });
+        // Basic card validation (in production, use Stripe API)
+        if (cardNumber.length !== 16) {
+          return res.status(400).json({ message: "Invalid card number" });
+        }
+
+        if (cvv.length !== 3) {
+          return res.status(400).json({ message: "Invalid CVV" });
+        }
+
+        const [expMonth, expYear] = expiryDate.split("/");
+        const now = new Date();
+        const currentYear = now.getFullYear() % 100;
+        const currentMonth = now.getMonth() + 1;
+
+        if (
+          parseInt(expYear) < currentYear ||
+          (parseInt(expYear) === currentYear && parseInt(expMonth) < currentMonth)
+        ) {
+          return res.status(400).json({ message: "Card has expired" });
+        }
+
+        // Simulate payment processing
+        // In production, integrate with Stripe
+        const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+        // Store payment record in Firebase if configured
+        if (isFirebaseConfigured()) {
+          try {
+            const db = getFirestore();
+            await db.collection("payments").doc(paymentId).set({
+              amount,
+              currency,
+              method: "card",
+              cardHolder,
+              email,
+              lastFourDigits: cardNumber.slice(-4),
+              status: "succeeded",
+              createdAt: new Date().toISOString(),
+            });
+          } catch (dbError) {
+            console.warn("Failed to store payment record:", dbError);
+          }
+        }
+
+        res.status(200).json({
+          id: paymentId,
+          amount,
+          currency,
+          status: "succeeded",
+          message: "Payment processed successfully",
+        });
+      } else {
+        res.status(400).json({ message: "Invalid payment method" });
+      }
     } catch (error: any) {
       console.error("Payment processing error:", error);
       res.status(500).json({ 
