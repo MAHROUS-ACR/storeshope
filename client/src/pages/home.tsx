@@ -130,9 +130,7 @@ export default function Home() {
               <h2 className="text-lg font-bold">Categories</h2>
             </div>
             <CategoryFilter active={activeCategory} onChange={setActiveCategory} />
-          </div>
 
-          <div className="px-6">
             {isLoading ? (
               <div className="grid grid-cols-2 gap-4 mt-4">
                 {[1, 2, 3, 4].map((i) => (
