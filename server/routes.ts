@@ -2,7 +2,6 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { initializeFirebase, getFirestore, isFirebaseConfigured } from "./firebase";
-import { initializeApp, cert } from "firebase-admin";
 import * as admin from "firebase-admin";
 import { type UserRecord } from "firebase-admin/auth";
 
@@ -121,13 +120,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current user by Firebase UID
   app.get("/api/auth/me", async (req, res) => {
     try {
-      const firebaseUid = req.headers["x-firebase-uid"];
+      const firebaseUid = req.headers["x-firebase-uid"] as string | undefined;
 
       if (!firebaseUid) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
-      const user = await storage.getUserByFirebaseUid(firebaseUid as string);
+      const user = await storage.getUserByFirebaseUid(firebaseUid);
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });
