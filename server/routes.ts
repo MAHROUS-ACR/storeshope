@@ -33,11 +33,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Email, password, and username are required" });
       }
 
-      const auth = admin.auth();
-
       try {
-        // Create user in Firebase Auth
-        const userRecord: UserRecord = await auth.createUser({
+        // Create user in Firebase Auth using admin SDK
+        const userRecord: UserRecord = await admin.auth().createUser({
           email,
           password,
           displayName: username,
@@ -106,11 +104,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log("Login attempt for email:", email);
 
-      const auth = admin.auth();
-
       try {
         // Verify user credentials using Firebase Admin SDK
-        const userRecord = await auth.getUserByEmail(email);
+        const userRecord = await admin.auth().getUserByEmail(email);
         console.log("User verified via Firebase Auth:", userRecord.uid);
 
         // Get user data from Firestore users collection
@@ -128,7 +124,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         // Create custom token for client-side Firebase authentication
-        const customToken = await auth.createCustomToken(userRecord.uid);
+        const customToken = await admin.auth().createCustomToken(userRecord.uid);
 
         console.log("Login successful for:", email);
         res.json({
