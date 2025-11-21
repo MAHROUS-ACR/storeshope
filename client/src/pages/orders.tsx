@@ -23,33 +23,37 @@ interface Order {
 }
 
 export default function OrdersPage() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [firebaseConfigured, setFirebaseConfigured] = useState(false);
 
   useEffect(() => {
     async function fetchOrders() {
+      setIsLoading(true);
       try {
-        // Try to fetch from server
+        // Check Firebase status
+        const statusResponse = await fetch("/api/firebase/status");
+        const status = await statusResponse.json();
+        setFirebaseConfigured(status.configured);
+
+        // Fetch orders from server
         const response = await fetch("/api/orders");
         if (response.ok) {
           const data = await response.json();
+          // Always use server data (even if empty array from Firebase)
+          setOrders(data || []);
+          // Save to localStorage as backup
           if (data && data.length > 0) {
-            setOrders(data);
-            // Save to localStorage as backup
             localStorage.setItem("orders", JSON.stringify(data));
-          } else {
-            // Fallback to localStorage
-            const savedOrders = localStorage.getItem("orders");
-            if (savedOrders) {
-              setOrders(JSON.parse(savedOrders));
-            }
           }
         } else {
           // Fallback to localStorage on error
           const savedOrders = localStorage.getItem("orders");
           if (savedOrders) {
             setOrders(JSON.parse(savedOrders));
+          } else {
+            setOrders([]);
           }
         }
       } catch (error) {
@@ -59,9 +63,12 @@ export default function OrdersPage() {
           const savedOrders = localStorage.getItem("orders");
           if (savedOrders) {
             setOrders(JSON.parse(savedOrders));
+          } else {
+            setOrders([]);
           }
         } catch (e) {
           console.error("Failed to load from localStorage:", e);
+          setOrders([]);
         }
       } finally {
         setIsLoading(false);
@@ -69,7 +76,7 @@ export default function OrdersPage() {
     }
 
     fetchOrders();
-    // Refresh orders when page becomes visible
+    // Refresh orders when page becomes visible or location changes
     const handleVisibilityChange = () => {
       if (!document.hidden) {
         fetchOrders();
@@ -77,7 +84,7 @@ export default function OrdersPage() {
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, []);
+  }, [location]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
