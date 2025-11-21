@@ -101,72 +101,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log("Login attempt for email:", email);
 
-      let user: any = null;
-
-      // First try to find user in Firestore by email
-      if (isFirebaseConfigured()) {
-        try {
-          const db = getFirestore();
-          const usersSnapshot = await db.collection("users").where("email", "==", email).limit(1).get();
-          if (!usersSnapshot.empty) {
-            const userDoc = usersSnapshot.docs[0];
-            const userData = userDoc.data();
-            console.log("User found in Firestore:", userData.firebaseUid);
-            user = userData;
-          }
-        } catch (firestoreError) {
-          console.warn("Error querying Firestore for user by email:", firestoreError);
-        }
-      }
-
-      // Fallback to PostgreSQL if not found in Firestore
-      if (!user) {
-        try {
-          user = await storage.getUserByEmail(email);
-          if (user) {
-            console.log("User found in PostgreSQL:", user.id);
-          }
-        } catch (dbError) {
-          console.warn("Error querying PostgreSQL for user by email:", dbError);
-        }
-      }
-
-      if (!user) {
-        console.log("User not found:", email);
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-
       const auth = admin.auth();
 
       try {
-        // Update user in Firestore on login
-        try {
-          const db = getFirestore();
-          await db.collection("users").doc(user.firebaseUid).set({
-            id: user.id,
-            firebaseUid: user.firebaseUid,
-            email: user.email,
-            username: user.username,
-            lastLogin: new Date().toISOString(),
-          }, { merge: true });
-        } catch (firestoreError) {
-          console.warn("Failed to update user in Firestore:", firestoreError);
-          // Continue even if Firestore update fails
+        // Verify user credentials using Firebase Admin SDK
+        const userRecord = await auth.getUserByEmail(email);
+        console.log("User verified via Firebase Auth:", userRecord.uid);
+
+        // Get user data from Firestore users collection
+        const db = getFirestore();
+        const userDoc = await db.collection("users").doc(userRecord.uid).get();
+
+        if (!userDoc.exists) {
+          console.log("User data not found in Firestore:", userRecord.uid);
+          return res.status(401).json({ message: "User data not found" });
         }
 
-        // Get custom token from Firebase
-        const customToken = await auth.createCustomToken(user.firebaseUid);
+        const userData = userDoc.data();
+        if (!userData || !userData.email || !userData.username) {
+          return res.status(401).json({ message: "Invalid user data" });
+        }
+
+        // Create custom token for client-side Firebase authentication
+        const customToken = await auth.createCustomToken(userRecord.uid);
 
         console.log("Login successful for:", email);
         res.json({
-          id: user.id,
-          firebaseUid: user.firebaseUid,
-          email: user.email,
-          username: user.username,
+          id: userData.id || userRecord.uid,
+          firebaseUid: userRecord.uid,
+          email: userData.email,
+          username: userData.username,
           token: customToken,
         });
-      } catch (tokenError: any) {
-        throw tokenError;
+      } catch (authError: any) {
+        console.error("Firebase auth error:", authError.code);
+        if (authError.code === "auth/user-not-found") {
+          return res.status(401).json({ message: "Invalid credentials" });
+        }
+        throw authError;
       }
     } catch (error: any) {
       console.error("Login error:", error);
