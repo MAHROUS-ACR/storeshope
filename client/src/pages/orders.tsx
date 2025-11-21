@@ -25,16 +25,16 @@ interface Order {
 
 export default function OrdersPage() {
   const [location, setLocation] = useLocation();
-  const { user, isLoggedIn } = useUser();
+  const { user, isLoggedIn, isLoading: authLoading } = useUser();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [firebaseConfigured, setFirebaseConfigured] = useState(false);
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!authLoading && !isLoggedIn) {
       setLocation("/login");
     }
-  }, [isLoggedIn, setLocation]);
+  }, [isLoggedIn, authLoading, setLocation]);
 
   useEffect(() => {
     async function fetchOrders() {

@@ -16,19 +16,29 @@ const menuItems = [
 
 export default function ProfilePage() {
   const [, setLocation] = useLocation();
-  const { user, isLoggedIn, logout } = useUser();
+  const { user, isLoggedIn, logout, isLoading } = useUser();
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isLoading && !isLoggedIn) {
       setLocation("/login");
     }
-  }, [isLoggedIn, setLocation]);
+  }, [isLoggedIn, isLoading, setLocation]);
 
   const handleLogout = () => {
     logout();
     toast.success("You have been logged out");
     setLocation("/");
   };
+
+  if (isLoading) {
+    return (
+      <MobileWrapper>
+        <div className="w-full flex-1 flex items-center justify-center">
+          <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+      </MobileWrapper>
+    );
+  }
 
   return (
     <MobileWrapper>

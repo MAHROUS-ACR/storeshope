@@ -10,13 +10,13 @@ import { toast } from "sonner";
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
   const { items, total, clearCart } = useCart();
-  const { user, isLoggedIn } = useUser();
+  const { user, isLoggedIn, isLoading: authLoading } = useUser();
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!authLoading && !isLoggedIn) {
       setLocation("/login");
     }
-  }, [isLoggedIn, setLocation]);
+  }, [isLoggedIn, authLoading, setLocation]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"card" | "delivery" | null>(null);
 
