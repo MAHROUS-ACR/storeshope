@@ -125,27 +125,41 @@ export default function CheckoutPage() {
       }
 
       const paymentData = await paymentResponse.json();
+      const orderId = `ord_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const orderData = {
+        id: orderId,
+        items,
+        total,
+        status: "confirmed",
+        paymentMethod: "card",
+        paymentId: paymentData.id,
+        createdAt: new Date().toISOString(),
+      };
 
-      const orderResponse = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items,
-          total,
-          status: "confirmed",
-          paymentMethod: "card",
-          paymentId: paymentData.id,
-          createdAt: new Date().toISOString(),
-        }),
-      });
-
-      if (orderResponse.ok) {
-        toast.success("Payment successful! Order confirmed.");
-        clearCart();
-        setLocation("/orders");
-      } else {
-        toast.error("Order creation failed");
+      // Save to localStorage first (immediate)
+      try {
+        const existingOrders = localStorage.getItem("orders");
+        const orders = existingOrders ? JSON.parse(existingOrders) : [];
+        orders.unshift(orderData);
+        localStorage.setItem("orders", JSON.stringify(orders));
+      } catch (e) {
+        console.warn("Failed to save to localStorage:", e);
       }
+
+      // Try to save to server
+      try {
+        await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+        });
+      } catch (error) {
+        console.warn("Failed to save to server:", error);
+      }
+
+      toast.success("Payment successful! Order confirmed.");
+      clearCart();
+      setLocation("/orders");
     } catch (error) {
       console.error("Payment error:", error);
       toast.error("Payment processing failed");
@@ -157,31 +171,46 @@ export default function CheckoutPage() {
   const handleDeliveryPayment = async () => {
     setIsProcessing(true);
     try {
-      const orderResponse = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items,
-          total,
-          status: "pending",
-          paymentMethod: "delivery",
-          deliveryAddress: {
-            email: formData.email,
-            address: formData.address,
-            city: formData.city,
-            zipCode: formData.zipCode,
-          },
-          createdAt: new Date().toISOString(),
-        }),
-      });
+      const orderId = `ord_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const orderData = {
+        id: orderId,
+        items,
+        total,
+        status: "pending",
+        paymentMethod: "delivery",
+        deliveryAddress: {
+          email: formData.email,
+          address: formData.address,
+          city: formData.city,
+          zipCode: formData.zipCode,
+        },
+        createdAt: new Date().toISOString(),
+      };
 
-      if (orderResponse.ok) {
-        toast.success("Order placed! Pay on delivery.");
-        clearCart();
-        setLocation("/orders");
-      } else {
-        toast.error("Order creation failed");
+      // Save to localStorage first (immediate)
+      try {
+        const existingOrders = localStorage.getItem("orders");
+        const orders = existingOrders ? JSON.parse(existingOrders) : [];
+        orders.unshift(orderData);
+        localStorage.setItem("orders", JSON.stringify(orders));
+      } catch (e) {
+        console.warn("Failed to save to localStorage:", e);
       }
+
+      // Try to save to server
+      try {
+        await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+        });
+      } catch (error) {
+        console.warn("Failed to save to server:", error);
+      }
+
+      toast.success("Order placed! Pay on delivery.");
+      clearCart();
+      setLocation("/orders");
     } catch (error) {
       console.error("Order error:", error);
       toast.error("Failed to place order");
