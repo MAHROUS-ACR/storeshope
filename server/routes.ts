@@ -35,7 +35,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       try {
         // Create user in Firebase Auth using admin SDK
-        const userRecord: UserRecord = await admin.auth.createUser({
+        const userRecord: UserRecord = await admin.auth().createUser({
           email,
           password,
           displayName: username,
@@ -106,7 +106,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       try {
         // Verify user credentials using Firebase Admin SDK
-        const userRecord = await admin.auth.getUserByEmail(email);
+        const userRecord = await admin.auth().getUserByEmail(email);
         console.log("User verified via Firebase Auth:", userRecord.uid);
 
         // Get user data from Firestore users collection
@@ -124,7 +124,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         // Create custom token for client-side Firebase authentication
-        const customToken = await admin.auth.createCustomToken(userRecord.uid);
+        const customToken = await admin.auth().createCustomToken(userRecord.uid);
 
         console.log("Login successful for:", email);
         res.json({
