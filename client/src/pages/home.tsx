@@ -122,8 +122,8 @@ export default function Home() {
         )}
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto no-scrollbar pb-24">
-          <div className="px-6 py-4">
+        <div className="flex-1 overflow-y-auto no-scrollbar pb-24 w-full">
+          <div className="w-full px-6 py-4">
             <PromoBanner />
             
             <div className="mb-2 mt-4">
