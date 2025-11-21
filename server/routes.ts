@@ -99,15 +99,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Email and password are required" });
       }
 
-      // Check if user exists in database
-      const user = await storage.getUserByEmail(email);
+      console.log("Login attempt for email:", email);
+
+      let user: any = null;
+
+      // First try to find user in Firestore by email
+      if (isFirebaseConfigured()) {
+        try {
+          const db = getFirestore();
+          const usersSnapshot = await db.collection("users").where("email", "==", email).limit(1).get();
+          if (!usersSnapshot.empty) {
+            const userDoc = usersSnapshot.docs[0];
+            const userData = userDoc.data();
+            console.log("User found in Firestore:", userData.firebaseUid);
+            user = userData;
+          }
+        } catch (firestoreError) {
+          console.warn("Error querying Firestore for user by email:", firestoreError);
+        }
+      }
+
+      // Fallback to PostgreSQL if not found in Firestore
+      if (!user) {
+        try {
+          user = await storage.getUserByEmail(email);
+          if (user) {
+            console.log("User found in PostgreSQL:", user.id);
+          }
+        } catch (dbError) {
+          console.warn("Error querying PostgreSQL for user by email:", dbError);
+        }
+      }
 
       if (!user) {
+        console.log("User not found:", email);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // In production, verify the password with Firebase Admin SDK using signInWithPassword
-      // For now, we'll use the user's existence as validation
       const auth = admin.auth();
 
       try {
@@ -129,6 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Get custom token from Firebase
         const customToken = await auth.createCustomToken(user.firebaseUid);
 
+        console.log("Login successful for:", email);
         res.json({
           id: user.id,
           firebaseUid: user.firebaseUid,
