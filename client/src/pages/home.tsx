@@ -44,49 +44,66 @@ const fallbackProducts = [
 ];
 
 export default function Home() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { items } = useCart();
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [products, setProducts] = useState(fallbackProducts);
+  const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [firebaseConfigured, setFirebaseConfigured] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function checkFirebaseAndFetchProducts() {
-      try {
-        // Check Firebase status
-        const statusResponse = await fetch("/api/firebase/status");
-        const status = await statusResponse.json();
-        setFirebaseConfigured(status.configured);
+  const fetchProductsData = async () => {
+    setIsLoading(true);
+    try {
+      // Check Firebase status
+      const statusResponse = await fetch("/api/firebase/status");
+      const status = await statusResponse.json();
+      setFirebaseConfigured(status.configured);
 
-        if (status.configured) {
-          // Fetch products from Firebase
+      if (status.configured) {
+        // Fetch products from Firebase
+        try {
           const productsResponse = await fetch("/api/products");
           if (productsResponse.ok) {
             const firebaseProducts = await productsResponse.json();
-            if (firebaseProducts.length > 0) {
-              setProducts(firebaseProducts);
-            }
+            // Use Firebase products regardless of count (empty array means empty page)
+            setProducts(firebaseProducts);
+            setError("");
           } else {
             setError("Failed to load products from Firebase");
+            setProducts([]);
           }
+        } catch (err) {
+          console.error("Error fetching from Firebase:", err);
+          setError("Failed to load products from Firebase");
+          setProducts([]);
         }
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Using demo products");
-      } finally {
-        setIsLoading(false);
+      } else {
+        // Firebase not configured - use fallback data
+        setProducts(fallbackProducts);
+        setError("");
       }
+    } catch (err) {
+      console.error("Error checking Firebase:", err);
+      setProducts(fallbackProducts);
+      setError("");
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    checkFirebaseAndFetchProducts();
-  }, []);
+  useEffect(() => {
+    fetchProductsData();
+  }, [location]);
 
   const filteredProducts = products.filter(p => {
-    const matchesCategory = activeCategory === "All" || p.category === activeCategory;
-    const matchesSearch = (p.title || "").toLowerCase().includes(searchQuery.toLowerCase());
+    if (!p) return false;
+    const category = p.category || "";
+    // Handle both 'title' (fallback) and 'name' (Firebase) fields
+    const title = p.title || p.name || "";
+    const matchesCategory = activeCategory === "All" || category === activeCategory;
+    const matchesSearch = String(title).toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 

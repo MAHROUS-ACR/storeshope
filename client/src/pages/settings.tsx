@@ -87,6 +87,8 @@ export default function SettingsPage() {
         setProjectId("");
         setPrivateKey("");
         setClientEmail("");
+        // Redirect to home and trigger data reload
+        setTimeout(() => setLocation("/"), 500);
       } else {
         const error = await response.json();
         toast.error(error.message || "Failed to save configuration");
