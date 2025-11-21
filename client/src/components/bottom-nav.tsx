@@ -2,9 +2,11 @@ import { Home, Search, ShoppingCart, User } from "lucide-react";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useCart } from "@/lib/cartContext";
 
 export function BottomNav() {
   const [location, setLocation] = useLocation();
+  const { items } = useCart();
 
   const tabs = [
     { id: "/", icon: Home, label: "Home" },
@@ -23,6 +25,7 @@ export function BottomNav() {
               key={tab.id}
               onClick={() => setLocation(tab.id)}
               className="relative flex flex-col items-center gap-1 p-2 group w-16"
+              data-testid={`nav-${tab.id}`}
             >
               {isActive && (
                 <motion.div
@@ -31,12 +34,19 @@ export function BottomNav() {
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               )}
-              <tab.icon
-                className={cn(
-                  "w-6 h-6 transition-colors duration-300",
-                  isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+              <div className="relative">
+                <tab.icon
+                  className={cn(
+                    "w-6 h-6 transition-colors duration-300",
+                    isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                  )}
+                />
+                {tab.id === "/cart" && items.length > 0 && (
+                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full text-white flex items-center justify-center text-[10px] font-bold border border-white">
+                    {items.length}
+                  </div>
                 )}
-              />
+              </div>
               <span
                 className={cn(
                   "text-[10px] font-medium transition-colors duration-300",

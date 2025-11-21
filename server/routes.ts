@@ -194,6 +194,126 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Orders Management
+  app.get("/api/orders", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ 
+          message: "Firebase not configured" 
+        });
+      }
+
+      const db = getFirestore();
+      const ordersSnapshot = await db.collection("orders").orderBy("createdAt", "desc").get();
+      
+      const orders = ordersSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      res.json(orders);
+    } catch (error: any) {
+      console.error("Error fetching orders:", error);
+      res.status(500).json({ 
+        message: "Failed to fetch orders",
+        error: error.message 
+      });
+    }
+  });
+
+  app.post("/api/orders", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ 
+          message: "Firebase not configured" 
+        });
+      }
+
+      const { items, total, status = "pending", createdAt } = req.body;
+
+      if (!items || !total) {
+        return res.status(400).json({ 
+          message: "Missing required fields: items or total" 
+        });
+      }
+
+      const db = getFirestore();
+      const orderRef = await db.collection("orders").add({
+        items,
+        total: parseFloat(total),
+        status,
+        createdAt: createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+
+      const newOrder = await orderRef.get();
+      res.status(201).json({ id: newOrder.id, ...newOrder.data() });
+    } catch (error: any) {
+      console.error("Error creating order:", error);
+      res.status(500).json({ 
+        message: "Failed to create order",
+        error: error.message 
+      });
+    }
+  });
+
+  app.get("/api/orders/:id", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ 
+          message: "Firebase not configured" 
+        });
+      }
+
+      const db = getFirestore();
+      const orderDoc = await db.collection("orders").doc(req.params.id).get();
+      
+      if (!orderDoc.exists) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      res.json({ id: orderDoc.id, ...orderDoc.data() });
+    } catch (error: any) {
+      console.error("Error fetching order:", error);
+      res.status(500).json({ 
+        message: "Failed to fetch order",
+        error: error.message 
+      });
+    }
+  });
+
+  app.patch("/api/orders/:id", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ 
+          message: "Firebase not configured" 
+        });
+      }
+
+      const db = getFirestore();
+      const orderRef = db.collection("orders").doc(req.params.id);
+      const orderDoc = await orderRef.get();
+
+      if (!orderDoc.exists) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      await orderRef.update({
+        ...req.body,
+        updatedAt: new Date().toISOString()
+      });
+
+      const updatedOrder = await orderRef.get();
+      res.json({ id: updatedOrder.id, ...updatedOrder.data() });
+    } catch (error: any) {
+      console.error("Error updating order:", error);
+      res.status(500).json({ 
+        message: "Failed to update order",
+        error: error.message 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
