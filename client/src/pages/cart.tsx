@@ -3,14 +3,13 @@ import { BottomNav } from "@/components/bottom-nav";
 import { ArrowLeft, Trash2, Minus, Plus } from "lucide-react";
 import { useLocation } from "wouter";
 import { useCart } from "@/lib/cartContext";
-import { useState } from "react";
 import { toast } from "sonner";
 
 export default function CartPage() {
   const [, setLocation] = useLocation();
   const { items, removeItem, updateQuantity, total, clearCart } = useCart();
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (items.length === 0) {
       toast.error("Your cart is empty");
       return;
@@ -100,8 +99,8 @@ export default function CartPage() {
               </div>
             </div>
 
-            {/* Checkout Section */}
-            <div className="px-6 pb-8 border-t border-gray-100 pt-4 space-y-3">
+            {/* Checkout Section - Fixed outside scrollable area */}
+            <div className="px-6 py-4 border-t border-gray-100 space-y-3 bg-white">
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
