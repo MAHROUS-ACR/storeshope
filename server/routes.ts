@@ -1,9 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { initializeFirebase, getFirestore, isFirebaseConfigured } from "./firebase";
+import { initializeFirebase, getFirestore, getAuth, isFirebaseConfigured } from "./firebase";
 import { queryUser } from "./db-utils";
-import * as admin from "firebase-admin";
 import { type UserRecord } from "firebase-admin/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -35,7 +34,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       try {
         // Create user in Firebase Auth using admin SDK
-        const userRecord: UserRecord = await admin.auth().createUser({
+        const auth = getAuth();
+        const userRecord: UserRecord = await auth.createUser({
           email,
           password,
           displayName: username,
@@ -106,7 +106,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       try {
         // Verify user credentials using Firebase Admin SDK
-        const userRecord = await admin.auth().getUserByEmail(email);
+        const auth = getAuth();
+        const userRecord = await auth.getUserByEmail(email);
         console.log("User verified via Firebase Auth:", userRecord.uid);
 
         // Get user data from Firestore users collection
@@ -124,7 +125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         // Create custom token for client-side Firebase authentication
-        const customToken = await admin.auth().createCustomToken(userRecord.uid);
+        const customToken = await auth.createCustomToken(userRecord.uid);
 
         console.log("Login successful for:", email);
         res.json({

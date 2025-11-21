@@ -31,6 +31,13 @@ export function getFirestore() {
   return admin.firestore();
 }
 
+export function getAuth() {
+  if (!firebaseInitialized) {
+    throw new Error("Firebase not initialized. Please configure Firebase settings first.");
+  }
+  return admin.auth();
+}
+
 export function isFirebaseConfigured() {
   return firebaseInitialized;
 }
