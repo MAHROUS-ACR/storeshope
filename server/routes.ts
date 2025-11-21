@@ -247,6 +247,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Create order
+  app.post("/api/orders", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      const orderData = req.body;
+      if (!orderData.userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      console.log("Saving order for user:", orderData.userId);
+      
+      const db = getFirestore();
+      const docRef = await db.collection("orders").add({
+        ...orderData,
+        createdAt: new Date().toISOString(),
+      });
+
+      console.log("Order saved:", docRef.id);
+      res.json({ id: docRef.id, message: "Order saved successfully" });
+    } catch (error: any) {
+      console.error("Error saving order:", error);
+      res.status(500).json({
+        message: "Failed to save order",
+        error: error.message,
+      });
+    }
+  });
+
+  // Get orders for user
+  app.get("/api/orders", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      const userId = req.headers["x-user-id"] as string;
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      console.log("Fetching orders for user:", userId);
+
+      const db = getFirestore();
+      const snapshot = await db.collection("orders").where("userId", "==", userId).get();
+      
+      const orders: any[] = [];
+      snapshot.forEach((doc) => {
+        orders.push({ id: doc.id, ...doc.data() });
+      });
+
+      console.log("Found orders:", orders.length);
+      res.json(orders);
+    } catch (error: any) {
+      console.error("Error fetching orders:", error);
+      res.status(500).json({
+        message: "Failed to fetch orders",
+        error: error.message,
+      });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }

@@ -45,10 +45,14 @@ export default function OrdersPage() {
         const status = await statusResponse.json();
         setFirebaseConfigured(status.configured);
 
-        // If Firebase is configured, fetch from server; otherwise use localStorage
-        if (status.configured) {
+        // If Firebase is configured and user exists, fetch from server
+        if (status.configured && user?.id) {
           // Fetch orders from Firebase via server
-          const response = await fetch("/api/orders");
+          const response = await fetch("/api/orders", {
+            headers: {
+              "x-user-id": user.id,
+            },
+          });
           if (response.ok) {
             const data = await response.json();
             setOrders(data || []);
@@ -102,7 +106,7 @@ export default function OrdersPage() {
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [location]);
+  }, [location, user]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
