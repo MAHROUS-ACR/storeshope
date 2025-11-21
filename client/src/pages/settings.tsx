@@ -110,7 +110,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto no-scrollbar pb-24">
+        <div className="flex-1 overflow-y-auto no-scrollbar pb-24 w-full">
           <div className="w-full px-6 py-6">
             {/* Server Config Section */}
             <div className="mb-8">
@@ -131,72 +131,73 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold mb-2" htmlFor="projectId">
-                Project ID
-              </label>
-              <input
-                id="projectId"
-                type="text"
-                value={projectId}
-                onChange={(e) => setProjectId(e.target.value)}
-                placeholder="your-project-id"
-                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                data-testid="input-project-id"
-              />
-            </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2" htmlFor="projectId">
+                    Project ID
+                  </label>
+                  <input
+                    id="projectId"
+                    type="text"
+                    value={projectId}
+                    onChange={(e) => setProjectId(e.target.value)}
+                    placeholder="your-project-id"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    data-testid="input-project-id"
+                  />
+                </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2" htmlFor="clientEmail">
-                Client Email
-              </label>
-              <input
-                id="clientEmail"
-                type="email"
-                value={clientEmail}
-                onChange={(e) => setClientEmail(e.target.value)}
-                placeholder="firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com"
-                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                data-testid="input-client-email"
-              />
-            </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2" htmlFor="clientEmail">
+                    Client Email
+                  </label>
+                  <input
+                    id="clientEmail"
+                    type="email"
+                    value={clientEmail}
+                    onChange={(e) => setClientEmail(e.target.value)}
+                    placeholder="firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    data-testid="input-client-email"
+                  />
+                </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2" htmlFor="privateKey">
-                Private Key
-              </label>
-              <textarea
-                id="privateKey"
-                value={privateKey}
-                onChange={(e) => setPrivateKey(e.target.value)}
-                placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"
-                rows={6}
-                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono text-xs resize-none"
-                data-testid="input-private-key"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Include the full key with BEGIN and END markers
-              </p>
-            </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2" htmlFor="privateKey">
+                    Private Key
+                  </label>
+                  <textarea
+                    id="privateKey"
+                    value={privateKey}
+                    onChange={(e) => setPrivateKey(e.target.value)}
+                    placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"
+                    rows={6}
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono text-xs resize-none"
+                    data-testid="input-private-key"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Include the full key with BEGIN and END markers
+                  </p>
+                </div>
 
-              <button
-                onClick={handleSaveServerConfig}
-                disabled={isLoading}
-                className="w-full bg-black text-white py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                data-testid="button-save-config"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-5 h-5" />
-                    Save Configuration
-                  </>
-                )}
-              </button>
+                <button
+                  onClick={handleSaveServerConfig}
+                  disabled={isLoading}
+                  className="w-full bg-black text-white py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  data-testid="button-save-config"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-5 h-5" />
+                      Save Configuration
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Client Auth Config Section */}
@@ -283,4 +284,3 @@ export default function SettingsPage() {
     </MobileWrapper>
   );
 }
-
