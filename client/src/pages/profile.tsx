@@ -113,13 +113,16 @@ export default function ProfilePage() {
   const [firebaseMeasurementId, setFirebaseMeasurementId] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  // Filter orders by date range
+  // Filter orders by date range (excluding cancelled)
   const getFilteredOrders = (range: "all" | "month" | "year") => {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfYear = new Date(now.getFullYear(), 0, 1);
 
     return orders.filter(order => {
+      // Exclude cancelled orders
+      if (order.status === 'cancelled') return false;
+      
       const orderDate = new Date(order.createdAt);
       if (range === "month") return orderDate >= startOfMonth;
       if (range === "year") return orderDate >= startOfYear;
