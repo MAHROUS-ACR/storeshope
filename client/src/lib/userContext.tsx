@@ -8,7 +8,7 @@ import {
   onAuthStateChanged, 
   type User as FirebaseUser 
 } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { getFirebaseConfig } from "./firebaseConfig";
 
 export interface User {
@@ -23,7 +23,6 @@ interface UserContextType {
   signup: (email: string, password: string, username: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  setRole: (role: string) => void;
   isLoggedIn: boolean;
   isLoading: boolean;
 }
@@ -33,7 +32,6 @@ const defaultUserValue: UserContextType = {
   signup: async () => {},
   login: async () => {},
   logout: async () => {},
-  setRole: () => {},
   isLoggedIn: false,
   isLoading: true,
 };
@@ -58,13 +56,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setFirestore(db);
 
         // Listen to Firebase Auth state changes
-        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
           if (firebaseUser) {
-            // User is signed in - fetch user data from Firestore
-            try {
-              const userRef = doc(db, "users", firebaseUser.uid);
-              const userSnap = await getDoc(userRef);
-              
+            // User is signed in - set up real-time listener for user data from Firestore
+            const userRef = doc(db, "users", firebaseUser.uid);
+            const unsubscribeUser = onSnapshot(userRef, (userSnap) => {
               let role = "user"; // default role
               
               if (userSnap.exists()) {
@@ -80,7 +76,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
               };
               setUser(userData);
               localStorage.setItem("user", JSON.stringify(userData));
-            } catch (error) {
+              setIsLoading(false);
+            }, (error) => {
               console.error("Failed to fetch user data from Firestore:", error);
               // Fallback to stored user data
               const storedUser = localStorage.getItem("user");
@@ -94,13 +91,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
               };
               setUser(userData);
               localStorage.setItem("user", JSON.stringify(userData));
-            }
+              setIsLoading(false);
+            });
+
+            return () => unsubscribeUser();
           } else {
             // User is signed out
             setUser(null);
             localStorage.removeItem("user");
+            setIsLoading(false);
           }
-          setIsLoading(false);
         });
 
         return () => unsubscribe();
@@ -153,13 +153,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("orders");
   };
 
-  const setRole = (role: string) => {
-    if (user) {
-      const updatedUser = { ...user, role };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-    }
-  };
 
   return (
     <UserContext.Provider
@@ -168,7 +161,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         signup,
         login,
         logout,
-        setRole,
         isLoggedIn: !!user,
         isLoading,
       }}
