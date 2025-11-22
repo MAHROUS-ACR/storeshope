@@ -421,7 +421,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updatedAt: new Date().toISOString(),
       };
 
-      await db.collection("settings").doc("store").set(storeData);
+      // Use merge: true to preserve firebase config field
+      await db.collection("settings").doc("store").set(storeData, { merge: true });
 
       console.log("✅ Store settings saved successfully to Firestore");
       res.json({ message: "Store settings saved successfully" });
