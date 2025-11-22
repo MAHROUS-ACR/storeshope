@@ -131,46 +131,43 @@ export default function Home() {
 
   return (
     <MobileWrapper>
-      <div className="w-full flex-1 flex flex-col overflow-hidden bg-gray-50">
-        {/* Store Header */}
-        <div className="px-6 pt-4 pb-6 flex-shrink-0 bg-gradient-to-br from-blue-600 to-blue-700">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
+      <div className="w-full flex-1 flex flex-col overflow-hidden bg-white">
+        {/* Header */}
+        <div className="px-5 pt-3 pb-4 flex-shrink-0 border-b border-gray-100">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-2">
               {storeLogo ? (
-                <img src={storeLogo} alt={storeName} className="w-10 h-10 rounded-lg object-cover border-2 border-white" />
+                <img src={storeLogo} alt={storeName} className="w-9 h-9 rounded-lg object-cover" />
               ) : (
-                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-blue-600 font-bold text-sm shadow-md">
+                <div className="w-9 h-9 bg-black rounded-lg flex items-center justify-center text-white font-bold text-sm">
                   {storeName.charAt(0)}
                 </div>
               )}
-              <div>
-                <h1 className="text-lg font-bold text-white">{storeName}</h1>
-                <p className="text-xs text-blue-100">Shop with confidence</p>
-              </div>
+              <h1 className="text-base font-bold text-gray-900">{storeName}</h1>
             </div>
             <button 
               onClick={() => setLocation("/cart")}
-              className="w-11 h-11 bg-white text-blue-600 rounded-xl flex items-center justify-center relative hover:bg-blue-50 transition-colors flex-shrink-0 shadow-md font-bold"
+              className="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center relative hover:bg-gray-900 transition-colors flex-shrink-0"
               data-testid="button-cart"
             >
-              <ShoppingCart className="w-5 h-5" />
+              <ShoppingCart className="w-4 h-4" />
               {items.length > 0 && (
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[11px] font-bold text-white shadow-md">
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white">
                   {items.length}
                 </div>
               )}
             </button>
           </div>
 
-          {/* Search Bar */}
+          {/* Search */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input 
               type="text" 
-              placeholder="Search products..." 
+              placeholder="Search..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md"
+              className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/10"
               data-testid="input-search"
             />
           </div>
@@ -178,14 +175,12 @@ export default function Home() {
 
         {/* Firebase Status Banner */}
         {!firebaseConfigured && (
-          <div className="px-6 pt-4 flex-shrink-0">
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <p className="text-xs font-semibold text-amber-900 mb-1">Using Demo Data</p>
-                <p className="text-xs text-amber-800">
-                  Configure Firebase in Profile → Firebase Settings to load your products
-                </p>
+          <div className="px-5 py-3 flex-shrink-0 bg-yellow-50 border-b border-yellow-100">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-yellow-900 mb-0.5">Demo Mode</p>
+                <p className="text-xs text-yellow-800">Configure Firebase in Profile to use your products</p>
               </div>
             </div>
           </div>
@@ -193,58 +188,44 @@ export default function Home() {
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-24 w-full">
-          <div className="w-full px-6 py-4">
+          <div className="w-full px-5 py-4">
+            {/* Promo Banner */}
             <PromoBanner />
             
-            {/* Categories Section */}
-            <div className="mt-6 mb-4">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-bold text-gray-900">Shop by Category</h2>
-                {categories.length > 1 && (
-                  <button 
-                    onClick={() => setActiveCategory("All")}
-                    className="text-xs text-blue-600 font-semibold hover:text-blue-700"
-                    data-testid="button-view-all"
-                  >
-                    View all
-                  </button>
-                )}
+            {/* Categories */}
+            {categories.length > 0 && (
+              <div className="mt-5 mb-6">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">Categories</h3>
+                <CategoryFilter active={activeCategory} onChange={setActiveCategory} categories={categories} />
               </div>
-              <CategoryFilter active={activeCategory} onChange={setActiveCategory} categories={categories} />
-            </div>
+            )}
 
-            {/* Products Section */}
-            <div className="mt-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-gray-900">
-                  {activeCategory === "All" ? "Featured Products" : `${activeCategory} Products`}
-                </h2>
-              </div>
-
-              {isLoading ? (
-                <div className="grid grid-cols-2 gap-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 overflow-hidden">
-                      <div className="aspect-square rounded-xl bg-gray-200 animate-pulse mb-3" />
-                      <div className="h-3 bg-gray-200 rounded animate-pulse mb-2" />
-                      <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3" />
+            {/* Products */}
+            {isLoading ? (
+              <div className="grid grid-cols-2 gap-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+                    <div className="aspect-square bg-gray-200 animate-pulse" />
+                    <div className="p-2">
+                      <div className="h-3 bg-gray-200 rounded animate-pulse mb-2 w-3/4" />
+                      <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2" />
                     </div>
-                  ))}
-                </div>
-              ) : filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3">
-                  {filteredProducts.map((product, index) => (
-                    <ProductCard key={product.id} product={product} index={index} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <div className="text-4xl mb-3">🔍</div>
-                  <p className="text-gray-600 font-semibold mb-1">No products found</p>
-                  <p className="text-xs text-gray-500">Try adjusting your search or category filters</p>
-                </div>
-              )}
-            </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {filteredProducts.map((product, index) => (
+                  <ProductCard key={product.id} product={product} index={index} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <div className="text-5xl mb-3">📦</div>
+                <p className="text-sm text-gray-600 font-semibold mb-1">No products found</p>
+                <p className="text-xs text-gray-500">Try a different search</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
