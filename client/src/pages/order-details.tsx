@@ -56,7 +56,8 @@ export default function OrderDetailsPage() {
       if (savedOrders) {
         const allOrders = JSON.parse(savedOrders);
         const foundOrder = allOrders.find((o: Order) => o.id === orderId);
-        if (foundOrder && (!user || foundOrder.userId === user.id || !foundOrder.userId)) {
+        // Allow access if: admin user, order belongs to current user, or order has no userId
+        if (foundOrder && ((user && user.role === 'admin') || foundOrder.userId === user?.id || !foundOrder.userId)) {
           setOrder(foundOrder);
         }
       }
