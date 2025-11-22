@@ -51,6 +51,9 @@ export default function ProfilePage() {
   const [showOrders, setShowOrders] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [analyticsDateRange, setAnalyticsDateRange] = useState<"all" | "month" | "year">("all");
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [userOrdersCount, setUserOrdersCount] = useState(0);
+  const [userOrdersTotal, setUserOrdersTotal] = useState(0);
   const [showItems, setShowItems] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [showUsers, setShowUsers] = useState(false);
@@ -142,6 +145,22 @@ export default function ProfilePage() {
     return { totalRevenue, totalShipping, salesAmount, completedCount, pendingCount, filtered };
   };
 
+  // Fetch user's orders and calculate stats
+  const fetchUserOrdersStats = async () => {
+    if (!user?.id) return;
+    try {
+      const response = await fetch("/api/orders");
+      if (response.ok) {
+        const data = await response.json();
+        const userOrders = data.filter((o: AdminOrder) => o.userId === user.id);
+        setUserOrdersCount(userOrders.length);
+        setUserOrdersTotal(userOrders.reduce((sum: number, o: AdminOrder) => sum + o.total, 0));
+      }
+    } catch (error) {
+      console.error("Error fetching user orders:", error);
+    }
+  };
+
   // Fetch all orders for admin
   const fetchAllOrders = async () => {
     setOrdersLoading(true);
@@ -159,11 +178,50 @@ export default function ProfilePage() {
     }
   };
 
+  // Handle profile image upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user?.id) return;
+
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        setProfileImage(base64);
+        
+        // Save to Firestore
+        const db = getFirestore();
+        const userRef = doc(db, "users", user.id);
+        await updateDoc(userRef, { profileImage: base64 });
+        toast.success("Profile image updated!");
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error updating profile image:", error);
+      toast.error("Failed to update profile image");
+    }
+  };
+
   useEffect(() => {
     if (!isLoading && !isLoggedIn) {
       setLocation("/login");
     }
   }, [isLoggedIn, isLoading, setLocation]);
+
+  // Load user profile image and orders stats
+  useEffect(() => {
+    if (user?.id) {
+      fetchUserOrdersStats();
+      // Load profile image from Firestore
+      const db = getFirestore();
+      const userRef = doc(db, "users", user.id);
+      getDoc(userRef).then(snap => {
+        if (snap.exists() && snap.data().profileImage) {
+          setProfileImage(snap.data().profileImage);
+        }
+      });
+    }
+  }, [user?.id]);
 
   // Check if sessionStorage has preferred tab (from order-details back button)
   useEffect(() => {
@@ -628,15 +686,49 @@ export default function ProfilePage() {
               {user && (
                 <div className="px-6 py-4 space-y-3">
                   <div className="bg-gradient-to-br from-primary to-purple-600 rounded-3xl p-4 text-white shadow-lg">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-12 h-12 rounded-full overflow-hidden border-3 border-white/20">
-                        <img src={avatarImage} alt="User" className="w-full h-full object-cover" />
+                    <div className="flex items-center gap-4">
+                      {/* Profile Image with Edit */}
+                      <div className="relative flex-shrink-0">
+                        <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/30 bg-white/10">
+                          <img 
+                            src={profileImage || avatarImage} 
+                            alt="User" 
+                            className="w-full h-full object-cover" 
+                            data-testid="img-profile-picture"
+                          />
+                        </div>
+                        <label className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-100 shadow-lg">
+                          <Edit2 className="w-4 h-4 text-primary" />
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={handleImageUpload} 
+                            className="hidden"
+                            data-testid="input-profile-image"
+                          />
+                        </label>
                       </div>
-                      <div>
-                        <h2 className="text-sm font-bold" data-testid="text-username">
+
+                      {/* User Info */}
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-lg font-bold" data-testid="text-username">
                           {user.username}
                         </h2>
-                        <p className="text-xs opacity-90">{user.id}</p>
+                        <p className="text-sm opacity-90 truncate" data-testid="text-email">
+                          {user.email}
+                        </p>
+                        
+                        {/* Orders Stats */}
+                        <div className="grid grid-cols-2 gap-2 mt-3">
+                          <div className="bg-white/20 rounded-lg p-2">
+                            <p className="text-xs opacity-75">Orders</p>
+                            <p className="text-sm font-bold" data-testid="text-orders-count">{userOrdersCount}</p>
+                          </div>
+                          <div className="bg-white/20 rounded-lg p-2">
+                            <p className="text-xs opacity-75">Total Spent</p>
+                            <p className="text-sm font-bold" data-testid="text-orders-total">${userOrdersTotal.toFixed(2)}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

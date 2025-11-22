@@ -16,6 +16,7 @@ export interface User {
   email: string;
   username?: string;
   role?: string;
+  profileImage?: string;
 }
 
 interface UserContextType {
