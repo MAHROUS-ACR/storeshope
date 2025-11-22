@@ -121,13 +121,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Saving order for user:", orderData.userId);
       
       const db = getFirestore();
+      
+      // Get total count of orders to generate sequential order number
+      const allOrders = await db.collection("orders").get();
+      const orderNumber = allOrders.size + 1;
+      
       const docRef = await db.collection("orders").add({
         ...orderData,
+        orderNumber: orderNumber,
         createdAt: new Date().toISOString(),
       });
 
-      console.log("Order saved:", docRef.id);
-      res.json({ id: docRef.id, message: "Order saved successfully" });
+      console.log("Order saved:", docRef.id, "Order #", orderNumber);
+      res.json({ id: docRef.id, orderNumber: orderNumber, message: "Order saved successfully" });
     } catch (error: any) {
       console.error("Error saving order:", error);
       res.status(500).json({

@@ -171,8 +171,8 @@ export default function OrdersPage() {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <p className="text-sm text-muted-foreground">Order ID</p>
-                      <p className="font-semibold text-sm font-mono">{order.id.slice(0, 12)}</p>
+                      <p className="text-sm text-muted-foreground">Order Number</p>
+                      <p className="font-semibold text-sm font-mono">#{(order as any).orderNumber || "N/A"}</p>
                     </div>
                     <div className="flex flex-col items-end gap-2">
                       <span

@@ -133,9 +133,7 @@ export default function CheckoutPage() {
       }
 
       const paymentData = await paymentResponse.json();
-      const orderId = `ord_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const orderData = {
-        id: orderId,
         items,
         total,
         status: "confirmed",
@@ -179,9 +177,7 @@ export default function CheckoutPage() {
   const handleDeliveryPayment = async () => {
     setIsProcessing(true);
     try {
-      const orderId = `ord_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const orderData = {
-        id: orderId,
         items,
         total,
         status: "pending",

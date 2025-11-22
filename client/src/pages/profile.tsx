@@ -29,6 +29,7 @@ interface AdminOrder {
   status: string;
   createdAt: string;
   paymentMethod?: string;
+  orderNumber?: number;
 }
 
 export default function ProfilePage() {
@@ -217,9 +218,9 @@ export default function ProfilePage() {
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
-                          <p className="text-xs font-semibold text-gray-500">Order ID</p>
-                          <p className="text-sm font-bold text-gray-900 truncate" data-testid={`text-order-id-${order.id}`}>
-                            {order.id}
+                          <p className="text-xs font-semibold text-gray-500">Order Number</p>
+                          <p className="text-sm font-bold text-gray-900" data-testid={`text-order-number-${order.id}`}>
+                            #{order.orderNumber || "N/A"}
                           </p>
                         </div>
                         <button
