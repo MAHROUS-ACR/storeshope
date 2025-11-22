@@ -7,6 +7,7 @@ import { useUser } from "@/lib/userContext";
 import { toast } from "sonner";
 import avatarImage from "@assets/generated_images/professional_user_avatar_portrait.png";
 import { saveFirebaseConfig, getFirebaseConfig, clearFirebaseConfig } from "@/lib/firebaseConfig";
+import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 
 const menuItems = [
   { icon: Package, label: "My Orders", path: "/orders", color: "text-purple-600 bg-purple-50" },
@@ -81,6 +82,21 @@ export default function ProfilePage() {
   const [storePhone, setStorePhone] = useState("");
   const [storeEmail, setStoreEmail] = useState("");
   const [storeLogo, setStoreLogo] = useState<string>("");
+
+  // Shipping Zones States
+  const [shippingZones, setShippingZones] = useState<any[]>([]);
+  const [showShippingZones, setShowShippingZones] = useState(false);
+  const [newZoneName, setNewZoneName] = useState("");
+  const [newZoneCost, setNewZoneCost] = useState("");
+  const [editingZoneId, setEditingZoneId] = useState<string | null>(null);
+
+  // User Profile States
+  const [userAddress, setUserAddress] = useState("");
+  const [userPhone, setUserPhone] = useState("");
+  const [userZone, setUserZone] = useState("");
+  const [userAddressAlt, setUserAddressAlt] = useState("");
+  const [userZoneAlt, setUserZoneAlt] = useState("");
+  const [showUserProfile, setShowUserProfile] = useState(false);
   
   // Firebase Config States
   const [projectId, setProjectId] = useState("");
@@ -346,6 +362,116 @@ export default function ProfilePage() {
     }
   };
 
+  const fetchShippingZones = async () => {
+    try {
+      const response = await fetch("/api/shipping-zones");
+      if (response.ok) {
+        const data = await response.json();
+        setShippingZones(data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching shipping zones:", error);
+    }
+  };
+
+  const handleSaveShippingZone = async () => {
+    if (!newZoneName || !newZoneCost) {
+      toast.error("Please fill in all zone fields");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/shipping-zones", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingZoneId,
+          name: newZoneName,
+          shippingCost: parseFloat(newZoneCost),
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Shipping zone saved successfully!");
+        setNewZoneName("");
+        setNewZoneCost("");
+        setEditingZoneId(null);
+        fetchShippingZones();
+      } else {
+        toast.error("Failed to save shipping zone");
+      }
+    } catch (error) {
+      console.error("Error saving shipping zone:", error);
+      toast.error("Failed to save shipping zone");
+    }
+  };
+
+  const handleDeleteShippingZone = async (zoneId: string) => {
+    try {
+      const response = await fetch(`/api/shipping-zones/${zoneId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        toast.success("Shipping zone deleted!");
+        fetchShippingZones();
+      } else {
+        toast.error("Failed to delete shipping zone");
+      }
+    } catch (error) {
+      console.error("Error deleting shipping zone:", error);
+      toast.error("Failed to delete shipping zone");
+    }
+  };
+
+  const handleSaveUserProfile = async () => {
+    if (!userAddress || !userPhone || !userZone) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const db = getFirestore();
+      const userRef = doc(db, "users", user?.id || "");
+      await updateDoc(userRef, {
+        address: userAddress,
+        phone: userPhone,
+        zone: userZone,
+        addressAlt: userAddressAlt,
+        zoneAlt: userZoneAlt,
+      });
+      
+      toast.success("Profile updated successfully!");
+      setShowUserProfile(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Failed to update profile");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const loadUserProfile = async () => {
+    if (!user?.id) return;
+    try {
+      const db = getFirestore();
+      const userRef = doc(db, "users", user.id);
+      const userSnap = await getDoc(userRef);
+      
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        setUserAddress(data.address || "");
+        setUserPhone(data.phone || "");
+        setUserZone(data.zone || "");
+        setUserAddressAlt(data.addressAlt || "");
+        setUserZoneAlt(data.zoneAlt || "");
+      }
+    } catch (error) {
+      console.error("Error loading user profile:", error);
+    }
+  };
+
   const handleStatusUpdate = async (orderId: string, status: string) => {
     try {
       const response = await fetch(`/api/orders/${orderId}`, {
@@ -495,6 +621,109 @@ export default function ProfilePage() {
                   </button>
                 ))}
 
+                {/* User Profile Section */}
+                <button
+                  onClick={() => {
+                    setShowUserProfile(!showUserProfile);
+                    if (!showUserProfile && user?.id) {
+                      loadUserProfile();
+                      fetchShippingZones();
+                    }
+                  }}
+                  className="w-full flex items-center justify-between p-4 bg-indigo-50 rounded-2xl border border-indigo-200 hover:border-indigo-300 transition-colors"
+                  data-testid="button-toggle-user-profile"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-indigo-100 text-indigo-600">
+                      <Package className="w-6 h-6" />
+                    </div>
+                    <span className="font-semibold text-sm text-indigo-900">Delivery Address</span>
+                  </div>
+                  <ChevronRight className={`w-5 h-5 text-indigo-400 transition-transform ${showUserProfile ? "rotate-90" : ""}`} />
+                </button>
+
+                {showUserProfile && (
+                  <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-4 mb-4">
+                    <div>
+                      <label className="text-xs font-semibold mb-1 block">Main Address *</label>
+                      <input
+                        type="text"
+                        placeholder="Street address"
+                        value={userAddress}
+                        onChange={(e) => setUserAddress(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                        data-testid="input-user-address"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold mb-1 block">Main Shipping Zone *</label>
+                      <select
+                        value={userZone}
+                        onChange={(e) => setUserZone(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                        data-testid="select-user-zone"
+                      >
+                        <option value="">Select Zone</option>
+                        {shippingZones.map((zone) => (
+                          <option key={zone.id} value={zone.name}>{zone.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold mb-1 block">Phone Number *</label>
+                      <input
+                        type="tel"
+                        placeholder="Mobile number"
+                        value={userPhone}
+                        onChange={(e) => setUserPhone(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                        data-testid="input-user-phone"
+                      />
+                    </div>
+
+                    <div className="pt-2 border-t border-gray-200">
+                      <h3 className="text-xs font-semibold mb-3">Alternative Address (Optional)</h3>
+
+                      <div className="mb-3">
+                        <label className="text-xs font-semibold mb-1 block">Alternative Address</label>
+                        <input
+                          type="text"
+                          placeholder="Street address"
+                          value={userAddressAlt}
+                          onChange={(e) => setUserAddressAlt(e.target.value)}
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                          data-testid="input-user-address-alt"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-semibold mb-1 block">Alternative Zone</label>
+                        <select
+                          value={userZoneAlt}
+                          onChange={(e) => setUserZoneAlt(e.target.value)}
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                          data-testid="select-user-zone-alt"
+                        >
+                          <option value="">Select Zone</option>
+                          {shippingZones.map((zone) => (
+                            <option key={zone.id} value={zone.name}>{zone.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleSaveUserProfile}
+                      disabled={isSaving}
+                      className="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold text-sm hover:bg-indigo-700 disabled:opacity-50"
+                      data-testid="button-save-user-profile"
+                    >
+                      {isSaving ? "Saving..." : "Save Address"}
+                    </button>
+                  </div>
+                )}
 
                 <button
                   onClick={handleLogout}
@@ -1491,6 +1720,110 @@ export default function ProfilePage() {
                   >
                     {isSaving ? "Saving..." : "Save Store Settings"}
                   </button>
+                </div>
+              )}
+
+              {/* Shipping Zones Section */}
+              <button
+                onClick={() => {
+                  setShowShippingZones(!showShippingZones);
+                  if (!showShippingZones) {
+                    fetchShippingZones();
+                  }
+                }}
+                className="w-full flex items-center justify-between p-4 bg-cyan-50 rounded-2xl border border-cyan-200 hover:border-cyan-300 transition-colors mb-6 mt-6"
+                data-testid="button-toggle-shipping-zones"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-cyan-100 text-cyan-600">
+                    <Package className="w-6 h-6" />
+                  </div>
+                  <span className="font-semibold text-sm text-cyan-900">Shipping Zones</span>
+                </div>
+                <ChevronRight className={`w-5 h-5 text-cyan-400 transition-transform ${showShippingZones ? "rotate-90" : ""}`} />
+              </button>
+
+              {showShippingZones && (
+                <div className="mb-6">
+                  {/* Add Shipping Zone Form */}
+                  <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4">
+                    <h3 className="text-sm font-bold mb-3">{editingZoneId ? "Edit Shipping Zone" : "Add Shipping Zone"}</h3>
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        placeholder="Zone Name (e.g., Cairo, Alexandria)"
+                        value={newZoneName}
+                        onChange={(e) => setNewZoneName(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-200"
+                        data-testid="input-zone-name"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Shipping Cost"
+                        value={newZoneCost}
+                        onChange={(e) => setNewZoneCost(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-200"
+                        data-testid="input-zone-cost"
+                      />
+                      <button
+                        onClick={handleSaveShippingZone}
+                        className="w-full bg-cyan-600 text-white py-2 rounded-lg font-semibold text-sm hover:bg-cyan-700"
+                        data-testid="button-save-zone"
+                      >
+                        {editingZoneId ? "Update Zone" : "Add Zone"}
+                      </button>
+                      {editingZoneId && (
+                        <button
+                          onClick={() => {
+                            setEditingZoneId(null);
+                            setNewZoneName("");
+                            setNewZoneCost("");
+                          }}
+                          className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold text-sm hover:bg-gray-300"
+                          data-testid="button-cancel-edit-zone"
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Zones List */}
+                  {shippingZones.length > 0 && (
+                    <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                      <h3 className="text-sm font-bold mb-3">Shipping Zones</h3>
+                      <div className="space-y-3">
+                        {shippingZones.map((zone) => (
+                          <div key={zone.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div>
+                              <p className="text-sm font-semibold text-gray-900" data-testid={`text-zone-name-${zone.id}`}>{zone.name}</p>
+                              <p className="text-xs text-gray-600">Cost: {zone.shippingCost}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setEditingZoneId(zone.id);
+                                  setNewZoneName(zone.name);
+                                  setNewZoneCost(zone.shippingCost.toString());
+                                }}
+                                className="px-3 py-2 bg-amber-100 text-amber-700 rounded-lg text-xs font-semibold hover:bg-amber-200"
+                                data-testid={`button-edit-zone-${zone.id}`}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteShippingZone(zone.id)}
+                                className="px-3 py-2 bg-red-100 text-red-700 rounded-lg text-xs font-semibold hover:bg-red-200"
+                                data-testid={`button-delete-zone-${zone.id}`}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

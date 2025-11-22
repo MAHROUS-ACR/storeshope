@@ -673,6 +673,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all shipping zones
+  app.get("/api/shipping-zones", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.json([]);
+      }
+
+      const db = getFirestore();
+      const snapshot = await db.collection("shippingZones").get();
+      const zones: any[] = [];
+      
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        zones.push({
+          id: doc.id,
+          name: data.name || "",
+          shippingCost: data.shippingCost || 0,
+        });
+      });
+
+      console.log(`✅ Fetched ${zones.length} shipping zones from Firestore`);
+      res.json(zones);
+    } catch (error: any) {
+      console.error("❌ Error fetching shipping zones:", error);
+      res.status(500).json({ message: "Failed to fetch shipping zones" });
+    }
+  });
+
+  // Add or update shipping zone
+  app.post("/api/shipping-zones", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      const { id, name, shippingCost } = req.body;
+
+      if (!name || shippingCost === undefined) {
+        return res.status(400).json({ message: "Zone name and shipping cost are required" });
+      }
+
+      const db = getFirestore();
+      const docId = id || name.toLowerCase().replace(/\s+/g, "_");
+      
+      await db.collection("shippingZones").doc(docId).set({
+        name: name,
+        shippingCost: parseFloat(shippingCost),
+        updatedAt: new Date().toISOString(),
+      }, { merge: true });
+
+      console.log(`✅ Shipping zone ${docId} saved to Firestore`);
+      res.json({ id: docId, name, shippingCost: parseFloat(shippingCost), message: "Shipping zone saved successfully" });
+    } catch (error: any) {
+      console.error("❌ Error saving shipping zone:", error);
+      res.status(500).json({ message: "Failed to save shipping zone" });
+    }
+  });
+
+  // Delete shipping zone
+  app.delete("/api/shipping-zones/:id", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      const { id } = req.params;
+      const db = getFirestore();
+      
+      await db.collection("shippingZones").doc(id).delete();
+
+      console.log(`✅ Shipping zone ${id} deleted from Firestore`);
+      res.json({ message: "Shipping zone deleted successfully" });
+    } catch (error: any) {
+      console.error("❌ Error deleting shipping zone:", error);
+      res.status(500).json({ message: "Failed to delete shipping zone" });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }
