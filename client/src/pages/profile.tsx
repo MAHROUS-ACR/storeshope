@@ -65,6 +65,7 @@ export default function ProfilePage() {
     title: "", 
     price: "", 
     category: "",
+    image: "",
     units: [] as string[],
     sizes: [] as string[],
     colors: [] as string[],
@@ -82,6 +83,20 @@ export default function ProfilePage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
+  
+  // Handle product image upload
+  const handleProductImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      setNewItemForm({ ...newItemForm, image: base64 });
+      toast.success("Image uploaded!");
+    };
+    reader.readAsDataURL(file);
+  };
   
   // Store Settings States
   const [storeName, setStoreName] = useState("");
@@ -1488,6 +1503,26 @@ export default function ProfilePage() {
                   <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4">
                     <h3 className="text-sm font-bold mb-3">{editingItemId ? "Edit Product" : "Add New Product"}</h3>
                     <div className="space-y-3">
+                      {/* Product Image */}
+                      <div>
+                        <label className="text-xs font-semibold mb-2 block">Product Image</label>
+                        <div className="flex items-center gap-3 mb-2">
+                          {newItemForm.image ? (
+                            <img src={newItemForm.image} alt="Product" className="w-16 h-16 rounded-lg object-cover border border-gray-200" />
+                          ) : (
+                            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 border border-gray-200">
+                              No image
+                            </div>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleProductImageUpload}
+                            className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg cursor-pointer"
+                            data-testid="input-item-image"
+                          />
+                        </div>
+                      </div>
                       <input
                         type="text"
                         placeholder="Product Title"
@@ -1663,6 +1698,7 @@ export default function ProfilePage() {
                                     title: newItemForm.title,
                                     price: parseFloat(newItemForm.price),
                                     category: newItemForm.category,
+                                    image: newItemForm.image || null,
                                     units: newItemForm.units.length > 0 ? newItemForm.units : null,
                                     sizes: newItemForm.sizes.length > 0 ? newItemForm.sizes : null,
                                     colors: newItemForm.colors.length > 0 ? newItemForm.colors : null,
@@ -1679,7 +1715,7 @@ export default function ProfilePage() {
                                     setItems([...items, { ...data }]);
                                     toast.success("Product added!");
                                   }
-                                  setNewItemForm({ title: "", price: "", category: "", units: [], sizes: [], colors: [], available: true });
+                                  setNewItemForm({ title: "", price: "", category: "", image: "", units: [], sizes: [], colors: [], available: true });
                                   setUnitInput("");
                                   setSizeInput("");
                                   setColorInput("");
@@ -1704,7 +1740,7 @@ export default function ProfilePage() {
                           <button
                             onClick={() => {
                               setEditingItemId(null);
-                              setNewItemForm({ title: "", price: "", category: "", units: [], sizes: [], colors: [], available: true });
+                              setNewItemForm({ title: "", price: "", category: "", image: "", units: [], sizes: [], colors: [], available: true });
                               setUnitInput("");
                               setSizeInput("");
                               setColorInput("");
@@ -1730,25 +1766,36 @@ export default function ProfilePage() {
                         <div
                           key={item.id}
                           className="bg-white border border-gray-200 rounded-2xl p-4 hover:border-gray-300 transition-colors"
+                          data-testid={`card-product-${item.id}`}
                         >
                           <div className="flex items-start justify-between mb-2">
-                            <div className="flex-1">
-                              <p className="text-sm font-bold text-gray-900">{item.title}</p>
-                              <p className="text-xs text-gray-500">{item.category}</p>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {item.units && item.units.map((u: string) => <span key={u} className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{u}</span>)}
-                                {item.sizes && item.sizes.map((s: string) => <span key={s} className="inline-block px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{s}</span>)}
-                                {item.colors && item.colors.map((c: string) => {
-                                  const colorName = typeof c === 'string' ? c.split('|')[0] : c;
-                                  const colorHex = typeof c === 'string' ? c.split('|')[1] || '#000000' : '#000000';
-                                  return (
-                                    <span key={colorName} className="inline-block px-2 py-1 bg-red-100 text-red-700 rounded text-xs flex items-center gap-1 border" style={{borderColor: colorHex}}>
-                                      <span style={{width: '8px', height: '8px', backgroundColor: colorHex, borderRadius: '2px'}}></span>
-                                      {colorName}
-                                    </span>
-                                  );
-                                })}
-                                {!item.available && <span className="inline-block px-2 py-1 bg-red-100 text-red-700 rounded text-xs">غير متاح</span>}
+                            <div className="flex-1 flex gap-3">
+                              {/* Product Image */}
+                              {item.image ? (
+                                <img src={item.image} alt={item.title} className="w-16 h-16 rounded-lg object-cover border border-gray-200 flex-shrink-0" />
+                              ) : (
+                                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 border border-gray-200 flex-shrink-0">
+                                  <span className="text-xs">No image</span>
+                                </div>
+                              )}
+                              <div className="flex-1">
+                                <p className="text-sm font-bold text-gray-900">{item.title}</p>
+                                <p className="text-xs text-gray-500">{item.category}</p>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {item.units && item.units.map((u: string) => <span key={u} className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{u}</span>)}
+                                  {item.sizes && item.sizes.map((s: string) => <span key={s} className="inline-block px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{s}</span>)}
+                                  {item.colors && item.colors.map((c: string) => {
+                                    const colorName = typeof c === 'string' ? c.split('|')[0] : c;
+                                    const colorHex = typeof c === 'string' ? c.split('|')[1] || '#000000' : '#000000';
+                                    return (
+                                      <span key={colorName} className="inline-block px-2 py-1 bg-red-100 text-red-700 rounded text-xs flex items-center gap-1 border" style={{borderColor: colorHex}}>
+                                        <span style={{width: '8px', height: '8px', backgroundColor: colorHex, borderRadius: '2px'}}></span>
+                                        {colorName}
+                                      </span>
+                                    );
+                                  })}
+                                  {!item.available && <span className="inline-block px-2 py-1 bg-red-100 text-red-700 rounded text-xs">غير متاح</span>}
+                                </div>
                               </div>
                             </div>
                             <p className="text-sm font-semibold text-gray-900">${item.price.toFixed(2)}</p>
@@ -1761,6 +1808,7 @@ export default function ProfilePage() {
                                   title: item.title,
                                   price: item.price.toString(),
                                   category: item.category,
+                                  image: item.image || "",
                                   units: item.units || [],
                                   sizes: item.sizes || [],
                                   colors: item.colors || [],
@@ -1787,7 +1835,7 @@ export default function ProfilePage() {
                                     setItems(items.filter(i => i.id !== item.id));
                                     if (editingItemId === item.id) {
                                       setEditingItemId(null);
-                                      setNewItemForm({ title: "", price: "", category: "", units: [], sizes: [], colors: [], available: true });
+                                      setNewItemForm({ title: "", price: "", category: "", image: "", units: [], sizes: [], colors: [], available: true });
                                       setUnitInput("");
                                       setSizeInput("");
                                       setColorInput("");

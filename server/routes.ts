@@ -593,6 +593,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           title: data.title || "",
           price: data.price || 0,
           category: data.category || "",
+          image: data.image || null,
           units: data.units || null,
           sizes: data.sizes || null,
           colors: data.colors || null,
@@ -615,7 +616,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(503).json({ message: "Firebase not configured" });
       }
 
-      const { id, title, price, category, units, sizes, colors, available } = req.body;
+      const { id, title, price, category, image, units, sizes, colors, available } = req.body;
 
       if (!title || !price || !category) {
         return res.status(400).json({ message: "All fields are required" });
@@ -628,6 +629,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         title: title,
         price: parseFloat(price),
         category: category,
+        image: image || null,
         units: units || null,
         sizes: sizes || null,
         colors: colors || null,
@@ -641,6 +643,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         title, 
         price, 
         category,
+        image,
         units,
         sizes,
         colors,
