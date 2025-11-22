@@ -3,6 +3,7 @@ import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
 import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X, Save, Plus, Trash2 } from "lucide-react";
 import { useLocation } from "wouter";
+import type { Location } from "wouter";
 import { useUser } from "@/lib/userContext";
 import { toast } from "sonner";
 import avatarImage from "@assets/generated_images/professional_user_avatar_portrait.png";
@@ -822,7 +823,7 @@ export default function ProfilePage() {
                       {orders.filter(order => selectedStatusFilter === null || order.status === selectedStatusFilter).map((order) => (
                         <button
                           key={order.id}
-                          onClick={() => setSelectedOrder(selectedOrder?.id === order.id ? null : order)}
+                          onClick={() => setLocation(`/order/${order.id}`)}
                           className="w-full p-3 bg-white border border-gray-200 rounded-2xl hover:border-primary hover:shadow-sm transition-all text-left"
                           data-testid={`order-${order.id}`}
                         >
@@ -854,175 +855,6 @@ export default function ProfilePage() {
                     </div>
                   )}
 
-                  {/* Expanded Details */}
-                  {selectedOrder && (
-                    <div className="mt-4 bg-white border border-gray-200 rounded-2xl p-4">
-                      <div className="flex items-start justify-between mb-3 pb-3 border-b border-gray-200">
-                        <div>
-                          <p className="text-xs font-semibold text-gray-500">Expanded Order</p>
-                          <p className="text-sm font-bold text-gray-900">#{selectedOrder.orderNumber || "N/A"}</p>
-                        </div>
-                        <button
-                          onClick={() => setSelectedOrder(null)}
-                          className="text-gray-400 hover:text-gray-600"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
-                        <div>
-                          <p className="text-xs text-gray-500">Total</p>
-                          <p className="font-semibold text-gray-900">${selectedOrder.total.toFixed(2)}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">Items</p>
-                          <p className="font-semibold text-gray-900">{selectedOrder.items.length}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">User</p>
-                          <p className="font-semibold text-gray-900 truncate text-xs">{selectedOrder.userId?.substring(0, 8) || "N/A"}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500">Payment</p>
-                          <p className="font-semibold text-gray-900">{selectedOrder.paymentMethod || "N/A"}</p>
-                        </div>
-                      </div>
-
-                      {/* Shipping Information */}
-                      {(selectedOrder.shippingAddress || selectedOrder.shippingPhone || selectedOrder.shippingZone) && (
-                        <div className="mt-3 pt-3 border-t border-gray-200">
-                          <p className="text-xs font-semibold text-gray-500 mb-2">Delivery Information</p>
-                          <div className="space-y-1.5">
-                            {selectedOrder.shippingAddress && (
-                              <div>
-                                <p className="text-xs text-gray-500">Address</p>
-                                <p className="text-xs font-medium text-gray-900">{selectedOrder.shippingAddress}</p>
-                              </div>
-                            )}
-                            {selectedOrder.shippingPhone && (
-                              <div>
-                                <p className="text-xs text-gray-500">Phone</p>
-                                <p className="text-xs font-medium text-gray-900">{selectedOrder.shippingPhone}</p>
-                              </div>
-                            )}
-                            {selectedOrder.shippingZone && (
-                              <div>
-                                <p className="text-xs text-gray-500">Zone</p>
-                                <p className="text-xs font-medium text-gray-900">{selectedOrder.shippingZone}</p>
-                              </div>
-                            )}
-                            {selectedOrder.shippingCost !== undefined && selectedOrder.shippingCost > 0 && (
-                              <div>
-                                <p className="text-xs text-gray-500">Shipping Cost</p>
-                                <p className="text-xs font-medium text-gray-900">${selectedOrder.shippingCost.toFixed(2)}</p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Status Edit */}
-                      {editingOrderId === selectedOrder?.id ? (
-                        <div className="flex gap-2 mt-3">
-                          <select
-                            value={newStatus}
-                            onChange={(e) => setNewStatus(e.target.value)}
-                            className="flex-1 px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                            data-testid={`select-status-${selectedOrder.id}`}
-                          >
-                            <option value="">Select Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="processing">Processing</option>
-                            <option value="shipped">Shipped</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
-                          </select>
-                          <button
-                            onClick={() => handleStatusUpdate(selectedOrder.id, newStatus)}
-                            className="px-3 py-2 bg-green-600 text-white rounded-lg flex items-center gap-1 hover:bg-green-700 transition-colors"
-                            data-testid={`button-save-status-${selectedOrder.id}`}
-                          >
-                            <Check className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              setEditingOrderId(null);
-                              setNewStatus("");
-                            }}
-                            className="px-3 py-2 bg-gray-300 text-gray-700 rounded-lg flex items-center gap-1 hover:bg-gray-400 transition-colors"
-                            data-testid={`button-cancel-edit-${selectedOrder.id}`}
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
-                          <span
-                            className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                              selectedOrder.status === "completed"
-                                ? "bg-green-100 text-green-700"
-                                : selectedOrder.status === "cancelled"
-                                ? "bg-red-100 text-red-700"
-                                : selectedOrder.status === "shipped"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-amber-100 text-amber-700"
-                            }`}
-                            data-testid={`status-badge-${selectedOrder.id}`}
-                          >
-                            {selectedOrder.status || "pending"}
-                          </span>
-                          <button
-                            onClick={() => {
-                              setEditingOrderId(selectedOrder.id);
-                              setNewStatus(selectedOrder.status || "pending");
-                            }}
-                            className="text-primary hover:text-primary/80 transition-colors"
-                            data-testid={`button-edit-status-${selectedOrder.id}`}
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
-
-                      {/* Items Details */}
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <p className="text-xs font-semibold text-gray-500 mb-2">Items</p>
-                        <div className="space-y-2">
-                          {selectedOrder.items.map((item, idx) => (
-                            <div key={`${item.id}-${idx}`} className="flex flex-col gap-1">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-700">
-                                  {item.quantity}x {item.title}
-                                </span>
-                                <span className="font-semibold text-gray-900">
-                                  ${(item.quantity * item.price).toFixed(2)}
-                                </span>
-                              </div>
-                              {(item.selectedColor || item.selectedSize || item.selectedUnit) && (
-                                <div className="flex flex-wrap gap-1 ml-2">
-                                  {item.selectedUnit && <span className="inline-block px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[8px] font-semibold">{item.selectedUnit}</span>}
-                                  {item.selectedSize && <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-[8px] font-semibold">{item.selectedSize}</span>}
-                                  {item.selectedColor && (() => {
-                                    const [colorName, colorHex] = typeof item.selectedColor === 'string' ? item.selectedColor.split('|') : [item.selectedColor, '#000000'];
-                                    return (
-                                      <span className="inline-block px-1.5 py-0.5 rounded text-[8px] font-semibold" style={{backgroundColor: colorHex || '#000000', color: ['#ffffff', '#f0f0f0', '#e0e0e0'].includes((colorHex || '#000000').toLowerCase()) ? '#000000' : '#ffffff'}}>
-                                        {colorName}
-                                      </span>
-                                    );
-                                  })()}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="mt-3 text-xs text-gray-600">
-                        <p>Created: {new Date(selectedOrder.createdAt).toLocaleString()}</p>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
 
