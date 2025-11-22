@@ -170,6 +170,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all orders (admin endpoint)
+  app.get("/api/orders/admin/all", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      console.log("Fetching all orders (admin)");
+
+      const db = getFirestore();
+      const snapshot = await db.collection("orders").get();
+      
+      const orders: any[] = [];
+      snapshot.forEach((doc) => {
+        orders.push({ id: doc.id, ...doc.data() });
+      });
+
+      // Sort by creation date (newest first)
+      orders.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA;
+      });
+
+      console.log("Found total orders:", orders.length);
+      res.json(orders);
+    } catch (error: any) {
+      console.error("Error fetching all orders:", error);
+      res.status(500).json({
+        message: "Failed to fetch orders",
+        error: error.message,
+      });
+    }
+  });
+
+  // Update order status (admin endpoint)
+  app.put("/api/orders/:orderId", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      const { orderId } = req.params;
+      const { status } = req.body;
+
+      if (!status) {
+        return res.status(400).json({ message: "Status is required" });
+      }
+
+      console.log("Updating order status:", orderId, "to:", status);
+
+      const db = getFirestore();
+      await db.collection("orders").doc(orderId).update({
+        status: status,
+        updatedAt: new Date().toISOString(),
+      });
+
+      console.log("Order updated successfully:", orderId);
+      res.json({ message: "Order updated successfully" });
+    } catch (error: any) {
+      console.error("Error updating order:", error);
+      res.status(500).json({
+        message: "Failed to update order",
+        error: error.message,
+      });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }
