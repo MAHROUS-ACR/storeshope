@@ -35,6 +35,7 @@ interface AdminOrder {
   createdAt: string;
   paymentMethod?: string;
   orderNumber?: number;
+  shippingCost?: number;
 }
 
 export default function ProfilePage() {
@@ -49,6 +50,7 @@ export default function ProfilePage() {
   const [showFirebaseSettings, setShowFirebaseSettings] = useState(false);
   const [showOrders, setShowOrders] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [analyticsDateRange, setAnalyticsDateRange] = useState<"all" | "month" | "year">("all");
   const [showItems, setShowItems] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [showUsers, setShowUsers] = useState(false);
@@ -110,6 +112,32 @@ export default function ProfilePage() {
   const [firebaseMessagingSenderId, setFirebaseMessagingSenderId] = useState("");
   const [firebaseMeasurementId, setFirebaseMeasurementId] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+
+  // Filter orders by date range
+  const getFilteredOrders = (range: "all" | "month" | "year") => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+    return orders.filter(order => {
+      const orderDate = new Date(order.createdAt);
+      if (range === "month") return orderDate >= startOfMonth;
+      if (range === "year") return orderDate >= startOfYear;
+      return true;
+    });
+  };
+
+  // Calculate analytics data
+  const getAnalyticsData = () => {
+    const filtered = getFilteredOrders(analyticsDateRange);
+    const totalRevenue = filtered.reduce((sum, o) => sum + o.total, 0);
+    const totalShipping = filtered.reduce((sum, o) => sum + (o.shippingCost || 0), 0);
+    const salesAmount = totalRevenue - totalShipping;
+    const completedCount = filtered.filter(o => o.status === 'completed').length;
+    const pendingCount = filtered.filter(o => o.status === 'pending').length;
+    
+    return { totalRevenue, totalShipping, salesAmount, completedCount, pendingCount, filtered };
+  };
 
   // Fetch all orders for admin
   const fetchAllOrders = async () => {
@@ -903,23 +931,75 @@ export default function ProfilePage() {
                     <div className="text-center py-8 text-gray-500">No orders data to display</div>
                   ) : (
                     <div className="space-y-4">
+                      {/* Date Range Filter */}
+                      <div className="bg-white rounded-2xl p-3 border border-gray-200">
+                        <p className="text-xs font-semibold text-gray-500 mb-2">Filter by Period</p>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setAnalyticsDateRange("all")}
+                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                              analyticsDateRange === "all"
+                                ? "bg-emerald-500 text-white"
+                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                            data-testid="filter-all-time"
+                          >
+                            All Time
+                          </button>
+                          <button
+                            onClick={() => setAnalyticsDateRange("month")}
+                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                              analyticsDateRange === "month"
+                                ? "bg-emerald-500 text-white"
+                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                            data-testid="filter-this-month"
+                          >
+                            This Month
+                          </button>
+                          <button
+                            onClick={() => setAnalyticsDateRange("year")}
+                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                              analyticsDateRange === "year"
+                                ? "bg-emerald-500 text-white"
+                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                            data-testid="filter-this-year"
+                          >
+                            This Year
+                          </button>
+                        </div>
+                      </div>
+
                       {/* Key Metrics */}
                       <div className="grid grid-cols-2 gap-3">
+                        {/* Total Revenue with Breakdown */}
                         <div className="bg-white rounded-2xl p-4 border border-gray-200">
-                          <p className="text-xs text-gray-500 mb-1">Total Revenue</p>
-                          <p className="text-lg font-bold text-emerald-600">${orders.reduce((sum, o) => sum + o.total, 0).toFixed(2)}</p>
+                          <p className="text-xs text-gray-500 mb-2">Total Revenue</p>
+                          <p className="text-lg font-bold text-emerald-600 mb-2">${getAnalyticsData().totalRevenue.toFixed(2)}</p>
+                          <div className="space-y-1 text-xs border-t pt-2">
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Sales:</span>
+                              <span className="font-semibold text-emerald-600">${getAnalyticsData().salesAmount.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Shipping:</span>
+                              <span className="font-semibold text-orange-600">${getAnalyticsData().totalShipping.toFixed(2)}</span>
+                            </div>
+                          </div>
                         </div>
+
                         <div className="bg-white rounded-2xl p-4 border border-gray-200">
                           <p className="text-xs text-gray-500 mb-1">Total Orders</p>
-                          <p className="text-lg font-bold text-blue-600">{orders.length}</p>
+                          <p className="text-lg font-bold text-blue-600">{getAnalyticsData().filtered.length}</p>
                         </div>
                         <div className="bg-white rounded-2xl p-4 border border-gray-200">
                           <p className="text-xs text-gray-500 mb-1">Completed</p>
-                          <p className="text-lg font-bold text-green-600">{orders.filter(o => o.status === 'completed').length}</p>
+                          <p className="text-lg font-bold text-green-600">{getAnalyticsData().completedCount}</p>
                         </div>
                         <div className="bg-white rounded-2xl p-4 border border-gray-200">
                           <p className="text-xs text-gray-500 mb-1">Pending</p>
-                          <p className="text-lg font-bold text-amber-600">{orders.filter(o => o.status === 'pending').length}</p>
+                          <p className="text-lg font-bold text-amber-600">{getAnalyticsData().pendingCount}</p>
                         </div>
                       </div>
 
@@ -929,7 +1009,7 @@ export default function ProfilePage() {
                         <ResponsiveContainer width="100%" height={250}>
                           <LineChart data={(() => {
                             const grouped: { [key: string]: number } = {};
-                            orders.forEach(order => {
+                            getAnalyticsData().filtered.forEach(order => {
                               const date = new Date(order.createdAt).toLocaleDateString();
                               grouped[date] = (grouped[date] || 0) + order.total;
                             });
@@ -950,7 +1030,7 @@ export default function ProfilePage() {
                         <ResponsiveContainer width="100%" height={250}>
                           <BarChart data={(() => {
                             const statusCounts: { [key: string]: number } = {};
-                            orders.forEach(order => {
+                            getAnalyticsData().filtered.forEach(order => {
                               statusCounts[order.status] = (statusCounts[order.status] || 0) + 1;
                             });
                             return Object.entries(statusCounts).map(([status, count]) => ({ status, count }));
@@ -972,7 +1052,7 @@ export default function ProfilePage() {
                             <Pie
                               data={(() => {
                                 const statusRevenue: { [key: string]: number } = {};
-                                orders.forEach(order => {
+                                getAnalyticsData().filtered.forEach(order => {
                                   statusRevenue[order.status] = (statusRevenue[order.status] || 0) + order.total;
                                 });
                                 return Object.entries(statusRevenue).map(([status, revenue]) => ({ 
