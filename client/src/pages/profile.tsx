@@ -19,6 +19,9 @@ interface OrderItem {
   quantity: number;
   price: number;
   title: string;
+  selectedColor?: string;
+  selectedSize?: string;
+  selectedUnit?: string;
 }
 
 interface AdminOrder {
@@ -716,15 +719,24 @@ export default function ProfilePage() {
                             <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
                               <div>
                                 <p className="text-xs font-semibold text-gray-500 mb-2">Items</p>
-                                <div className="space-y-1">
-                                  {order.items.map((item) => (
-                                    <div key={item.id} className="flex justify-between text-sm">
-                                      <span className="text-gray-700">
-                                        {item.quantity}x {item.title}
-                                      </span>
-                                      <span className="font-semibold text-gray-900">
-                                        ${(item.quantity * item.price).toFixed(2)}
-                                      </span>
+                                <div className="space-y-2">
+                                  {order.items.map((item, idx) => (
+                                    <div key={`${item.id}-${idx}`} className="flex flex-col gap-1">
+                                      <div className="flex justify-between text-sm">
+                                        <span className="text-gray-700">
+                                          {item.quantity}x {item.title}
+                                        </span>
+                                        <span className="font-semibold text-gray-900">
+                                          ${(item.quantity * item.price).toFixed(2)}
+                                        </span>
+                                      </div>
+                                      {(item.selectedColor || item.selectedSize || item.selectedUnit) && (
+                                        <div className="flex flex-wrap gap-1 ml-2">
+                                          {item.selectedUnit && <span className="inline-block px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[8px] font-semibold">{item.selectedUnit}</span>}
+                                          {item.selectedSize && <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-[8px] font-semibold">{item.selectedSize}</span>}
+                                          {item.selectedColor && <span className="inline-block px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[8px] font-semibold">{item.selectedColor}</span>}
+                                        </div>
+                                      )}
                                     </div>
                                   ))}
                                 </div>
@@ -1151,36 +1163,54 @@ export default function ProfilePage() {
                       {/* Colors */}
                       <div>
                         <label className="text-xs font-semibold mb-1 block">ألوان (Colors) - اختياري</label>
-                        <div className="flex gap-2 mb-2">
-                          <input
-                            type="text"
-                            placeholder="أضف لون"
-                            value={colorInput}
-                            onChange={(e) => setColorInput(e.target.value)}
-                            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
-                            data-testid="input-item-color"
-                          />
-                          <button
-                            onClick={() => {
-                              if (colorInput.trim()) {
-                                setNewItemForm({ ...newItemForm, colors: [...newItemForm.colors, colorInput.trim()] });
-                                setColorInput("");
-                              }
-                            }}
-                            className="px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-semibold"
-                            data-testid="button-add-color"
-                          >
-                            أضف
-                          </button>
+                        <div className="space-y-2 mb-2">
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              placeholder="اسم اللون"
+                              value={colorInput}
+                              onChange={(e) => setColorInput(e.target.value)}
+                              className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
+                              data-testid="input-item-color-name"
+                            />
+                            <input
+                              type="color"
+                              value={newItemForm.colors && newItemForm.colors.length > 0 && typeof newItemForm.colors[newItemForm.colors.length - 1] === 'object' ? (newItemForm.colors[newItemForm.colors.length - 1] as any).hex || '#000000' : '#000000'}
+                              onChange={(e) => {
+                                // This is just for preview, will be combined with text on add
+                              }}
+                              className="w-12 h-10 rounded-lg cursor-pointer border border-gray-200"
+                              data-testid="input-item-color-picker"
+                            />
+                            <button
+                              onClick={() => {
+                                if (colorInput.trim()) {
+                                  const colorValue = document.querySelector('[data-testid="input-item-color-picker"]') as HTMLInputElement;
+                                  const colorHex = colorValue?.value || '#000000';
+                                  setNewItemForm({ ...newItemForm, colors: [...newItemForm.colors, `${colorInput.trim()}|${colorHex}`] });
+                                  setColorInput("");
+                                }
+                              }}
+                              className="px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-semibold"
+                              data-testid="button-add-color"
+                            >
+                              أضف
+                            </button>
+                          </div>
                         </div>
                         {newItemForm.colors.length > 0 && (
                           <div className="flex flex-wrap gap-1">
-                            {newItemForm.colors.map((color, i) => (
-                              <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
-                                {color}
-                                <button onClick={() => setNewItemForm({ ...newItemForm, colors: newItemForm.colors.filter((_, idx) => idx !== i) })} className="text-red-700 hover:text-red-900">×</button>
-                              </span>
-                            ))}
+                            {newItemForm.colors.map((color, i) => {
+                              const colorName = typeof color === 'string' ? color.split('|')[0] : color;
+                              const colorHex = typeof color === 'string' ? color.split('|')[1] || '#000000' : '#000000';
+                              return (
+                                <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded text-xs border" style={{borderColor: colorHex}}>
+                                  <span style={{width: '12px', height: '12px', backgroundColor: colorHex, borderRadius: '3px'}}></span>
+                                  {colorName}
+                                  <button onClick={() => setNewItemForm({ ...newItemForm, colors: newItemForm.colors.filter((_, idx) => idx !== i) })} className="text-red-700 hover:text-red-900">×</button>
+                                </span>
+                              );
+                            })}
                           </div>
                         )}
                       </div>
@@ -1280,7 +1310,16 @@ export default function ProfilePage() {
                               <div className="flex flex-wrap gap-1 mt-1">
                                 {item.units && item.units.map((u: string) => <span key={u} className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{u}</span>)}
                                 {item.sizes && item.sizes.map((s: string) => <span key={s} className="inline-block px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{s}</span>)}
-                                {item.colors && item.colors.map((c: string) => <span key={c} className="inline-block px-2 py-1 bg-red-100 text-red-700 rounded text-xs">{c}</span>)}
+                                {item.colors && item.colors.map((c: string) => {
+                                  const colorName = typeof c === 'string' ? c.split('|')[0] : c;
+                                  const colorHex = typeof c === 'string' ? c.split('|')[1] || '#000000' : '#000000';
+                                  return (
+                                    <span key={colorName} className="inline-block px-2 py-1 bg-red-100 text-red-700 rounded text-xs flex items-center gap-1 border" style={{borderColor: colorHex}}>
+                                      <span style={{width: '8px', height: '8px', backgroundColor: colorHex, borderRadius: '2px'}}></span>
+                                      {colorName}
+                                    </span>
+                                  );
+                                })}
                                 {!item.available && <span className="inline-block px-2 py-1 bg-red-100 text-red-700 rounded text-xs">غير متاح</span>}
                               </div>
                             </div>
@@ -1302,6 +1341,9 @@ export default function ProfilePage() {
                                 setUnitInput("");
                                 setSizeInput("");
                                 setColorInput("");
+                                // Reset color picker to black
+                                const colorPicker = document.querySelector('[data-testid="input-item-color-picker"]') as HTMLInputElement;
+                                if (colorPicker) colorPicker.value = '#000000';
                               }}
                               className="flex-1 px-3 py-2 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center gap-1 hover:bg-amber-200 transition-colors text-xs font-semibold"
                               data-testid={`button-edit-item-${item.id}`}

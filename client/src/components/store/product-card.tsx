@@ -112,7 +112,16 @@ export function ProductCard({ product, index }: { product: ProductProps; index: 
           <div className="flex flex-wrap gap-1 mb-2">
             {product.units && product.units.map((u) => <span key={u} className="inline-block px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px] font-medium">{u}</span>)}
             {product.sizes && product.sizes.map((s) => <span key={s} className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-[9px] font-medium">{s}</span>)}
-            {product.colors && product.colors.map((c) => <span key={c} className="inline-block px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[9px] font-medium">{c}</span>)}
+            {product.colors && product.colors.map((c) => {
+              const colorName = typeof c === 'string' ? c.split('|')[0] : c;
+              const colorHex = typeof c === 'string' ? c.split('|')[1] || '#000000' : '#000000';
+              return (
+                <span key={colorName} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[9px] font-medium border" style={{borderColor: colorHex}}>
+                  <span style={{width: '8px', height: '8px', backgroundColor: colorHex, borderRadius: '2px'}}></span>
+                  {colorName}
+                </span>
+              );
+            })}
           </div>
         )}
         
@@ -173,17 +182,29 @@ export function ProductCard({ product, index }: { product: ProductProps; index: 
             {product.colors && product.colors.length > 0 && (
               <div className="mb-4">
                 <p className="text-sm font-semibold mb-2">لون (Color)</p>
-                <select
-                  value={selectedColor}
-                  onChange={(e) => setSelectedColor(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-                  data-testid={`select-variant-color-${product.id}`}
-                >
-                  <option value="">اختر لون</option>
-                  {product.colors.map((color) => (
-                    <option key={color} value={color || ""}>{color}</option>
-                  ))}
-                </select>
+                <div className="flex flex-wrap gap-2">
+                  {product.colors.map((color) => {
+                    const colorName = typeof color === 'string' ? color.split('|')[0] : (color || '');
+                    const colorHex = typeof color === 'string' ? color.split('|')[1] || '#000000' : '#000000';
+                    return (
+                      <button
+                        key={colorName}
+                        onClick={() => setSelectedColor(colorName || '')}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${
+                          selectedColor === colorName
+                            ? 'border-gray-800 bg-gray-50'
+                            : 'border-gray-200 bg-white hover:border-gray-300'
+                        }`}
+                        data-testid={`button-color-${product.id}-${colorName}`}
+                      >
+                        <span 
+                          style={{width: '20px', height: '20px', backgroundColor: colorHex, borderRadius: '4px', border: '1px solid rgba(0,0,0,0.1)'}}
+                        ></span>
+                        <span className="text-sm font-medium">{colorName}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
             

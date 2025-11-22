@@ -12,6 +12,9 @@ interface CartItem {
   quantity: number;
   price: number;
   image?: string;
+  selectedColor?: string;
+  selectedSize?: string;
+  selectedUnit?: string;
 }
 
 interface Order {
@@ -197,6 +200,13 @@ export default function OrdersPage() {
                       {order.items.slice(0, 2).map((item, i) => (
                         <div key={i} data-testid={`item-${order.id}-${i}`}>
                           <p className="text-xs font-medium">{item.quantity}x {item.title}</p>
+                          {(item.selectedColor || item.selectedSize || item.selectedUnit) && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {item.selectedUnit && <span className="inline-block px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[8px]">{item.selectedUnit}</span>}
+                              {item.selectedSize && <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-[8px]">{item.selectedSize}</span>}
+                              {item.selectedColor && <span className="inline-block px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[8px]">{item.selectedColor}</span>}
+                            </div>
+                          )}
                           <p className="text-xs text-muted-foreground">
                             ${(item.price * item.quantity).toFixed(2)}
                           </p>
