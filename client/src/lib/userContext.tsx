@@ -14,6 +14,7 @@ export interface User {
   id: string;
   email: string;
   username?: string;
+  role?: string;
 }
 
 interface UserContextType {
@@ -58,6 +59,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
               id: firebaseUser.uid,
               email: firebaseUser.email || "",
               username: firebaseUser.displayName || firebaseUser.email?.split("@")[0],
+              role: "user",
             };
             setUser(userData);
             localStorage.setItem("user", JSON.stringify(userData));

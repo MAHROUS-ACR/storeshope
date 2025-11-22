@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X, Save } from "lucide-react";
+import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X, Save, Plus, Trash2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useUser } from "@/lib/userContext";
 import { toast } from "sonner";
@@ -43,8 +43,12 @@ export default function ProfilePage() {
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [showFirebaseSettings, setShowFirebaseSettings] = useState(false);
   const [showOrders, setShowOrders] = useState(true);
+  const [showItems, setShowItems] = useState(false);
   const [showStoreSettings, setShowStoreSettings] = useState(false);
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string | null>(null);
+  const [items, setItems] = useState<any[]>([]);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [newItemForm, setNewItemForm] = useState({ title: "", price: "", category: "" });
   
   // Store Settings States
   const [storeName, setStoreName] = useState("");
@@ -328,20 +332,22 @@ export default function ProfilePage() {
             >
               Account
             </button>
-            <button
-              onClick={() => {
-                setActiveTab("admin");
-                fetchAllOrders();
-              }}
-              className={`py-3 px-4 font-semibold text-sm border-b-2 transition-colors ${
-                activeTab === "admin"
-                  ? "border-black text-black"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
-              data-testid="tab-admin"
-            >
-              Admin Orders
-            </button>
+            {user.role === "admin" && (
+              <button
+                onClick={() => {
+                  setActiveTab("admin");
+                  fetchAllOrders();
+                }}
+                className={`py-3 px-4 font-semibold text-sm border-b-2 transition-colors ${
+                  activeTab === "admin"
+                    ? "border-black text-black"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+                data-testid="tab-admin"
+              >
+                Admin
+              </button>
+            )}
           </div>
         )}
 
@@ -644,6 +650,124 @@ export default function ProfilePage() {
                               </div>
                             </div>
                           )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Items Management Section */}
+              <button
+                onClick={() => setShowItems(!showItems)}
+                className="w-full flex items-center justify-between p-4 bg-blue-50 rounded-2xl border border-blue-200 hover:border-blue-300 transition-colors mb-6 mt-6"
+                data-testid="button-toggle-items"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-blue-100 text-blue-600">
+                    <Package className="w-6 h-6" />
+                  </div>
+                  <span className="font-semibold text-sm text-blue-900">Items Management</span>
+                </div>
+                <ChevronRight className={`w-5 h-5 text-blue-400 transition-transform ${showItems ? "rotate-90" : ""}`} />
+              </button>
+
+              {/* Items Content */}
+              {showItems && (
+                <div className="mb-6">
+                  {/* Add New Item Form */}
+                  <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4">
+                    <h3 className="text-sm font-bold mb-3">Add New Item</h3>
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        placeholder="Item Title"
+                        value={newItemForm.title}
+                        onChange={(e) => setNewItemForm({ ...newItemForm, title: e.target.value })}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        data-testid="input-item-title"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Price"
+                        value={newItemForm.price}
+                        onChange={(e) => setNewItemForm({ ...newItemForm, price: e.target.value })}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        data-testid="input-item-price"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Category"
+                        value={newItemForm.category}
+                        onChange={(e) => setNewItemForm({ ...newItemForm, category: e.target.value })}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        data-testid="input-item-category"
+                      />
+                      <button
+                        onClick={() => {
+                          if (newItemForm.title && newItemForm.price && newItemForm.category) {
+                            const newItem = {
+                              id: Date.now().toString(),
+                              ...newItemForm,
+                              price: parseFloat(newItemForm.price),
+                            };
+                            setItems([...items, newItem]);
+                            setNewItemForm({ title: "", price: "", category: "" });
+                            toast.success("Item added successfully!");
+                          } else {
+                            toast.error("Please fill all fields");
+                          }
+                        }}
+                        className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors text-sm"
+                        data-testid="button-add-item"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add Item
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Items List */}
+                  {items.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">No items yet</div>
+                  ) : (
+                    <div className="space-y-3">
+                      {items.map((item) => (
+                        <div
+                          key={item.id}
+                          className="bg-white border border-gray-200 rounded-2xl p-4 hover:border-gray-300 transition-colors"
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex-1">
+                              <p className="text-sm font-bold text-gray-900">{item.title}</p>
+                              <p className="text-xs text-gray-500">{item.category}</p>
+                            </div>
+                            <p className="text-sm font-semibold text-gray-900">${item.price.toFixed(2)}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => {
+                                setEditingItemId(editingItemId === item.id ? null : item.id);
+                                setNewItemForm(item);
+                              }}
+                              className="flex-1 px-3 py-2 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center gap-1 hover:bg-amber-200 transition-colors text-xs font-semibold"
+                              data-testid={`button-edit-item-${item.id}`}
+                            >
+                              <Edit2 className="w-3 h-3" />
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => {
+                                setItems(items.filter(i => i.id !== item.id));
+                                toast.success("Item deleted!");
+                              }}
+                              className="flex-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg flex items-center justify-center gap-1 hover:bg-red-200 transition-colors text-xs font-semibold"
+                              data-testid={`button-delete-item-${item.id}`}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
