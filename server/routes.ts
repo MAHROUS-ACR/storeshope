@@ -21,35 +21,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Note: Authentication is now handled entirely by Firebase Auth on the client
   // Server endpoints are deprecated and replaced with direct Firebase Auth
 
-  // Get current Firebase configuration
-  app.get("/api/firebase/config", (req, res) => {
+  // Get Firebase configuration from Firestore
+  app.get("/api/firebase/config", async (req, res) => {
     try {
-      const config = {
-        projectId: process.env.FIREBASE_PROJECT_ID || "",
-        privateKey: process.env.FIREBASE_PRIVATE_KEY || "",
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL || "",
-      };
+      if (!isFirebaseConfigured()) {
+        return res.json({
+          projectId: process.env.FIREBASE_PROJECT_ID || "",
+          privateKey: process.env.FIREBASE_PRIVATE_KEY || "",
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL || "",
+          firebaseApiKey: "",
+          firebaseProjectId: "",
+          firebaseAppId: "",
+          firebaseAuthDomain: "",
+          firebaseStorageBucket: "",
+          firebaseMessagingSenderId: "",
+          firebaseMeasurementId: "",
+        });
+      }
 
-      res.json(config);
+      const db = getFirestore();
+      const doc = await db.collection("settings").doc("store").get();
+      const data = doc.data();
+
+      if (!doc.exists || !data?.firebase) {
+        return res.json({
+          projectId: process.env.FIREBASE_PROJECT_ID || "",
+          privateKey: process.env.FIREBASE_PRIVATE_KEY || "",
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL || "",
+          firebaseApiKey: "",
+          firebaseProjectId: "",
+          firebaseAppId: "",
+          firebaseAuthDomain: "",
+          firebaseStorageBucket: "",
+          firebaseMessagingSenderId: "",
+          firebaseMeasurementId: "",
+        });
+      }
+
+      res.json(data.firebase);
     } catch (error) {
       res.status(500).json({ message: "Failed to get Firebase config" });
     }
   });
 
-  // Update Firebase configuration
-  app.post("/api/firebase/config", (req, res) => {
+  // Update Firebase configuration in Firestore
+  app.post("/api/firebase/config", async (req, res) => {
     try {
-      const { projectId, privateKey, clientEmail } = req.body;
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      const { projectId, privateKey, clientEmail, firebaseApiKey, firebaseProjectId, firebaseAppId, firebaseAuthDomain, firebaseStorageBucket, firebaseMessagingSenderId, firebaseMeasurementId } = req.body;
 
       if (!projectId || !privateKey || !clientEmail) {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      // Initialize Firebase with the provided credentials
-      initializeFirebase(projectId, privateKey, clientEmail);
+      const db = getFirestore();
+      const firebaseConfig = {
+        projectId,
+        privateKey,
+        clientEmail,
+        firebaseApiKey: firebaseApiKey || "",
+        firebaseProjectId: firebaseProjectId || "",
+        firebaseAppId: firebaseAppId || "",
+        firebaseAuthDomain: firebaseAuthDomain || "",
+        firebaseStorageBucket: firebaseStorageBucket || "",
+        firebaseMessagingSenderId: firebaseMessagingSenderId || "",
+        firebaseMeasurementId: firebaseMeasurementId || "",
+      };
 
+      // Get existing store settings
+      const docRef = db.collection("settings").doc("store");
+      const existingDoc = await docRef.get();
+
+      if (existingDoc.exists) {
+        // Merge with existing data
+        await docRef.update({
+          firebase: firebaseConfig,
+          updatedAt: new Date().toISOString(),
+        });
+      } else {
+        // Create new document with default store values
+        await docRef.set({
+          name: "",
+          address: "",
+          phone: "",
+          email: "",
+          firebase: firebaseConfig,
+          updatedAt: new Date().toISOString(),
+        });
+      }
+
+      console.log("✅ Firebase config saved to Firestore");
       res.json({ message: "Firebase configured successfully" });
     } catch (error: any) {
+      console.error("❌ Error saving Firebase config:", error);
       res.status(500).json({
         message: "Failed to configure Firebase",
         error: error.message,

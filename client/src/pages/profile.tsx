@@ -74,24 +74,27 @@ export default function ProfilePage() {
   useEffect(() => {
     const loadConfig = async () => {
       try {
+        // Load Firebase config from Firestore
         const response = await fetch("/api/firebase/config");
         if (response.ok) {
-          const serverConfig = await response.json();
-          setProjectId(serverConfig.projectId || "");
-          setPrivateKey(serverConfig.privateKey || "");
-          setClientEmail(serverConfig.clientEmail || "");
-          setFirebaseApiKey(serverConfig.firebaseApiKey || "");
-          setFirebaseProjectId(serverConfig.firebaseProjectId || "");
-          setFirebaseAppId(serverConfig.firebaseAppId || "");
-          setFirebaseAuthDomain(serverConfig.firebaseAuthDomain || "");
-          setFirebaseStorageBucket(serverConfig.firebaseStorageBucket || "");
-          setFirebaseMessagingSenderId(serverConfig.firebaseMessagingSenderId || "");
-          setFirebaseMeasurementId(serverConfig.firebaseMeasurementId || "");
+          const config = await response.json();
+          console.log("Loaded Firebase config from Firestore:", config);
+          setProjectId(config.projectId || "");
+          setPrivateKey(config.privateKey || "");
+          setClientEmail(config.clientEmail || "");
+          setFirebaseApiKey(config.firebaseApiKey || "");
+          setFirebaseProjectId(config.firebaseProjectId || "");
+          setFirebaseAppId(config.firebaseAppId || "");
+          setFirebaseAuthDomain(config.firebaseAuthDomain || "");
+          setFirebaseStorageBucket(config.firebaseStorageBucket || "");
+          setFirebaseMessagingSenderId(config.firebaseMessagingSenderId || "");
+          setFirebaseMeasurementId(config.firebaseMeasurementId || "");
         }
       } catch (error) {
         console.error("Failed to load Firebase config from server:", error);
       }
 
+      // Also load from localStorage as fallback
       const localConfig = getFirebaseConfig();
       if (localConfig) {
         setFirebaseApiKey(localConfig.apiKey || "");
@@ -147,13 +150,18 @@ export default function ProfilePage() {
           projectId,
           privateKey,
           clientEmail,
+          firebaseApiKey,
+          firebaseProjectId,
+          firebaseAppId,
+          firebaseAuthDomain,
+          firebaseStorageBucket,
+          firebaseMessagingSenderId,
+          firebaseMeasurementId,
         }),
       });
 
       if (response.ok) {
-        toast.success("Firebase configuration saved successfully!");
-        setProjectId("");
-        setPrivateKey("");
+        toast.success("Firebase configuration saved to Firestore successfully!");
         setClientEmail("");
       } else {
         const error = await response.json();
