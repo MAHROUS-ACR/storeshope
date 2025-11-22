@@ -298,9 +298,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Include Firebase config if provided
       if (firebase) {
+        console.log("Saving Firebase config:", firebase);
         storeData.firebase = firebase;
       }
 
+      console.log("Final store data to save:", JSON.stringify(storeData, null, 2));
       await db.collection("settings").doc("store").set(storeData);
 
       console.log("✅ Store settings saved successfully to Firestore");

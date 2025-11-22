@@ -115,6 +115,8 @@ export default function ProfilePage() {
         const response = await fetch("/api/store-settings");
         if (response.ok) {
           const data = await response.json();
+          console.log("Loaded store settings from Firestore:", data);
+          
           setStoreName(data.name || "");
           setStoreAddress(data.address || "");
           setStorePhone(data.phone || "");
@@ -122,6 +124,7 @@ export default function ProfilePage() {
           
           // Load Firebase settings from Firestore if available
           if (data.firebase) {
+            console.log("Found Firebase config in store settings:", data.firebase);
             setProjectId(data.firebase.projectId || "");
             setPrivateKey(data.firebase.privateKey || "");
             setClientEmail(data.firebase.clientEmail || "");
@@ -132,6 +135,8 @@ export default function ProfilePage() {
             setFirebaseStorageBucket(data.firebase.firebaseStorageBucket || "");
             setFirebaseMessagingSenderId(data.firebase.firebaseMessagingSenderId || "");
             setFirebaseMeasurementId(data.firebase.firebaseMeasurementId || "");
+          } else {
+            console.log("No Firebase config found in store settings");
           }
         }
       } catch (error) {
