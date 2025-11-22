@@ -248,11 +248,19 @@ export default function ProfilePage() {
     if (preferredTab === 'admin') {
       setActiveTab('admin');
       fetchAllOrders(); // Fetch orders when switching to admin tab
+      fetchCategories(); // Load categories on admin tab
       sessionStorage.removeItem('preferredTab'); // Clear after use
     } else {
       setActiveTab('profile');
     }
   }, []);
+
+  // Load admin data when switching to admin tab
+  useEffect(() => {
+    if (activeTab === 'admin') {
+      fetchCategories(); // Load categories when admin tab is active
+    }
+  }, [activeTab]);
 
   useEffect(() => {
     const loadConfig = async () => {
