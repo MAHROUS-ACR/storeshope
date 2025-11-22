@@ -131,51 +131,54 @@ export default function Home() {
 
   return (
     <MobileWrapper>
-      <div className="w-full flex-1 flex flex-col overflow-hidden">
+      <div className="w-full flex-1 flex flex-col overflow-hidden bg-gray-50">
         {/* Store Header */}
-        <div className="px-6 pt-4 pb-3 flex-shrink-0 border-b border-gray-100">
-          <div className="flex items-center gap-3 mb-4">
-            {storeLogo ? (
-              <img src={storeLogo} alt={storeName} className="w-10 h-10 rounded-lg object-cover" />
-            ) : (
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                {storeName.charAt(0)}
+        <div className="px-6 pt-4 pb-6 flex-shrink-0 bg-gradient-to-br from-blue-600 to-blue-700">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              {storeLogo ? (
+                <img src={storeLogo} alt={storeName} className="w-10 h-10 rounded-lg object-cover border-2 border-white" />
+              ) : (
+                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-blue-600 font-bold text-sm shadow-md">
+                  {storeName.charAt(0)}
+                </div>
+              )}
+              <div>
+                <h1 className="text-lg font-bold text-white">{storeName}</h1>
+                <p className="text-xs text-blue-100">Shop with confidence</p>
               </div>
-            )}
-            <h1 className="text-lg font-bold text-gray-900">{storeName}</h1>
-          </div>
-
-          {/* Search and Cart */}
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <input 
-                type="text" 
-                placeholder="Search products..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                data-testid="input-search"
-              />
             </div>
             <button 
               onClick={() => setLocation("/cart")}
-              className="w-11 h-11 bg-black text-white rounded-2xl flex items-center justify-center relative hover:bg-neutral-800 transition-colors flex-shrink-0"
+              className="w-11 h-11 bg-white text-blue-600 rounded-xl flex items-center justify-center relative hover:bg-blue-50 transition-colors flex-shrink-0 shadow-md font-bold"
               data-testid="button-cart"
             >
               <ShoppingCart className="w-5 h-5" />
               {items.length > 0 && (
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[11px] font-bold text-white shadow-md">
                   {items.length}
                 </div>
               )}
             </button>
           </div>
+
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input 
+              type="text" 
+              placeholder="Search products..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 bg-white border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md"
+              data-testid="input-search"
+            />
+          </div>
         </div>
 
         {/* Firebase Status Banner */}
         {!firebaseConfigured && (
-          <div className="px-6 pb-4 flex-shrink-0">
+          <div className="px-6 pt-4 flex-shrink-0">
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
@@ -193,28 +196,55 @@ export default function Home() {
           <div className="w-full px-6 py-4">
             <PromoBanner />
             
-            <div className="mb-2 mt-4">
-              <h2 className="text-lg font-bold">Categories</h2>
+            {/* Categories Section */}
+            <div className="mt-6 mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-bold text-gray-900">Shop by Category</h2>
+                {categories.length > 1 && (
+                  <button 
+                    onClick={() => setActiveCategory("All")}
+                    className="text-xs text-blue-600 font-semibold hover:text-blue-700"
+                    data-testid="button-view-all"
+                  >
+                    View all
+                  </button>
+                )}
+              </div>
+              <CategoryFilter active={activeCategory} onChange={setActiveCategory} categories={categories} />
             </div>
-            <CategoryFilter active={activeCategory} onChange={setActiveCategory} categories={categories} />
 
-            {isLoading ? (
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="bg-white rounded-3xl p-3 shadow-sm border border-gray-100">
-                    <div className="aspect-square rounded-2xl bg-gray-200 animate-pulse mb-3" />
-                    <div className="h-3 bg-gray-200 rounded animate-pulse mb-2" />
-                    <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3" />
-                  </div>
-                ))}
+            {/* Products Section */}
+            <div className="mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-gray-900">
+                  {activeCategory === "All" ? "Featured Products" : `${activeCategory} Products`}
+                </h2>
               </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                {filteredProducts.map((product, index) => (
-                  <ProductCard key={product.id} product={product} index={index} />
-                ))}
-              </div>
-            )}
+
+              {isLoading ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 overflow-hidden">
+                      <div className="aspect-square rounded-xl bg-gray-200 animate-pulse mb-3" />
+                      <div className="h-3 bg-gray-200 rounded animate-pulse mb-2" />
+                      <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3" />
+                    </div>
+                  ))}
+                </div>
+              ) : filteredProducts.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {filteredProducts.map((product, index) => (
+                    <ProductCard key={product.id} product={product} index={index} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-4xl mb-3">🔍</div>
+                  <p className="text-gray-600 font-semibold mb-1">No products found</p>
+                  <p className="text-xs text-gray-500">Try adjusting your search or category filters</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
