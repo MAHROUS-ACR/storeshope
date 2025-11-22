@@ -17,7 +17,7 @@ interface ProductProps {
   available?: boolean;
 }
 
-export function ProductCard({ product, index }: { product: ProductProps; index: number }) {
+export function ProductCard({ product, index, onProductClick }: { product: ProductProps; index: number; onProductClick?: (id: string | number) => void }) {
   const { addItem } = useCart();
   const [isAdding, setIsAdding] = useState(false);
   const [showVariantModal, setShowVariantModal] = useState(false);
@@ -81,7 +81,8 @@ export function ProductCard({ product, index }: { product: ProductProps; index: 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="group relative bg-white rounded-3xl p-3 shadow-sm border border-gray-100"
+      onClick={() => onProductClick?.(product.id)}
+      className="group relative bg-white rounded-3xl p-3 shadow-sm border border-gray-100 cursor-pointer transition-all hover:shadow-md hover:border-gray-200"
     >
       <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-3">
         <img 
@@ -136,12 +137,16 @@ export function ProductCard({ product, index }: { product: ProductProps; index: 
           </div>
         )}
         
-        {/* Availability status */}
-        {!isAvailable && (
-          <p className="text-xs font-semibold text-red-600 mb-1">غير متاح</p>
-        )}
-        
-        <p className="font-bold text-lg" data-testid={`text-price-${product.id}`}>${product.price.toFixed(2)}</p>
+        {/* Price and Availability */}
+        <div className="flex items-center justify-between gap-2">
+          <p className="font-bold text-lg" data-testid={`text-price-${product.id}`}>${product.price.toFixed(2)}</p>
+          {!isAvailable && (
+            <p className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded whitespace-nowrap" data-testid={`text-unavailable-${product.id}`}>غير متاح</p>
+          )}
+          {isAvailable && (
+            <p className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded whitespace-nowrap" data-testid={`text-available-${product.id}`}>متاح</p>
+          )}
+        </div>
       </div>
 
       {/* Variant Selection Modal */}

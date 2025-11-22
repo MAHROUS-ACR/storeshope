@@ -188,6 +188,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get single product by ID
+  app.get("/api/products/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      if (!isFirebaseConfigured()) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      const db = getFirestore();
+      const doc = await db.collection("products").doc(id).get();
+      
+      if (!doc.exists) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json({ id: doc.id, ...doc.data() });
+    } catch (error: any) {
+      console.error("Error fetching product:", error);
+      res.status(500).json({
+        message: "Failed to fetch product",
+        error: error.message,
+      });
+    }
+  });
+
   // Get Firebase status
   app.get("/api/firebase/status", async (req, res) => {
     try {

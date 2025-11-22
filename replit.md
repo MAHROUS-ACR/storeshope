@@ -5,12 +5,15 @@
 Flux Wallet is a high-fidelity mobile e-commerce application built as a progressive web app. It simulates a modern mobile shopping experience with a wallet interface, product browsing, cart management, and checkout flow. The application uses a mobile-first design approach with a simulated iPhone-style interface wrapper.
 
 **Key Features:**
-- Mobile-optimized shopping interface with product catalog
+- Mobile-optimized shopping interface with product catalog and detailed product pages
+- Product cards display availability status (متاح/غير متاح) next to price
+- Click on any product to view full details including description, variants, and options
 - Shopping cart and checkout with multiple payment options
 - Firebase integration for product data management
 - Order history tracking
 - User profile and settings management
 - Responsive mobile wrapper simulating iPhone device
+- Product variant selection (units, sizes, colors with hex codes)
 
 ## User Preferences
 

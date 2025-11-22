@@ -216,7 +216,12 @@ export default function Home() {
             ) : filteredProducts.length > 0 ? (
               <div className="grid grid-cols-2 gap-3">
                 {filteredProducts.map((product, index) => (
-                  <ProductCard key={product.id} product={product} index={index} />
+                  <ProductCard 
+                    key={product.id} 
+                    product={product} 
+                    index={index}
+                    onProductClick={(id) => setLocation(`/product/${id}`)}
+                  />
                 ))}
               </div>
             ) : (
