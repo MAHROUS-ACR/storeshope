@@ -1,9 +1,10 @@
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Edit2, Check, X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/userContext";
+import { toast } from "sonner";
 
 interface CartItem {
   id: string;
@@ -37,6 +38,8 @@ export default function OrderDetailsPage() {
   const { user, isLoggedIn, isLoading: authLoading } = useUser();
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [newStatus, setNewStatus] = useState("");
 
   // Extract order ID from URL
   const orderId = location.split("/order/")[1]?.split("?")[0];
@@ -83,6 +86,28 @@ export default function OrderDetailsPage() {
     }
   };
 
+  const handleStatusUpdate = (newSts: string) => {
+    if (!newSts || !order) return;
+    
+    try {
+      const savedOrders = localStorage.getItem("orders");
+      if (savedOrders) {
+        const allOrders = JSON.parse(savedOrders);
+        const updatedOrders = allOrders.map((o: Order) => 
+          o.id === order.id ? { ...o, status: newSts } : o
+        );
+        localStorage.setItem("orders", JSON.stringify(updatedOrders));
+        setOrder({ ...order, status: newSts });
+        setEditingStatus(false);
+        setNewStatus("");
+        toast.success("Order status updated");
+      }
+    } catch (error) {
+      toast.error("Failed to update status");
+      console.error(error);
+    }
+  };
+
   return (
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
@@ -126,9 +151,55 @@ export default function OrderDetailsPage() {
                     <p className="text-sm text-muted-foreground">Order Number</p>
                     <p className="font-semibold text-lg font-mono">#{order.orderNumber || order.id.slice(0, 8).toUpperCase()}</p>
                   </div>
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${getStatusColor(order.status)}`}>
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                  </span>
+                  {editingStatus ? (
+                    <div className="flex gap-1">
+                      <select
+                        value={newStatus}
+                        onChange={(e) => setNewStatus(e.target.value)}
+                        className="px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      >
+                        <option value="">Select Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                      <button
+                        onClick={() => handleStatusUpdate(newStatus)}
+                        className="p-1 bg-green-600 text-white rounded hover:bg-green-700"
+                      >
+                        <Check className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingStatus(false);
+                          setNewStatus("");
+                        }}
+                        className="p-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${getStatusColor(order.status)}`}>
+                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                      </span>
+                      {user?.role === 'admin' && (
+                        <button
+                          onClick={() => {
+                            setEditingStatus(true);
+                            setNewStatus(order.status);
+                          }}
+                          className="p-1 text-primary hover:bg-primary/10 rounded"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {new Date(order.createdAt).toLocaleDateString()} {new Date(order.createdAt).toLocaleTimeString()}
