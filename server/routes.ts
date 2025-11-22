@@ -449,9 +449,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const db = getFirestore();
-      await db.collection("users").doc(userId).update({
+      // Use set with merge to create or update the document
+      await db.collection("users").doc(userId).set({
         role: role,
-      });
+      }, { merge: true });
 
       console.log(`✅ User ${userId} role updated to ${role}`);
       res.json({ message: "User role updated successfully", role });
