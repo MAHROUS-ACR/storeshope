@@ -3,7 +3,6 @@ import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
 import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X, Save, Plus, Trash2 } from "lucide-react";
 import { useLocation } from "wouter";
-import type { Location } from "wouter";
 import { useUser } from "@/lib/userContext";
 import { toast } from "sonner";
 import avatarImage from "@assets/generated_images/professional_user_avatar_portrait.png";
@@ -40,13 +39,16 @@ interface AdminOrder {
 export default function ProfilePage() {
   const [location, setLocation] = useLocation();
   const { user, isLoggedIn, logout, isLoading } = useUser();
-  
+  const [activeTab, setActiveTab] = useState<"profile" | "admin">("profile");
+
   // Check if coming from order details with tab=admin parameter
-  const queryParams = new URLSearchParams(location.split('?')[1] || '');
-  const tabFromQuery = queryParams.get('tab');
-  const [activeTab, setActiveTab] = useState<"profile" | "admin">(
-    tabFromQuery === 'admin' ? 'admin' : 'profile'
-  );
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.split('?')[1] || '');
+    const tabFromQuery = queryParams.get('tab');
+    if (tabFromQuery === 'admin') {
+      setActiveTab('admin');
+    }
+  }, [location]);
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
