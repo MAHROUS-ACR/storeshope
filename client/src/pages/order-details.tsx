@@ -44,7 +44,7 @@ export default function OrderDetailsPage() {
   // Extract order ID from URL
   const orderId = location.split("/order/")[1]?.split("?")[0];
   // Determine back path based on user role
-  const backPath = user?.role === 'admin' ? '/profile' : '/orders';
+  const backPath = user?.role === 'admin' ? '/profile' : '/';
 
   useEffect(() => {
     if (!authLoading && !isLoggedIn) {
@@ -140,7 +140,7 @@ export default function OrderDetailsPage() {
               onClick={() => setLocation(backPath)}
               className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold mt-4"
             >
-              {user?.role === 'admin' ? 'Back to Admin' : 'Back to Orders'}
+              {user?.role === 'admin' ? 'Back to Admin' : 'Back to Home'}
             </button>
           </div>
         ) : (
