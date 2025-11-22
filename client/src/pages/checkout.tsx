@@ -180,7 +180,13 @@ export default function CheckoutPage() {
         shippingPhone = newPhone;
       }
 
+      const existingOrders = localStorage.getItem("orders");
+      const savedOrders = existingOrders ? JSON.parse(existingOrders) : [];
+      const nextOrderNumber = Math.max(0, ...savedOrders.map((o: any) => o.orderNumber || 0)) + 1;
+
       const orderData = {
+        id: `order-${Date.now()}`,
+        orderNumber: nextOrderNumber,
         items,
         subtotal: total,
         shippingCost,
@@ -243,7 +249,13 @@ export default function CheckoutPage() {
         shippingPhone = newPhone;
       }
 
+      const existingOrders2 = localStorage.getItem("orders");
+      const savedOrders2 = existingOrders2 ? JSON.parse(existingOrders2) : [];
+      const nextOrderNumber2 = Math.max(0, ...savedOrders2.map((o: any) => o.orderNumber || 0)) + 1;
+
       const orderData = {
+        id: `order-${Date.now()}`,
+        orderNumber: nextOrderNumber2,
         items,
         subtotal: total,
         shippingCost,
@@ -260,10 +272,10 @@ export default function CheckoutPage() {
       const orderWithUser = { ...orderData, userId: user?.id };
 
       try {
-        const existingOrders = localStorage.getItem("orders");
-        const savedOrders = existingOrders ? JSON.parse(existingOrders) : [];
-        savedOrders.unshift(orderWithUser);
-        localStorage.setItem("orders", JSON.stringify(savedOrders));
+        const allOrders = localStorage.getItem("orders");
+        const allSavedOrders = allOrders ? JSON.parse(allOrders) : [];
+        allSavedOrders.unshift(orderWithUser);
+        localStorage.setItem("orders", JSON.stringify(allSavedOrders));
       } catch (e) {
         console.warn("Failed to save to localStorage:", e);
       }

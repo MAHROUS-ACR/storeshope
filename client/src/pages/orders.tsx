@@ -180,7 +180,7 @@ export default function OrdersPage() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <p className="text-sm text-muted-foreground">Order #{order.id.slice(0, 8).toUpperCase()}</p>
+                      <p className="text-sm text-muted-foreground">Order #{(order as any).orderNumber || "N/A"}</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         {new Date(order.createdAt).toLocaleDateString()}
                       </p>
