@@ -24,6 +24,11 @@ interface Order {
   status: string;
   paymentMethod?: string;
   createdAt: string;
+  subtotal?: number;
+  shippingCost?: number;
+  shippingAddress?: string;
+  shippingPhone?: string;
+  shippingZone?: string;
 }
 
 export default function OrdersPage() {
@@ -231,15 +236,55 @@ export default function OrdersPage() {
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(order.createdAt).toLocaleDateString()}
-                      </p>
-                      <p className="font-bold text-lg" data-testid={`total-${order.id}`}>
-                        ${order.total.toFixed(2)}
-                      </p>
+                  {/* Shipping Details */}
+                  {((order as any).shippingAddress || (order as any).shippingPhone || (order as any).shippingZone) && (
+                    <div className="bg-gray-50 rounded-lg p-3 mb-3 space-y-2 border border-gray-100">
+                      <p className="text-xs font-semibold text-gray-700">Delivery Information</p>
+                      {(order as any).shippingAddress && (
+                        <div className="text-xs">
+                          <p className="text-gray-500">Address:</p>
+                          <p className="font-medium">{(order as any).shippingAddress}</p>
+                        </div>
+                      )}
+                      {(order as any).shippingPhone && (
+                        <div className="text-xs">
+                          <p className="text-gray-500">Phone:</p>
+                          <p className="font-medium">{(order as any).shippingPhone}</p>
+                        </div>
+                      )}
+                      {(order as any).shippingZone && (
+                        <div className="text-xs">
+                          <p className="text-gray-500">Zone:</p>
+                          <p className="font-medium">{(order as any).shippingZone}</p>
+                        </div>
+                      )}
                     </div>
+                  )}
+
+                  {/* Order Summary */}
+                  <div className="bg-gray-50 rounded-lg p-3 mb-3 space-y-2 border border-gray-100">
+                    {(order as any).subtotal !== undefined && (
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-500">Subtotal:</span>
+                        <span>${((order as any).subtotal || 0).toFixed(2)}</span>
+                      </div>
+                    )}
+                    {(order as any).shippingCost !== undefined && (order as any).shippingCost > 0 && (
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-500">Shipping:</span>
+                        <span>${((order as any).shippingCost || 0).toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-sm font-bold border-t border-gray-200 pt-2">
+                      <span>Total:</span>
+                      <span data-testid={`total-${order.id}`}>${order.total.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </p>
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </div>
                 </div>
