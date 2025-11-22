@@ -260,6 +260,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           address: "",
           phone: "",
           email: "",
+          firebase: {
+            projectId: "",
+            privateKey: "",
+            clientEmail: "",
+            firebaseApiKey: "",
+            firebaseProjectId: "",
+            firebaseAppId: "",
+            firebaseAuthDomain: "",
+            firebaseStorageBucket: "",
+            firebaseMessagingSenderId: "",
+            firebaseMeasurementId: "",
+          }
         });
       }
 
@@ -273,14 +285,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Save store settings
+  // Save store settings with Firebase configuration
   app.post("/api/store-settings", async (req, res) => {
     try {
       if (!isFirebaseConfigured()) {
         return res.status(503).json({ message: "Firebase not configured" });
       }
 
-      const { name, address, phone, email } = req.body;
+      const { 
+        name, 
+        address, 
+        phone, 
+        email,
+        firebase 
+      } = req.body;
 
       if (!name || !address || !phone || !email) {
         return res.status(400).json({ message: "All fields are required" });
@@ -292,11 +310,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         address,
         phone,
         email,
+        firebase: firebase || {
+          projectId: "",
+          privateKey: "",
+          clientEmail: "",
+          firebaseApiKey: "",
+          firebaseProjectId: "",
+          firebaseAppId: "",
+          firebaseAuthDomain: "",
+          firebaseStorageBucket: "",
+          firebaseMessagingSenderId: "",
+          firebaseMeasurementId: "",
+        },
         updatedAt: new Date().toISOString(),
       });
 
-      console.log("Store settings saved successfully");
-      res.json({ message: "Store settings saved successfully" });
+      console.log("Store settings and Firebase config saved successfully");
+      res.json({ message: "Store settings and Firebase config saved successfully" });
     } catch (error: any) {
       console.error("Error saving store settings:", error);
       res.status(500).json({
