@@ -247,14 +247,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const allOrders = await db.collection("orders").get();
       const orderNumber = allOrders.size + 1;
       
-      const docRef = await db.collection("orders").add({
+      // Use the order ID from the client if provided, otherwise generate one
+      const orderId = orderData.id || `order-${Date.now()}`;
+      
+      await db.collection("orders").doc(orderId).set({
         ...orderData,
+        id: orderId,
         orderNumber: orderNumber,
-        createdAt: new Date().toISOString(),
+        createdAt: orderData.createdAt || new Date().toISOString(),
       });
 
-      console.log("Order saved:", docRef.id, "Order #", orderNumber);
-      res.json({ id: docRef.id, orderNumber: orderNumber, message: "Order saved successfully" });
+      console.log("Order saved:", orderId, "Order #", orderNumber);
+      res.json({ id: orderId, orderNumber: orderNumber, message: "Order saved successfully" });
     } catch (error: any) {
       console.error("Error saving order:", error);
       res.status(500).json({
