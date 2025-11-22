@@ -686,10 +686,10 @@ export default function ProfilePage() {
               {user && (
                 <div className="px-6 py-4 space-y-3">
                   <div className="bg-gradient-to-br from-primary to-purple-600 rounded-3xl p-4 text-white shadow-lg">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-start gap-3">
                       {/* Profile Image with Edit */}
                       <div className="relative flex-shrink-0">
-                        <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/30 bg-white/10">
+                        <div className="w-16 h-16 rounded-full overflow-hidden border-3 border-white/30 bg-white/10">
                           <img 
                             src={profileImage || avatarImage} 
                             alt="User" 
@@ -697,8 +697,8 @@ export default function ProfilePage() {
                             data-testid="img-profile-picture"
                           />
                         </div>
-                        <label className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-100 shadow-lg">
-                          <Edit2 className="w-4 h-4 text-primary" />
+                        <label className="absolute bottom-0 right-0 w-6 h-6 bg-white rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-100 shadow-lg">
+                          <Edit2 className="w-3 h-3 text-primary" />
                           <input 
                             type="file" 
                             accept="image/*" 
@@ -711,20 +711,20 @@ export default function ProfilePage() {
 
                       {/* User Info */}
                       <div className="flex-1 min-w-0">
-                        <h2 className="text-lg font-bold" data-testid="text-username">
+                        <h2 className="text-base font-bold line-clamp-2" data-testid="text-username">
                           {user.username}
                         </h2>
-                        <p className="text-sm opacity-90 truncate" data-testid="text-email">
+                        <p className="text-xs opacity-90 line-clamp-1" data-testid="text-email">
                           {user.email}
                         </p>
                         
                         {/* Orders Stats */}
-                        <div className="grid grid-cols-2 gap-2 mt-3">
-                          <div className="bg-white/20 rounded-lg p-2">
+                        <div className="grid grid-cols-2 gap-1.5 mt-2">
+                          <div className="bg-white/20 rounded-lg p-1.5">
                             <p className="text-xs opacity-75">Orders</p>
                             <p className="text-sm font-bold" data-testid="text-orders-count">{userOrdersCount}</p>
                           </div>
-                          <div className="bg-white/20 rounded-lg p-2">
+                          <div className="bg-white/20 rounded-lg p-1.5">
                             <p className="text-xs opacity-75">Total Spent</p>
                             <p className="text-sm font-bold" data-testid="text-orders-total">${userOrdersTotal.toFixed(2)}</p>
                           </div>
