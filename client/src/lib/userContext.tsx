@@ -1,13 +1,19 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { initializeApp } from "firebase/app";
-import { getAuth, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, type User as FirebaseUser } from "firebase/auth";
+import { 
+  getAuth, 
+  signOut, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  onAuthStateChanged, 
+  type User as FirebaseUser 
+} from "firebase/auth";
 import { getFirebaseConfig } from "./firebaseConfig";
 
 export interface User {
   id: string;
-  firebaseUid: string;
   email: string;
-  username: string;
+  username?: string;
 }
 
 interface UserContextType {
@@ -44,26 +50,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
         const auth = getAuth(app);
         setFirebaseAuth(auth);
 
-        // Try to restore user from localStorage first
-        const savedUser = localStorage.getItem("user");
-        if (savedUser) {
-          try {
-            setUser(JSON.parse(savedUser));
-            setIsLoading(false);
-          } catch (error) {
-            console.error("Failed to parse saved user:", error);
-          }
-        }
-
-        // Restore user from localStorage if available
-        setIsLoading(false);
-        
-        // Listen to auth state changes as backup
-        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
-          // Just track auth state, don't fetch user (already in localStorage)
-          if (!firebaseUser && !savedUser) {
+        // Listen to Firebase Auth state changes
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+          if (firebaseUser) {
+            // User is signed in
+            const userData: User = {
+              id: firebaseUser.uid,
+              email: firebaseUser.email || "",
+              username: firebaseUser.displayName || firebaseUser.email?.split("@")[0],
+            };
+            setUser(userData);
+            localStorage.setItem("user", JSON.stringify(userData));
+          } else {
+            // User is signed out
             setUser(null);
+            localStorage.removeItem("user");
           }
+          setIsLoading(false);
         });
 
         return () => unsubscribe();
@@ -79,56 +82,28 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const signup = async (email: string, password: string, username: string) => {
     if (!firebaseAuth) throw new Error("Firebase not configured");
 
+    // Create user with Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
     const firebaseUser = userCredential.user;
 
-    // Save to database via server
-    const response = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, username }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to create user");
-    }
-
-    const userData = await response.json();
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+    // User data is automatically set via onAuthStateChanged
+    // No need to call server endpoint
+    console.log("User created with Firebase Auth:", firebaseUser.uid);
   };
 
   const login = async (email: string, password: string) => {
-    // Use server-side login for simplicity
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    if (!firebaseAuth) throw new Error("Firebase not configured");
 
-    if (!response.ok) {
-      throw new Error("Login failed");
-    }
-
-    const userData = await response.json();
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+    // Sign in with Firebase Auth
+    const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
     
-    // Also log in with Firebase to set authentication state
-    if (firebaseAuth) {
-      try {
-        await signInWithEmailAndPassword(firebaseAuth, email, password);
-      } catch (error) {
-        console.warn("Firebase signin skipped (server-only auth):", error);
-      }
-    }
+    // User data is automatically set via onAuthStateChanged
+    console.log("User signed in with Firebase Auth:", userCredential.user.uid);
   };
 
   const logout = async () => {
     if (!firebaseAuth) throw new Error("Firebase not configured");
     await signOut(firebaseAuth);
-    setUser(null);
-    localStorage.removeItem("user");
     localStorage.removeItem("orders");
   };
 

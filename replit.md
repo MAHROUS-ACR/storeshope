@@ -82,14 +82,31 @@ Preferred communication style: Simple, everyday language.
 - Client-side: Browser localStorage for cart state
 - Future: Database-backed storage with session management
 
+### Authentication
+
+**Firebase Authentication:**
+- **Method:** Firebase Auth (client-side authentication)
+- **Features:** Email/password signup and login
+- **User ID:** Firebase UID stored as `user.id`
+- **Session:** Managed by Firebase Auth service
+- **Persistence:** User data cached in localStorage
+- **Status:** Primary authentication method (Nov 22, 2025)
+- **Previous System:** Server-side database authentication (deprecated)
+
 ### External Dependencies
 
 **Firebase Integration:**
-- **Purpose:** Product catalog management (Firestore)
+- **Purpose:** Product catalog management (Firestore) + Authentication (Firebase Auth)
+- **Authentication:** Email/password via Firebase Auth service
+- **Product Data:** Firestore collections for products and orders
 - **Configuration:** Runtime configuration via settings page
 - **Credentials:** Project ID, private key, and client email stored in environment
-- **Status:** Optional - app functions with fallback mock data if not configured
-- **API Endpoint:** `/api/firebase/config` for credential setup
+- **Status:** Required for full functionality
+- **API Endpoints:** 
+  - `/api/firebase/config` - Get/update Firebase config
+  - `/api/firebase/status` - Check if Firebase is configured
+  - `/api/products` - Get product catalog from Firestore
+  - `/api/orders` - Save/retrieve user orders from Firestore
 
 **Third-Party Services:**
 - **Stripe:** Payment processing infrastructure (partially integrated)
