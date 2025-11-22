@@ -40,34 +40,6 @@ export default function ProfilePage() {
   const [location, setLocation] = useLocation();
   const { user, isLoggedIn, logout, isLoading } = useUser();
   const [activeTab, setActiveTab] = useState<"profile" | "admin">("profile");
-
-  // Check if sessionStorage has preferred tab (from order-details back button)
-  const fetchAllOrders = async () => {
-    setOrdersLoading(true);
-    try {
-      const response = await fetch("/api/orders/admin/all");
-      if (response.ok) {
-        const data = await response.json();
-        setOrders(data || []);
-      }
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-      toast.error("Failed to load orders");
-    } finally {
-      setOrdersLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const preferredTab = sessionStorage.getItem('preferredTab');
-    if (preferredTab === 'admin') {
-      setActiveTab('admin');
-      fetchAllOrders(); // Fetch orders when switching to admin tab
-      sessionStorage.removeItem('preferredTab'); // Clear after use
-    } else {
-      setActiveTab('profile');
-    }
-  }, []);
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
@@ -137,11 +109,40 @@ export default function ProfilePage() {
   const [firebaseMeasurementId, setFirebaseMeasurementId] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
+  // Fetch all orders for admin
+  const fetchAllOrders = async () => {
+    setOrdersLoading(true);
+    try {
+      const response = await fetch("/api/orders/admin/all");
+      if (response.ok) {
+        const data = await response.json();
+        setOrders(data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      toast.error("Failed to load orders");
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!isLoading && !isLoggedIn) {
       setLocation("/login");
     }
   }, [isLoggedIn, isLoading, setLocation]);
+
+  // Check if sessionStorage has preferred tab (from order-details back button)
+  useEffect(() => {
+    const preferredTab = sessionStorage.getItem('preferredTab');
+    if (preferredTab === 'admin') {
+      setActiveTab('admin');
+      fetchAllOrders(); // Fetch orders when switching to admin tab
+      sessionStorage.removeItem('preferredTab'); // Clear after use
+    } else {
+      setActiveTab('profile');
+    }
+  }, []);
 
   useEffect(() => {
     const loadConfig = async () => {
