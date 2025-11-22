@@ -38,9 +38,15 @@ interface AdminOrder {
 }
 
 export default function ProfilePage() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { user, isLoggedIn, logout, isLoading } = useUser();
-  const [activeTab, setActiveTab] = useState<"profile" | "admin">("profile");
+  
+  // Check if coming from order details with tab=admin parameter
+  const queryParams = new URLSearchParams(location.split('?')[1] || '');
+  const tabFromQuery = queryParams.get('tab');
+  const [activeTab, setActiveTab] = useState<"profile" | "admin">(
+    tabFromQuery === 'admin' ? 'admin' : 'profile'
+  );
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
