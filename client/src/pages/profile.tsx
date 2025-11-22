@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X, Save, Plus, Trash2 } from "lucide-react";
+import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X, Save, Plus, Trash2, TrendingUp } from "lucide-react";
 import { useLocation } from "wouter";
 import { useUser } from "@/lib/userContext";
 import { toast } from "sonner";
 import avatarImage from "@assets/generated_images/professional_user_avatar_portrait.png";
 import { saveFirebaseConfig, getFirebaseConfig, clearFirebaseConfig } from "@/lib/firebaseConfig";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 const menuItems = [
   { icon: Package, label: "My Orders", path: "/orders", color: "text-purple-600 bg-purple-50" },
@@ -47,6 +48,7 @@ export default function ProfilePage() {
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [showFirebaseSettings, setShowFirebaseSettings] = useState(false);
   const [showOrders, setShowOrders] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const [showItems, setShowItems] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [showUsers, setShowUsers] = useState(false);
@@ -876,6 +878,129 @@ export default function ProfilePage() {
                     </div>
                   )}
 
+                </div>
+              )}
+
+              {/* Sales Analytics Section */}
+              <button
+                onClick={() => setShowAnalytics(!showAnalytics)}
+                className="w-full flex items-center justify-between p-4 bg-emerald-50 rounded-2xl border border-emerald-200 hover:border-emerald-300 transition-colors mb-6"
+                data-testid="button-toggle-analytics"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-emerald-100 text-emerald-600">
+                    <TrendingUp className="w-6 h-6" />
+                  </div>
+                  <span className="font-semibold text-sm text-emerald-900">Sales Analytics</span>
+                </div>
+                <ChevronRight className={`w-5 h-5 text-emerald-400 transition-transform ${showAnalytics ? "rotate-90" : ""}`} />
+              </button>
+
+              {/* Sales Analytics Content */}
+              {showAnalytics && (
+                <div className="mb-6">
+                  {orders.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">No orders data to display</div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Key Metrics */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                          <p className="text-xs text-gray-500 mb-1">Total Revenue</p>
+                          <p className="text-lg font-bold text-emerald-600">${orders.reduce((sum, o) => sum + o.total, 0).toFixed(2)}</p>
+                        </div>
+                        <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                          <p className="text-xs text-gray-500 mb-1">Total Orders</p>
+                          <p className="text-lg font-bold text-blue-600">{orders.length}</p>
+                        </div>
+                        <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                          <p className="text-xs text-gray-500 mb-1">Completed</p>
+                          <p className="text-lg font-bold text-green-600">{orders.filter(o => o.status === 'completed').length}</p>
+                        </div>
+                        <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                          <p className="text-xs text-gray-500 mb-1">Pending</p>
+                          <p className="text-lg font-bold text-amber-600">{orders.filter(o => o.status === 'pending').length}</p>
+                        </div>
+                      </div>
+
+                      {/* Sales Trend Chart */}
+                      <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                        <p className="text-sm font-semibold text-gray-900 mb-3">Sales Trend</p>
+                        <ResponsiveContainer width="100%" height={250}>
+                          <LineChart data={(() => {
+                            const grouped: { [key: string]: number } = {};
+                            orders.forEach(order => {
+                              const date = new Date(order.createdAt).toLocaleDateString();
+                              grouped[date] = (grouped[date] || 0) + order.total;
+                            });
+                            return Object.entries(grouped).map(([date, total]) => ({ date, total: parseFloat(total.toFixed(2)) }));
+                          })()}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="date" style={{ fontSize: '10px' }} />
+                            <YAxis style={{ fontSize: '10px' }} />
+                            <Tooltip />
+                            <Line type="monotone" dataKey="total" stroke="#10b981" strokeWidth={2} />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* Orders by Status Chart */}
+                      <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                        <p className="text-sm font-semibold text-gray-900 mb-3">Orders by Status</p>
+                        <ResponsiveContainer width="100%" height={250}>
+                          <BarChart data={(() => {
+                            const statusCounts: { [key: string]: number } = {};
+                            orders.forEach(order => {
+                              statusCounts[order.status] = (statusCounts[order.status] || 0) + 1;
+                            });
+                            return Object.entries(statusCounts).map(([status, count]) => ({ status, count }));
+                          })()}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="status" style={{ fontSize: '10px' }} />
+                            <YAxis style={{ fontSize: '10px' }} />
+                            <Tooltip />
+                            <Bar dataKey="count" fill="#3b82f6" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* Revenue by Status */}
+                      <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                        <p className="text-sm font-semibold text-gray-900 mb-3">Revenue by Status</p>
+                        <ResponsiveContainer width="100%" height={250}>
+                          <PieChart>
+                            <Pie
+                              data={(() => {
+                                const statusRevenue: { [key: string]: number } = {};
+                                orders.forEach(order => {
+                                  statusRevenue[order.status] = (statusRevenue[order.status] || 0) + order.total;
+                                });
+                                return Object.entries(statusRevenue).map(([status, revenue]) => ({ 
+                                  name: status.charAt(0).toUpperCase() + status.slice(1),
+                                  value: parseFloat(revenue.toFixed(2))
+                                }));
+                              })()}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              label={({ name, value }) => `${name}: $${value}`}
+                              outerRadius={80}
+                              fill="#8884d8"
+                              dataKey="value"
+                            >
+                              {[
+                                '#10b981', '#3b82f6', '#f59e0b', 
+                                '#06b6d4', '#ef4444', '#8b5cf6', '#ec4899'
+                              ].map((color, index) => (
+                                <Cell key={`cell-${index}`} fill={color} />
+                              ))}
+                            </Pie>
+                            <Tooltip formatter={(value) => `$${typeof value === 'number' ? value.toFixed(2) : value}`} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
