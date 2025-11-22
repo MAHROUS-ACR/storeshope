@@ -18,6 +18,8 @@ interface CartItem {
 
 interface Order {
   id: string;
+  orderNumber?: number;
+  userId?: string;
   items: CartItem[];
   total: number;
   status: string;
@@ -121,7 +123,7 @@ export default function OrderDetailsPage() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Order Number</p>
-                    <p className="font-semibold text-lg font-mono">#{order.id.slice(0, 8).toUpperCase()}</p>
+                    <p className="font-semibold text-lg font-mono">#{order.orderNumber || order.id.slice(0, 8).toUpperCase()}</p>
                   </div>
                   <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${getStatusColor(order.status)}`}>
                     {order.status.charAt(0).toUpperCase() + order.status.slice(1)}

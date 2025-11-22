@@ -889,6 +889,39 @@ export default function ProfilePage() {
                         </div>
                       </div>
 
+                      {/* Shipping Information */}
+                      {(selectedOrder.shippingAddress || selectedOrder.shippingPhone || selectedOrder.shippingZone) && (
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <p className="text-xs font-semibold text-gray-500 mb-2">Delivery Information</p>
+                          <div className="space-y-1.5">
+                            {selectedOrder.shippingAddress && (
+                              <div>
+                                <p className="text-xs text-gray-500">Address</p>
+                                <p className="text-xs font-medium text-gray-900">{selectedOrder.shippingAddress}</p>
+                              </div>
+                            )}
+                            {selectedOrder.shippingPhone && (
+                              <div>
+                                <p className="text-xs text-gray-500">Phone</p>
+                                <p className="text-xs font-medium text-gray-900">{selectedOrder.shippingPhone}</p>
+                              </div>
+                            )}
+                            {selectedOrder.shippingZone && (
+                              <div>
+                                <p className="text-xs text-gray-500">Zone</p>
+                                <p className="text-xs font-medium text-gray-900">{selectedOrder.shippingZone}</p>
+                              </div>
+                            )}
+                            {selectedOrder.shippingCost !== undefined && selectedOrder.shippingCost > 0 && (
+                              <div>
+                                <p className="text-xs text-gray-500">Shipping Cost</p>
+                                <p className="text-xs font-medium text-gray-900">${selectedOrder.shippingCost.toFixed(2)}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Status Edit */}
                       {editingOrderId === selectedOrder?.id ? (
                         <div className="flex gap-2 mt-3">
