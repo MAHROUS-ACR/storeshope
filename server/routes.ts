@@ -332,6 +332,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get single order (allows admin to view any order, regular users can only view their own)
+  app.get("/api/orders/:orderId", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      const { orderId } = req.params;
+      const userId = req.headers["x-user-id"] as string;
+
+      const db = getFirestore();
+      const doc = await db.collection("orders").doc(orderId).get();
+
+      if (!doc.exists) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      const order = { id: doc.id, ...doc.data() } as any;
+
+      // Allow access if: admin, order belongs to user, or order has no userId
+      const isAdmin = req.headers["x-user-role"] === "admin";
+      if (!isAdmin && userId && order.userId && order.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      console.log("Order retrieved:", orderId);
+      res.json(order);
+    } catch (error: any) {
+      console.error("Error fetching order:", error);
+      res.status(500).json({
+        message: "Failed to fetch order",
+        error: error.message,
+      });
+    }
+  });
+
   // Update order status (admin endpoint)
   app.put("/api/orders/:orderId", async (req, res) => {
     try {

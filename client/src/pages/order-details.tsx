@@ -69,21 +69,53 @@ export default function OrderDetailsPage() {
     if (!orderId) return;
 
     setIsLoading(true);
-    try {
-      const savedOrders = localStorage.getItem("orders");
-      if (savedOrders) {
-        const allOrders = JSON.parse(savedOrders);
-        const foundOrder = allOrders.find((o: Order) => o.id === orderId);
-        // Allow access if: admin user, order belongs to current user, or order has no userId
-        if (foundOrder && ((user && user.role === 'admin') || foundOrder.userId === user?.id || !foundOrder.userId)) {
-          setOrder(foundOrder);
+    const fetchOrder = async () => {
+      try {
+        const headers: any = {};
+        if (user?.id) {
+          headers["x-user-id"] = user.id;
         }
+        if (user?.role) {
+          headers["x-user-role"] = user.role;
+        }
+
+        const response = await fetch(`/api/orders/${orderId}`, { headers });
+        
+        if (response.ok) {
+          const fetchedOrder = await response.json();
+          setOrder(fetchedOrder);
+        } else {
+          // If API fails, fallback to localStorage
+          const savedOrders = localStorage.getItem("orders");
+          if (savedOrders) {
+            const allOrders = JSON.parse(savedOrders);
+            const foundOrder = allOrders.find((o: Order) => o.id === orderId);
+            if (foundOrder && ((user && user.role === 'admin') || foundOrder.userId === user?.id || !foundOrder.userId)) {
+              setOrder(foundOrder);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error loading order:", error);
+        // Fallback to localStorage on error
+        try {
+          const savedOrders = localStorage.getItem("orders");
+          if (savedOrders) {
+            const allOrders = JSON.parse(savedOrders);
+            const foundOrder = allOrders.find((o: Order) => o.id === orderId);
+            if (foundOrder && ((user && user.role === 'admin') || foundOrder.userId === user?.id || !foundOrder.userId)) {
+              setOrder(foundOrder);
+            }
+          }
+        } catch (e) {
+          console.error("Error loading from localStorage:", e);
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error loading order:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    };
+
+    fetchOrder();
   }, [orderId, user]);
 
   const getStatusColor = (status: string) => {
