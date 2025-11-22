@@ -149,12 +149,15 @@ export default function ProfilePage() {
   const fetchUserOrdersStats = async () => {
     if (!user?.id) return;
     try {
-      const response = await fetch("/api/orders");
+      const response = await fetch("/api/orders", {
+        headers: { "x-user-id": user.id }
+      });
       if (response.ok) {
         const data = await response.json();
-        const userOrders = data.filter((o: AdminOrder) => o.userId === user.id && o.status === 'completed');
-        setUserOrdersCount(userOrders.length);
-        setUserOrdersTotal(userOrders.reduce((sum: number, o: AdminOrder) => sum + o.total, 0));
+        // Only count completed orders
+        const completedOrders = data.filter((o: AdminOrder) => o.status === 'completed');
+        setUserOrdersCount(completedOrders.length);
+        setUserOrdersTotal(completedOrders.reduce((sum: number, o: AdminOrder) => sum + o.total, 0));
       }
     } catch (error) {
       console.error("Error fetching user orders:", error);
