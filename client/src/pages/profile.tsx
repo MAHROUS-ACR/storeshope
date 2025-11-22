@@ -592,75 +592,121 @@ export default function ProfilePage() {
 
               {/* Store Settings Content */}
               {showStoreSettings && (
-                <div className="mb-6 bg-white rounded-2xl p-4 border border-gray-200">
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-semibold mb-2">Store Name</label>
-                      <input
-                        type="text"
-                        value={storeName}
-                        onChange={(e) => setStoreName(e.target.value)}
-                        placeholder="Your Store Name"
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        data-testid="input-store-name"
-                      />
-                    </div>
+                <div className="mb-6 space-y-4">
+                  {/* Store Info Section */}
+                  <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                    <h3 className="text-lg font-bold mb-3">Store Information</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">Store Name</label>
+                        <input
+                          type="text"
+                          value={storeName}
+                          onChange={(e) => setStoreName(e.target.value)}
+                          placeholder="Your Store Name"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          data-testid="input-store-name"
+                        />
+                      </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold mb-2">Address</label>
-                      <input
-                        type="text"
-                        value={storeAddress}
-                        onChange={(e) => setStoreAddress(e.target.value)}
-                        placeholder="Store Address"
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        data-testid="input-store-address"
-                      />
-                    </div>
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">Address</label>
+                        <input
+                          type="text"
+                          value={storeAddress}
+                          onChange={(e) => setStoreAddress(e.target.value)}
+                          placeholder="Store Address"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          data-testid="input-store-address"
+                        />
+                      </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold mb-2">Phone Number</label>
-                      <input
-                        type="tel"
-                        value={storePhone}
-                        onChange={(e) => setStorePhone(e.target.value)}
-                        placeholder="+1 234 567 8900"
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        data-testid="input-store-phone"
-                      />
-                    </div>
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">Phone Number</label>
+                        <input
+                          type="tel"
+                          value={storePhone}
+                          onChange={(e) => setStorePhone(e.target.value)}
+                          placeholder="+1 234 567 8900"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          data-testid="input-store-phone"
+                        />
+                      </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold mb-2">Email</label>
-                      <input
-                        type="email"
-                        value={storeEmail}
-                        onChange={(e) => setStoreEmail(e.target.value)}
-                        placeholder="info@store.com"
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        data-testid="input-store-email"
-                      />
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">Email</label>
+                        <input
+                          type="email"
+                          value={storeEmail}
+                          onChange={(e) => setStoreEmail(e.target.value)}
+                          placeholder="info@store.com"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          data-testid="input-store-email"
+                        />
+                      </div>
                     </div>
-
-                    <button
-                      onClick={handleSaveStoreSettings}
-                      disabled={isSaving}
-                      className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                      data-testid="button-save-store-settings"
-                    >
-                      {isSaving ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                          Saving...
-                        </>
-                      ) : (
-                        <>
-                          <Save className="w-4 h-4" />
-                          Save Store Settings
-                        </>
-                      )}
-                    </button>
                   </div>
+
+                  {/* Firebase Config in Store Settings */}
+                  <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                    <h3 className="text-lg font-bold mb-3">Firebase Configuration</h3>
+                    <p className="text-xs text-gray-600 mb-4">Server-side Firebase configuration will be saved with store data</p>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">Project ID</label>
+                        <input
+                          type="text"
+                          value={projectId}
+                          onChange={(e) => setProjectId(e.target.value)}
+                          placeholder="your-project-id"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          data-testid="input-store-firebase-project-id"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">Private Key</label>
+                        <textarea
+                          value={privateKey}
+                          onChange={(e) => setPrivateKey(e.target.value)}
+                          placeholder="-----BEGIN PRIVATE KEY-----..."
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary h-20 font-mono text-xs"
+                          data-testid="input-store-firebase-private-key"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">Client Email</label>
+                        <input
+                          type="email"
+                          value={clientEmail}
+                          onChange={(e) => setClientEmail(e.target.value)}
+                          placeholder="firebase@project.iam.gserviceaccount.com"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          data-testid="input-store-firebase-client-email"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleSaveStoreSettings}
+                    disabled={isSaving}
+                    className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                    data-testid="button-save-store-settings"
+                  >
+                    {isSaving ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        Save Store Settings
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
 
