@@ -164,13 +164,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get Firebase status
-  app.get("/api/firebase/status", (req, res) => {
-    res.json({
-      configured: isFirebaseConfigured(),
-      message: isFirebaseConfigured()
-        ? "Firebase is configured and ready"
-        : "Firebase is not configured",
-    });
+  app.get("/api/firebase/status", async (req, res) => {
+    try {
+      // Check if Firebase is configured from environment variables
+      const envConfigured = isFirebaseConfigured();
+
+      if (!envConfigured) {
+        return res.json({
+          configured: false,
+          message: "Firebase is not configured",
+        });
+      }
+
+      // Check if Firebase settings are saved in Firestore
+      const db = getFirestore();
+      const doc = await db.collection("settings").doc("store").get();
+      const data = doc.data();
+
+      // Firebase is only considered "configured" if Firestore has a valid Firebase config with required fields
+      const hasValidFirebaseConfig =
+        data?.firebase &&
+        data.firebase.projectId &&
+        data.firebase.privateKey &&
+        data.firebase.clientEmail;
+
+      res.json({
+        configured: hasValidFirebaseConfig,
+        message: hasValidFirebaseConfig
+          ? "Firebase is configured and ready"
+          : "Firebase is not configured",
+      });
+    } catch (error) {
+      res.json({
+        configured: false,
+        message: "Error checking Firebase status",
+      });
+    }
   });
 
   // Create order
