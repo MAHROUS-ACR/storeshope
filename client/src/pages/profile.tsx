@@ -54,6 +54,10 @@ export default function ProfilePage() {
   const [usersLoading, setUsersLoading] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [newUserRole, setNewUserRole] = useState<string>("");
+  const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [categories, setCategories] = useState<any[]>([]);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [newCategoryName, setNewCategoryName] = useState("");
   
   // Store Settings States
   const [storeName, setStoreName] = useState("");
@@ -722,6 +726,18 @@ export default function ProfilePage() {
               {/* Users Content */}
               {showUsers && (
                 <div className="mb-6">
+                  {/* Search Users */}
+                  <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4">
+                    <input
+                      type="text"
+                      placeholder="Search users by email..."
+                      value={userSearchQuery}
+                      onChange={(e) => setUserSearchQuery(e.target.value)}
+                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      data-testid="input-search-users"
+                    />
+                  </div>
+
                   {usersLoading ? (
                     <div className="flex items-center justify-center py-8">
                       <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -730,7 +746,7 @@ export default function ProfilePage() {
                     <div className="text-center py-8 text-gray-500">No users found</div>
                   ) : (
                     <div className="space-y-3">
-                      {users.map((u) => (
+                      {users.filter(u => u.email.toLowerCase().includes(userSearchQuery.toLowerCase())).map((u) => (
                         <div
                           key={u.id}
                           className="bg-white border border-gray-200 rounded-2xl p-4 hover:border-gray-300 transition-colors"
@@ -799,19 +815,154 @@ export default function ProfilePage() {
                 </div>
               )}
 
+              {/* Categories Management Section */}
+              <button
+                onClick={() => {
+                  setShowItems(!showItems);
+                  // Load categories when opening items
+                }}
+                className="w-full flex items-center justify-between p-4 bg-green-50 rounded-2xl border border-green-200 hover:border-green-300 transition-colors mb-6"
+                data-testid="button-categories-section"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-green-100 text-green-600">
+                    <Package className="w-6 h-6" />
+                  </div>
+                  <span className="font-semibold text-sm text-green-900">Categories</span>
+                </div>
+                <ChevronRight className={`w-5 h-5 text-green-400 transition-transform ${showItems ? "rotate-90" : ""}`} />
+              </button>
+
+              {/* Categories List */}
+              {showItems && (
+                <div className="mb-6">
+                  {/* Add New Category */}
+                  <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4">
+                    <h3 className="text-sm font-bold mb-3">Add New Category</h3>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Category name"
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        data-testid="input-category-name"
+                      />
+                      <button
+                        onClick={() => {
+                          if (newCategoryName.trim()) {
+                            const newCategory = {
+                              id: Date.now().toString(),
+                              name: newCategoryName,
+                            };
+                            setCategories([...categories, newCategory]);
+                            setNewCategoryName("");
+                            toast.success("Category added!");
+                          } else {
+                            toast.error("Enter category name");
+                          }
+                        }}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold flex items-center justify-center gap-1 hover:bg-green-700 transition-colors text-sm"
+                        data-testid="button-add-category"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Categories List */}
+                  {categories.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">No categories yet</div>
+                  ) : (
+                    <div className="space-y-2">
+                      {categories.map((cat) => (
+                        <div
+                          key={cat.id}
+                          className="bg-white border border-gray-200 rounded-2xl p-4 flex items-center justify-between hover:border-gray-300 transition-colors"
+                          data-testid={`card-category-${cat.id}`}
+                        >
+                          {editingCategoryId === cat.id ? (
+                            <div className="flex-1 flex gap-2">
+                              <input
+                                type="text"
+                                defaultValue={cat.name}
+                                onChange={(e) => setNewCategoryName(e.target.value)}
+                                className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                data-testid={`input-edit-category-${cat.id}`}
+                              />
+                              <button
+                                onClick={() => {
+                                  if (newCategoryName.trim()) {
+                                    setCategories(categories.map(c => c.id === cat.id ? { ...c, name: newCategoryName } : c));
+                                    setEditingCategoryId(null);
+                                    setNewCategoryName("");
+                                    toast.success("Category updated!");
+                                  }
+                                }}
+                                className="px-3 py-2 bg-green-600 text-white rounded-lg flex items-center justify-center hover:bg-green-700 transition-colors text-xs"
+                                data-testid={`button-save-category-${cat.id}`}
+                              >
+                                <Check className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingCategoryId(null);
+                                  setNewCategoryName("");
+                                }}
+                                className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-300 transition-colors text-xs"
+                                data-testid={`button-cancel-category-${cat.id}`}
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <span className="font-semibold text-sm text-gray-900">{cat.name}</span>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => {
+                                    setEditingCategoryId(cat.id);
+                                    setNewCategoryName(cat.name);
+                                  }}
+                                  className="px-3 py-2 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center hover:bg-amber-200 transition-colors text-xs"
+                                  data-testid={`button-edit-category-${cat.id}`}
+                                >
+                                  <Edit2 className="w-3 h-3" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setCategories(categories.filter(c => c.id !== cat.id));
+                                    toast.success("Category deleted!");
+                                  }}
+                                  className="px-3 py-2 bg-red-100 text-red-700 rounded-lg flex items-center justify-center hover:bg-red-200 transition-colors text-xs"
+                                  data-testid={`button-delete-category-${cat.id}`}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Items Management Section */}
               <button
-                onClick={() => setShowItems(!showItems)}
-                className="w-full flex items-center justify-between p-4 bg-blue-50 rounded-2xl border border-blue-200 hover:border-blue-300 transition-colors mb-6 mt-6"
+                onClick={() => setShowItems(false)}
+                className="w-full flex items-center justify-between p-4 bg-blue-50 rounded-2xl border border-blue-200 hover:border-blue-300 transition-colors mb-6 mt-6 opacity-50 cursor-not-allowed"
                 data-testid="button-toggle-items"
+                disabled
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-blue-100 text-blue-600">
                     <Package className="w-6 h-6" />
                   </div>
-                  <span className="font-semibold text-sm text-blue-900">Items Management</span>
+                  <span className="font-semibold text-sm text-blue-900">Items Management (Legacy)</span>
                 </div>
-                <ChevronRight className={`w-5 h-5 text-blue-400 transition-transform ${showItems ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-5 h-5 text-blue-400 transition-transform`} />
               </button>
 
               {/* Items Content */}
