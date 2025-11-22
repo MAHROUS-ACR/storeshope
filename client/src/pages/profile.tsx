@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X } from "lucide-react";
+import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X, Save } from "lucide-react";
 import { useLocation } from "wouter";
 import { useUser } from "@/lib/userContext";
 import { toast } from "sonner";
 import avatarImage from "@assets/generated_images/professional_user_avatar_portrait.png";
+import { saveFirebaseConfig, getFirebaseConfig, clearFirebaseConfig } from "@/lib/firebaseConfig";
 
 const menuItems = [
-  { icon: Database, label: "Firebase Settings", path: "/settings", color: "text-blue-600 bg-blue-50" },
   { icon: Package, label: "My Orders", path: "/orders", color: "text-purple-600 bg-purple-50" },
   { icon: Bell, label: "Notifications", path: "/notifications", color: "text-orange-600 bg-orange-50" },
   { icon: HelpCircle, label: "Help & Support", path: "/help", color: "text-green-600 bg-green-50" },
@@ -41,12 +41,136 @@ export default function ProfilePage() {
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
   const [newStatus, setNewStatus] = useState<string>("");
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
+  const [showFirebaseSettings, setShowFirebaseSettings] = useState(false);
+  
+  // Firebase Config States
+  const [projectId, setProjectId] = useState("");
+  const [privateKey, setPrivateKey] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [firebaseApiKey, setFirebaseApiKey] = useState("");
+  const [firebaseProjectId, setFirebaseProjectId] = useState("");
+  const [firebaseAppId, setFirebaseAppId] = useState("");
+  const [firebaseAuthDomain, setFirebaseAuthDomain] = useState("");
+  const [firebaseStorageBucket, setFirebaseStorageBucket] = useState("");
+  const [firebaseMessagingSenderId, setFirebaseMessagingSenderId] = useState("");
+  const [firebaseMeasurementId, setFirebaseMeasurementId] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isLoggedIn) {
       setLocation("/login");
     }
   }, [isLoggedIn, isLoading, setLocation]);
+
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const response = await fetch("/api/firebase/config");
+        if (response.ok) {
+          const serverConfig = await response.json();
+          setProjectId(serverConfig.projectId || "");
+          setPrivateKey(serverConfig.privateKey || "");
+          setClientEmail(serverConfig.clientEmail || "");
+          setFirebaseApiKey(serverConfig.firebaseApiKey || "");
+          setFirebaseProjectId(serverConfig.firebaseProjectId || "");
+          setFirebaseAppId(serverConfig.firebaseAppId || "");
+          setFirebaseAuthDomain(serverConfig.firebaseAuthDomain || "");
+          setFirebaseStorageBucket(serverConfig.firebaseStorageBucket || "");
+          setFirebaseMessagingSenderId(serverConfig.firebaseMessagingSenderId || "");
+          setFirebaseMeasurementId(serverConfig.firebaseMeasurementId || "");
+        }
+      } catch (error) {
+        console.error("Failed to load Firebase config from server:", error);
+      }
+
+      const localConfig = getFirebaseConfig();
+      if (localConfig) {
+        setFirebaseApiKey(localConfig.apiKey || "");
+        setFirebaseProjectId(localConfig.projectId || "");
+        setFirebaseAppId(localConfig.appId || "");
+        setFirebaseAuthDomain(localConfig.authDomain || "");
+        setFirebaseStorageBucket(localConfig.storageBucket || "");
+        setFirebaseMessagingSenderId(localConfig.messagingSenderId || "");
+        setFirebaseMeasurementId(localConfig.measurementId || "");
+      }
+    };
+
+    if (showFirebaseSettings) {
+      loadConfig();
+    }
+  }, [showFirebaseSettings]);
+
+  const handleSaveServerConfig = async () => {
+    if (!projectId || !privateKey || !clientEmail) {
+      toast.error("Please fill in all Firebase configuration fields");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/firebase/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId,
+          privateKey,
+          clientEmail,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Firebase configuration saved successfully!");
+        setProjectId("");
+        setPrivateKey("");
+        setClientEmail("");
+      } else {
+        const error = await response.json();
+        toast.error(error.message || "Failed to save configuration");
+      }
+    } catch (error) {
+      toast.error("Failed to connect to server");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveAuthConfig = () => {
+    if (!firebaseApiKey || !firebaseProjectId || !firebaseAppId) {
+      toast.error("Please fill in all Firebase Authentication fields");
+      return;
+    }
+
+    try {
+      saveFirebaseConfig({
+        apiKey: firebaseApiKey,
+        projectId: firebaseProjectId,
+        appId: firebaseAppId,
+        authDomain: firebaseAuthDomain,
+        storageBucket: firebaseStorageBucket,
+        messagingSenderId: firebaseMessagingSenderId,
+        measurementId: firebaseMeasurementId,
+      });
+      toast.success("Firebase Authentication settings saved!");
+    } catch (error) {
+      toast.error("Failed to save authentication settings");
+    }
+  };
+
+  const handleClearAuthConfig = () => {
+    try {
+      clearFirebaseConfig();
+      setFirebaseApiKey("");
+      setFirebaseProjectId("");
+      setFirebaseAppId("");
+      setFirebaseAuthDomain("");
+      setFirebaseStorageBucket("");
+      setFirebaseMessagingSenderId("");
+      setFirebaseMeasurementId("");
+      toast.success("Firebase Authentication settings cleared!");
+    } catch (error) {
+      toast.error("Failed to clear authentication settings");
+    }
+  };
 
   const fetchAllOrders = async () => {
     setOrdersLoading(true);
@@ -203,6 +327,167 @@ export default function ProfilePage() {
           ) : (
             // Admin Orders Tab
             <div className="w-full px-4 py-4">
+              {/* Firebase Settings Toggle Button */}
+              <button
+                onClick={() => setShowFirebaseSettings(!showFirebaseSettings)}
+                className="w-full flex items-center justify-between p-4 bg-blue-50 rounded-2xl border border-blue-200 hover:border-blue-300 transition-colors mb-6"
+                data-testid="button-firebase-settings"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-blue-100 text-blue-600">
+                    <Database className="w-6 h-6" />
+                  </div>
+                  <span className="font-semibold text-sm text-blue-900">Firebase Settings</span>
+                </div>
+                <ChevronRight className={`w-5 h-5 text-blue-400 transition-transform ${showFirebaseSettings ? "rotate-90" : ""}`} />
+              </button>
+
+              {/* Firebase Settings Content */}
+              {showFirebaseSettings && (
+                <div className="space-y-6 mb-6">
+                  {/* Server Config Section */}
+                  <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                    <h3 className="text-lg font-bold mb-4">Firebase Data Configuration</h3>
+                    <div className="bg-blue-50 border border-blue-200 rounded-2xl p-3 mb-4">
+                      <div className="flex items-start gap-3">
+                        <Database className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <div className="text-sm">
+                          <p className="font-semibold text-blue-900 mb-1 text-xs">Setup Instructions</p>
+                          <ol className="text-blue-800 space-y-1 list-decimal list-inside text-xs leading-relaxed">
+                            <li>Go to Firebase Console → Project Settings</li>
+                            <li>Navigate to Service Accounts tab</li>
+                            <li>Click "Generate New Private Key"</li>
+                            <li>Copy the values from the JSON file</li>
+                          </ol>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">Project ID</label>
+                        <input
+                          type="text"
+                          value={projectId}
+                          onChange={(e) => setProjectId(e.target.value)}
+                          placeholder="your-project-id"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          data-testid="input-project-id"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">Client Email</label>
+                        <input
+                          type="email"
+                          value={clientEmail}
+                          onChange={(e) => setClientEmail(e.target.value)}
+                          placeholder="firebase-adminsdk-xxxxx@your-project.iam.gserviceaccount.com"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          data-testid="input-client-email"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">Private Key</label>
+                        <textarea
+                          value={privateKey}
+                          onChange={(e) => setPrivateKey(e.target.value)}
+                          placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"
+                          rows={4}
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono text-xs resize-none"
+                          data-testid="input-private-key"
+                        />
+                      </div>
+
+                      <button
+                        onClick={handleSaveServerConfig}
+                        disabled={isSaving}
+                        className="w-full bg-black text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                        data-testid="button-save-server-config"
+                      >
+                        {isSaving ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-4 h-4" />
+                            Save Server Config
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Auth Config Section */}
+                  <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                    <h3 className="text-lg font-bold mb-3">Firebase Authentication</h3>
+                    <p className="text-xs text-gray-600 mb-4">Configure client-side authentication</p>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">API Key</label>
+                        <input
+                          type="text"
+                          value={firebaseApiKey}
+                          onChange={(e) => setFirebaseApiKey(e.target.value)}
+                          placeholder="AIza..."
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          data-testid="input-firebase-api-key"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">Project ID</label>
+                        <input
+                          type="text"
+                          value={firebaseProjectId}
+                          onChange={(e) => setFirebaseProjectId(e.target.value)}
+                          placeholder="your-project-id"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          data-testid="input-firebase-project-id"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold mb-2">App ID</label>
+                        <input
+                          type="text"
+                          value={firebaseAppId}
+                          onChange={(e) => setFirebaseAppId(e.target.value)}
+                          placeholder="1:123456789:web:abc..."
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          data-testid="input-firebase-app-id"
+                        />
+                      </div>
+
+                      <button
+                        onClick={handleSaveAuthConfig}
+                        className="w-full bg-primary text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors text-sm"
+                        data-testid="button-save-auth-config"
+                      >
+                        <Save className="w-4 h-4" />
+                        Save Authentication
+                      </button>
+
+                      {firebaseApiKey && (
+                        <button
+                          onClick={handleClearAuthConfig}
+                          className="w-full bg-red-50 text-red-600 py-2 rounded-lg font-semibold flex items-center justify-center gap-2 border border-red-200 hover:bg-red-100 transition-colors text-sm"
+                          data-testid="button-clear-auth-config"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Clear Settings
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Orders List */}
               {ordersLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
