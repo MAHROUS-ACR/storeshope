@@ -244,6 +244,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get store settings
+  app.get("/api/store-settings", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      const db = getFirestore();
+      const doc = await db.collection("settings").doc("store").get();
+
+      if (!doc.exists) {
+        return res.json({
+          name: "",
+          address: "",
+          phone: "",
+          email: "",
+        });
+      }
+
+      res.json(doc.data());
+    } catch (error: any) {
+      console.error("Error fetching store settings:", error);
+      res.status(500).json({
+        message: "Failed to fetch store settings",
+        error: error.message,
+      });
+    }
+  });
+
+  // Save store settings
+  app.post("/api/store-settings", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      const { name, address, phone, email } = req.body;
+
+      if (!name || !address || !phone || !email) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      const db = getFirestore();
+      await db.collection("settings").doc("store").set({
+        name,
+        address,
+        phone,
+        email,
+        updatedAt: new Date().toISOString(),
+      });
+
+      console.log("Store settings saved successfully");
+      res.json({ message: "Store settings saved successfully" });
+    } catch (error: any) {
+      console.error("Error saving store settings:", error);
+      res.status(500).json({
+        message: "Failed to save store settings",
+        error: error.message,
+      });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }

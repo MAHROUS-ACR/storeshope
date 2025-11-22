@@ -43,7 +43,14 @@ export default function ProfilePage() {
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [showFirebaseSettings, setShowFirebaseSettings] = useState(false);
   const [showOrders, setShowOrders] = useState(true);
+  const [showStoreSettings, setShowStoreSettings] = useState(false);
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string | null>(null);
+  
+  // Store Settings States
+  const [storeName, setStoreName] = useState("");
+  const [storeAddress, setStoreAddress] = useState("");
+  const [storePhone, setStorePhone] = useState("");
+  const [storeEmail, setStoreEmail] = useState("");
   
   // Firebase Config States
   const [projectId, setProjectId] = useState("");
@@ -101,6 +108,27 @@ export default function ProfilePage() {
       loadConfig();
     }
   }, [showFirebaseSettings]);
+
+  useEffect(() => {
+    const loadStoreSettings = async () => {
+      try {
+        const response = await fetch("/api/store-settings");
+        if (response.ok) {
+          const data = await response.json();
+          setStoreName(data.name || "");
+          setStoreAddress(data.address || "");
+          setStorePhone(data.phone || "");
+          setStoreEmail(data.email || "");
+        }
+      } catch (error) {
+        console.error("Failed to load store settings:", error);
+      }
+    };
+
+    if (showStoreSettings) {
+      loadStoreSettings();
+    }
+  }, [showStoreSettings]);
 
   const handleSaveServerConfig = async () => {
     if (!projectId || !privateKey || !clientEmail) {
@@ -171,6 +199,38 @@ export default function ProfilePage() {
       toast.success("Firebase Authentication settings cleared!");
     } catch (error) {
       toast.error("Failed to clear authentication settings");
+    }
+  };
+
+  const handleSaveStoreSettings = async () => {
+    if (!storeName || !storeAddress || !storePhone || !storeEmail) {
+      toast.error("Please fill in all store fields");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/store-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: storeName,
+          address: storeAddress,
+          phone: storePhone,
+          email: storeEmail,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Store settings saved successfully!");
+      } else {
+        const error = await response.json();
+        toast.error(error.message || "Failed to save store settings");
+      }
+    } catch (error) {
+      toast.error("Failed to connect to server");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -485,6 +545,95 @@ export default function ProfilePage() {
                         </button>
                       )}
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Store Settings Section */}
+              <button
+                onClick={() => setShowStoreSettings(!showStoreSettings)}
+                className="w-full flex items-center justify-between p-4 bg-emerald-50 rounded-2xl border border-emerald-200 hover:border-emerald-300 transition-colors mb-6"
+                data-testid="button-toggle-store-settings"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-emerald-100 text-emerald-600">
+                    <Settings className="w-6 h-6" />
+                  </div>
+                  <span className="font-semibold text-sm text-emerald-900">Store Settings</span>
+                </div>
+                <ChevronRight className={`w-5 h-5 text-emerald-400 transition-transform ${showStoreSettings ? "rotate-90" : ""}`} />
+              </button>
+
+              {/* Store Settings Content */}
+              {showStoreSettings && (
+                <div className="mb-6 bg-white rounded-2xl p-4 border border-gray-200">
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-semibold mb-2">Store Name</label>
+                      <input
+                        type="text"
+                        value={storeName}
+                        onChange={(e) => setStoreName(e.target.value)}
+                        placeholder="Your Store Name"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        data-testid="input-store-name"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold mb-2">Address</label>
+                      <input
+                        type="text"
+                        value={storeAddress}
+                        onChange={(e) => setStoreAddress(e.target.value)}
+                        placeholder="Store Address"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        data-testid="input-store-address"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold mb-2">Phone Number</label>
+                      <input
+                        type="tel"
+                        value={storePhone}
+                        onChange={(e) => setStorePhone(e.target.value)}
+                        placeholder="+1 234 567 8900"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        data-testid="input-store-phone"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold mb-2">Email</label>
+                      <input
+                        type="email"
+                        value={storeEmail}
+                        onChange={(e) => setStoreEmail(e.target.value)}
+                        placeholder="info@store.com"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        data-testid="input-store-email"
+                      />
+                    </div>
+
+                    <button
+                      onClick={handleSaveStoreSettings}
+                      disabled={isSaving}
+                      className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                      data-testid="button-save-store-settings"
+                    >
+                      {isSaving ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4" />
+                          Save Store Settings
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               )}
