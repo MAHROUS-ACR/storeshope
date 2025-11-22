@@ -11,9 +11,9 @@ interface ProductProps {
   category?: string;
   price: number;
   image?: string;
-  unit?: string | null;
-  size?: string | null;
-  color?: string | null;
+  units?: (string | null)[] | null;
+  sizes?: (string | null)[] | null;
+  colors?: (string | null)[] | null;
   available?: boolean;
 }
 
@@ -29,7 +29,9 @@ export function ProductCard({ product, index }: { product: ProductProps; index: 
   const productTitle = product.title || product.name || "Product";
   const productCategory = product.category || "Uncategorized";
   const productImage = product.image || "";
-  const hasVariants = product.color || product.size || product.unit;
+  const hasVariants = (product.colors && product.colors.length > 0) || 
+                      (product.sizes && product.sizes.length > 0) || 
+                      (product.units && product.units.length > 0);
   const isAvailable = product.available !== false;
 
   const handleAddToCart = async (e: React.MouseEvent) => {
@@ -108,9 +110,9 @@ export function ProductCard({ product, index }: { product: ProductProps; index: 
         {/* Variants display */}
         {hasVariants && (
           <div className="flex flex-wrap gap-1 mb-2">
-            {product.unit && <span className="inline-block px-1.5 py-0.5 bg-gray-100 rounded text-[9px] font-medium">{product.unit}</span>}
-            {product.size && <span className="inline-block px-1.5 py-0.5 bg-gray-100 rounded text-[9px] font-medium">{product.size}</span>}
-            {product.color && <span className="inline-block px-1.5 py-0.5 bg-gray-100 rounded text-[9px] font-medium">{product.color}</span>}
+            {product.units && product.units.map((u) => <span key={u} className="inline-block px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px] font-medium">{u}</span>)}
+            {product.sizes && product.sizes.map((s) => <span key={s} className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-[9px] font-medium">{s}</span>)}
+            {product.colors && product.colors.map((c) => <span key={c} className="inline-block px-1.5 py-0.5 bg-red-100 text-red-700 rounded text-[9px] font-medium">{c}</span>)}
           </div>
         )}
         
@@ -134,45 +136,54 @@ export function ProductCard({ product, index }: { product: ProductProps; index: 
           >
             <h2 className="text-lg font-bold mb-4">Select Options for {productTitle}</h2>
             
-            {product.unit && (
+            {product.units && product.units.length > 0 && (
               <div className="mb-4">
                 <p className="text-sm font-semibold mb-2">وحدة (Unit)</p>
-                <input
-                  type="text"
-                  placeholder="Enter unit"
+                <select
                   value={selectedUnit}
                   onChange={(e) => setSelectedUnit(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-                  data-testid={`input-variant-unit-${product.id}`}
-                />
+                  data-testid={`select-variant-unit-${product.id}`}
+                >
+                  <option value="">اختر وحدة</option>
+                  {product.units.map((unit) => (
+                    <option key={unit} value={unit || ""}>{unit}</option>
+                  ))}
+                </select>
               </div>
             )}
             
-            {product.size && (
+            {product.sizes && product.sizes.length > 0 && (
               <div className="mb-4">
                 <p className="text-sm font-semibold mb-2">مقاس (Size)</p>
-                <input
-                  type="text"
-                  placeholder="Enter size"
+                <select
                   value={selectedSize}
                   onChange={(e) => setSelectedSize(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-                  data-testid={`input-variant-size-${product.id}`}
-                />
+                  data-testid={`select-variant-size-${product.id}`}
+                >
+                  <option value="">اختر مقاس</option>
+                  {product.sizes.map((size) => (
+                    <option key={size} value={size || ""}>{size}</option>
+                  ))}
+                </select>
               </div>
             )}
             
-            {product.color && (
+            {product.colors && product.colors.length > 0 && (
               <div className="mb-4">
                 <p className="text-sm font-semibold mb-2">لون (Color)</p>
-                <input
-                  type="text"
-                  placeholder="Enter color"
+                <select
                   value={selectedColor}
                   onChange={(e) => setSelectedColor(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-                  data-testid={`input-variant-color-${product.id}`}
-                />
+                  data-testid={`select-variant-color-${product.id}`}
+                >
+                  <option value="">اختر لون</option>
+                  {product.colors.map((color) => (
+                    <option key={color} value={color || ""}>{color}</option>
+                  ))}
+                </select>
               </div>
             )}
             

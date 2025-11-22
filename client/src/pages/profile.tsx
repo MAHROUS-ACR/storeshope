@@ -54,11 +54,14 @@ export default function ProfilePage() {
     title: "", 
     price: "", 
     category: "",
-    unit: "",
-    size: "",
-    color: "",
+    units: [] as string[],
+    sizes: [] as string[],
+    colors: [] as string[],
     available: true,
   });
+  const [unitInput, setUnitInput] = useState("");
+  const [sizeInput, setSizeInput] = useState("");
+  const [colorInput, setColorInput] = useState("");
   const [users, setUsers] = useState<any[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
@@ -1071,30 +1074,116 @@ export default function ProfilePage() {
                           <option key={cat.id} value={cat.name}>{cat.name}</option>
                         ))}
                       </select>
-                      <input
-                        type="text"
-                        placeholder="Unit (وحدة) - اختياري"
-                        value={newItemForm.unit}
-                        onChange={(e) => setNewItemForm({ ...newItemForm, unit: e.target.value })}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        data-testid="input-item-unit"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Size (مقاس) - اختياري"
-                        value={newItemForm.size}
-                        onChange={(e) => setNewItemForm({ ...newItemForm, size: e.target.value })}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        data-testid="input-item-size"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Color (لون) - اختياري"
-                        value={newItemForm.color}
-                        onChange={(e) => setNewItemForm({ ...newItemForm, color: e.target.value })}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        data-testid="input-item-color"
-                      />
+                      {/* Units */}
+                      <div>
+                        <label className="text-xs font-semibold mb-1 block">وحدات (Units) - اختياري</label>
+                        <div className="flex gap-2 mb-2">
+                          <input
+                            type="text"
+                            placeholder="أضف وحدة"
+                            value={unitInput}
+                            onChange={(e) => setUnitInput(e.target.value)}
+                            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
+                            data-testid="input-item-unit"
+                          />
+                          <button
+                            onClick={() => {
+                              if (unitInput.trim()) {
+                                setNewItemForm({ ...newItemForm, units: [...newItemForm.units, unitInput.trim()] });
+                                setUnitInput("");
+                              }
+                            }}
+                            className="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-semibold"
+                            data-testid="button-add-unit"
+                          >
+                            أضف
+                          </button>
+                        </div>
+                        {newItemForm.units.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {newItemForm.units.map((unit, i) => (
+                              <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
+                                {unit}
+                                <button onClick={() => setNewItemForm({ ...newItemForm, units: newItemForm.units.filter((_, idx) => idx !== i) })} className="text-blue-700 hover:text-blue-900">×</button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Sizes */}
+                      <div>
+                        <label className="text-xs font-semibold mb-1 block">مقاسات (Sizes) - اختياري</label>
+                        <div className="flex gap-2 mb-2">
+                          <input
+                            type="text"
+                            placeholder="أضف مقاس"
+                            value={sizeInput}
+                            onChange={(e) => setSizeInput(e.target.value)}
+                            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
+                            data-testid="input-item-size"
+                          />
+                          <button
+                            onClick={() => {
+                              if (sizeInput.trim()) {
+                                setNewItemForm({ ...newItemForm, sizes: [...newItemForm.sizes, sizeInput.trim()] });
+                                setSizeInput("");
+                              }
+                            }}
+                            className="px-3 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-semibold"
+                            data-testid="button-add-size"
+                          >
+                            أضف
+                          </button>
+                        </div>
+                        {newItemForm.sizes.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {newItemForm.sizes.map((size, i) => (
+                              <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
+                                {size}
+                                <button onClick={() => setNewItemForm({ ...newItemForm, sizes: newItemForm.sizes.filter((_, idx) => idx !== i) })} className="text-green-700 hover:text-green-900">×</button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Colors */}
+                      <div>
+                        <label className="text-xs font-semibold mb-1 block">ألوان (Colors) - اختياري</label>
+                        <div className="flex gap-2 mb-2">
+                          <input
+                            type="text"
+                            placeholder="أضف لون"
+                            value={colorInput}
+                            onChange={(e) => setColorInput(e.target.value)}
+                            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
+                            data-testid="input-item-color"
+                          />
+                          <button
+                            onClick={() => {
+                              if (colorInput.trim()) {
+                                setNewItemForm({ ...newItemForm, colors: [...newItemForm.colors, colorInput.trim()] });
+                                setColorInput("");
+                              }
+                            }}
+                            className="px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-semibold"
+                            data-testid="button-add-color"
+                          >
+                            أضف
+                          </button>
+                        </div>
+                        {newItemForm.colors.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {newItemForm.colors.map((color, i) => (
+                              <span key={i} className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded text-xs">
+                                {color}
+                                <button onClick={() => setNewItemForm({ ...newItemForm, colors: newItemForm.colors.filter((_, idx) => idx !== i) })} className="text-red-700 hover:text-red-900">×</button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <label className="flex items-center gap-2 px-3 py-2">
                         <input
                           type="checkbox"
@@ -1118,41 +1207,26 @@ export default function ProfilePage() {
                                     title: newItemForm.title,
                                     price: parseFloat(newItemForm.price),
                                     category: newItemForm.category,
-                                    unit: newItemForm.unit || null,
-                                    size: newItemForm.size || null,
-                                    color: newItemForm.color || null,
+                                    units: newItemForm.units.length > 0 ? newItemForm.units : null,
+                                    sizes: newItemForm.sizes.length > 0 ? newItemForm.sizes : null,
+                                    colors: newItemForm.colors.length > 0 ? newItemForm.colors : null,
                                     available: newItemForm.available,
                                   }),
                                 });
                                 if (response.ok) {
                                   const data = await response.json();
                                   if (editingItemId) {
-                                    setItems(items.map(i => i.id === editingItemId ? {
-                                      id: data.id,
-                                      title: data.title,
-                                      price: data.price,
-                                      category: data.category,
-                                      unit: data.unit,
-                                      size: data.size,
-                                      color: data.color,
-                                      available: data.available,
-                                    } : i));
+                                    setItems(items.map(i => i.id === editingItemId ? { ...data } : i));
                                     toast.success("Product updated!");
                                     setEditingItemId(null);
                                   } else {
-                                    setItems([...items, {
-                                      id: data.id,
-                                      title: data.title,
-                                      price: data.price,
-                                      category: data.category,
-                                      unit: data.unit,
-                                      size: data.size,
-                                      color: data.color,
-                                      available: data.available,
-                                    }]);
+                                    setItems([...items, { ...data }]);
                                     toast.success("Product added!");
                                   }
-                                  setNewItemForm({ title: "", price: "", category: "", unit: "", size: "", color: "", available: true });
+                                  setNewItemForm({ title: "", price: "", category: "", units: [], sizes: [], colors: [], available: true });
+                                  setUnitInput("");
+                                  setSizeInput("");
+                                  setColorInput("");
                                 } else {
                                   toast.error("Failed to save product");
                                 }
@@ -1173,7 +1247,10 @@ export default function ProfilePage() {
                           <button
                             onClick={() => {
                               setEditingItemId(null);
-                              setNewItemForm({ title: "", price: "", category: "", unit: "", size: "", color: "", available: true });
+                              setNewItemForm({ title: "", price: "", category: "", units: [], sizes: [], colors: [], available: true });
+                              setUnitInput("");
+                              setSizeInput("");
+                              setColorInput("");
                             }}
                             className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-300 transition-colors text-sm"
                             data-testid="button-cancel-item"
@@ -1201,9 +1278,9 @@ export default function ProfilePage() {
                               <p className="text-sm font-bold text-gray-900">{item.title}</p>
                               <p className="text-xs text-gray-500">{item.category}</p>
                               <div className="flex flex-wrap gap-1 mt-1">
-                                {item.unit && <span className="inline-block px-2 py-1 bg-gray-100 rounded text-xs">{item.unit}</span>}
-                                {item.size && <span className="inline-block px-2 py-1 bg-gray-100 rounded text-xs">{item.size}</span>}
-                                {item.color && <span className="inline-block px-2 py-1 bg-gray-100 rounded text-xs">{item.color}</span>}
+                                {item.units && item.units.map((u: string) => <span key={u} className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{u}</span>)}
+                                {item.sizes && item.sizes.map((s: string) => <span key={s} className="inline-block px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{s}</span>)}
+                                {item.colors && item.colors.map((c: string) => <span key={c} className="inline-block px-2 py-1 bg-red-100 text-red-700 rounded text-xs">{c}</span>)}
                                 {!item.available && <span className="inline-block px-2 py-1 bg-red-100 text-red-700 rounded text-xs">غير متاح</span>}
                               </div>
                             </div>
@@ -1217,11 +1294,14 @@ export default function ProfilePage() {
                                   title: item.title,
                                   price: item.price.toString(),
                                   category: item.category,
-                                  unit: item.unit || "",
-                                  size: item.size || "",
-                                  color: item.color || "",
+                                  units: item.units || [],
+                                  sizes: item.sizes || [],
+                                  colors: item.colors || [],
                                   available: item.available !== false,
                                 });
+                                setUnitInput("");
+                                setSizeInput("");
+                                setColorInput("");
                               }}
                               className="flex-1 px-3 py-2 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center gap-1 hover:bg-amber-200 transition-colors text-xs font-semibold"
                               data-testid={`button-edit-item-${item.id}`}
@@ -1239,7 +1319,10 @@ export default function ProfilePage() {
                                     setItems(items.filter(i => i.id !== item.id));
                                     if (editingItemId === item.id) {
                                       setEditingItemId(null);
-                                      setNewItemForm({ title: "", price: "", category: "", unit: "", size: "", color: "", available: true });
+                                      setNewItemForm({ title: "", price: "", category: "", units: [], sizes: [], colors: [], available: true });
+                                      setUnitInput("");
+                                      setSizeInput("");
+                                      setColorInput("");
                                     }
                                     toast.success("Product deleted!");
                                   } else {

@@ -573,7 +573,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all products
+  // Get all products (admin)
   app.get("/api/products/admin", async (req, res) => {
     try {
       if (!isFirebaseConfigured()) {
@@ -591,9 +591,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           title: data.title || "",
           price: data.price || 0,
           category: data.category || "",
-          unit: data.unit || null,
-          size: data.size || null,
-          color: data.color || null,
+          units: data.units || null,
+          sizes: data.sizes || null,
+          colors: data.colors || null,
           available: data.available !== false,
         });
       });
@@ -613,7 +613,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(503).json({ message: "Firebase not configured" });
       }
 
-      const { id, title, price, category, unit, size, color, available } = req.body;
+      const { id, title, price, category, units, sizes, colors, available } = req.body;
 
       if (!title || !price || !category) {
         return res.status(400).json({ message: "All fields are required" });
@@ -626,9 +626,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         title: title,
         price: parseFloat(price),
         category: category,
-        unit: unit || null,
-        size: size || null,
-        color: color || null,
+        units: units || null,
+        sizes: sizes || null,
+        colors: colors || null,
         available: available !== false,
         updatedAt: new Date().toISOString(),
       }, { merge: true });
@@ -639,9 +639,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         title, 
         price, 
         category,
-        unit,
-        size,
-        color,
+        units,
+        sizes,
+        colors,
         available,
         message: "Product saved successfully" 
       });
