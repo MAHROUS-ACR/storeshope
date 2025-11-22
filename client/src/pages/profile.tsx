@@ -94,8 +94,6 @@ export default function ProfilePage() {
   const [userAddress, setUserAddress] = useState("");
   const [userPhone, setUserPhone] = useState("");
   const [userZone, setUserZone] = useState("");
-  const [userAddressAlt, setUserAddressAlt] = useState("");
-  const [userZoneAlt, setUserZoneAlt] = useState("");
   const [showUserProfile, setShowUserProfile] = useState(false);
   
   // Firebase Config States
@@ -438,8 +436,6 @@ export default function ProfilePage() {
         address: userAddress,
         phone: userPhone,
         zone: userZone,
-        addressAlt: userAddressAlt,
-        zoneAlt: userZoneAlt,
       });
       
       toast.success("Profile updated successfully!");
@@ -464,8 +460,6 @@ export default function ProfilePage() {
         setUserAddress(data.address || "");
         setUserPhone(data.phone || "");
         setUserZone(data.zone || "");
-        setUserAddressAlt(data.addressAlt || "");
-        setUserZoneAlt(data.zoneAlt || "");
       }
     } catch (error) {
       console.error("Error loading user profile:", error);
@@ -681,37 +675,6 @@ export default function ProfilePage() {
                         className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
                         data-testid="input-user-phone"
                       />
-                    </div>
-
-                    <div className="pt-2 border-t border-gray-200">
-                      <h3 className="text-xs font-semibold mb-3">Alternative Address (Optional)</h3>
-
-                      <div className="mb-3">
-                        <label className="text-xs font-semibold mb-1 block">Alternative Address</label>
-                        <input
-                          type="text"
-                          placeholder="Street address"
-                          value={userAddressAlt}
-                          onChange={(e) => setUserAddressAlt(e.target.value)}
-                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                          data-testid="input-user-address-alt"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-semibold mb-1 block">Alternative Zone</label>
-                        <select
-                          value={userZoneAlt}
-                          onChange={(e) => setUserZoneAlt(e.target.value)}
-                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                          data-testid="select-user-zone-alt"
-                        >
-                          <option value="">Select Zone</option>
-                          {shippingZones.map((zone) => (
-                            <option key={zone.id} value={zone.name}>{zone.name}</option>
-                          ))}
-                        </select>
-                      </div>
                     </div>
 
                     <button

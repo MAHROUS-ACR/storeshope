@@ -24,7 +24,7 @@ export default function CheckoutPage() {
   // Shipping data
   const [shippingZones, setShippingZones] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<any>(null);
-  const [shippingType, setShippingType] = useState<"main" | "alt" | "new" | null>(null);
+  const [shippingType, setShippingType] = useState<"saved" | "new" | null>(null);
   const [shippingCost, setShippingCost] = useState(0);
   const [newAddress, setNewAddress] = useState("");
   const [newPhone, setNewPhone] = useState("");
@@ -426,31 +426,15 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() => {
-                          setShippingType("main");
+                          setShippingType("saved");
                           setFormData(prev => ({ ...prev, address: userProfile.address, city: userProfile.zone, zipCode: userProfile.phone }));
                           setSelectedZone(userProfile.zone);
                         }}
                         className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100 transition-colors"
-                        data-testid="button-main-address"
+                        data-testid="button-saved-address"
                       >
-                        <p className="text-sm font-semibold">Main Address</p>
+                        <p className="text-sm font-semibold">Use My Saved Address</p>
                         <p className="text-xs text-gray-600">{userProfile.address} • {userProfile.zone}</p>
-                      </button>
-                    )}
-                    
-                    {userProfile?.addressAlt && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShippingType("alt");
-                          setFormData(prev => ({ ...prev, address: userProfile.addressAlt, city: userProfile.zoneAlt, zipCode: userProfile.phone }));
-                          setSelectedZone(userProfile.zoneAlt);
-                        }}
-                        className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100 transition-colors"
-                        data-testid="button-alt-address"
-                      >
-                        <p className="text-sm font-semibold">Alternative Address</p>
-                        <p className="text-xs text-gray-600">{userProfile.addressAlt} • {userProfile.zoneAlt}</p>
                       </button>
                     )}
 
@@ -460,7 +444,7 @@ export default function CheckoutPage() {
                       className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100 transition-colors"
                       data-testid="button-new-address"
                     >
-                      <p className="text-sm font-semibold">Enter New Address</p>
+                      <p className="text-sm font-semibold">Ship to Another Address</p>
                     </button>
                   </div>
                 </div>
@@ -517,8 +501,8 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* Zone Selection for Main/Alt */}
-              {(shippingType === "main" || shippingType === "alt") && (
+              {/* Zone Selection for Saved Address */}
+              {shippingType === "saved" && (
                 <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-semibold text-sm">Select Zone</h3>
@@ -540,7 +524,7 @@ export default function CheckoutPage() {
                       if (zone) setShippingCost(zone.shippingCost);
                     }}
                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
-                    data-testid={`select-${shippingType}-zone`}
+                    data-testid="select-saved-zone"
                   >
                     <option value="">Select Zone</option>
                     {shippingZones.map((zone) => (
