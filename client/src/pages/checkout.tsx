@@ -105,10 +105,6 @@ export default function CheckoutPage() {
       toast.error("Please select shipping address and zone");
       return false;
     }
-    if (!formData.email.trim()) {
-      toast.error("Please enter email");
-      return false;
-    }
     return true;
   };
 
@@ -127,10 +123,6 @@ export default function CheckoutPage() {
     }
     if (!formData.cardHolder.trim()) {
       toast.error("Please enter cardholder name");
-      return false;
-    }
-    if (!formData.email.trim()) {
-      toast.error("Please enter email");
       return false;
     }
     return true;
@@ -598,18 +590,6 @@ export default function CheckoutPage() {
                   </div>
                 </>
               )}
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Email</label>
-                <input
-                  type="email"
-                  placeholder="john@example.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  data-testid="input-email"
-                />
-              </div>
 
               {paymentMethod === "card" && (
                 <div className="bg-green-50 border border-green-200 rounded-2xl p-3 flex items-start gap-2">
