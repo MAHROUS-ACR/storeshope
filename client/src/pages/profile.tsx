@@ -357,7 +357,7 @@ export default function ProfilePage() {
             // Profile Tab
             <>
               {user && (
-                <div className="px-6 py-4">
+                <div className="px-6 py-4 space-y-3">
                   <div className="bg-gradient-to-br from-primary to-purple-600 rounded-3xl p-4 text-white shadow-lg">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-12 h-12 rounded-full overflow-hidden border-3 border-white/20">
@@ -368,9 +368,34 @@ export default function ProfilePage() {
                           {user.username}
                         </h2>
                         <p className="text-xs opacity-90">{user.id}</p>
+                        <p className="text-xs opacity-90 mt-1">Role: {user.role || 'user'}</p>
                       </div>
                     </div>
                   </div>
+                  {user.role !== "admin" && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          const response = await fetch("/api/user/role", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ userId: user.id, role: "admin" }),
+                          });
+                          if (response.ok) {
+                            toast.success("Role updated to admin! Refresh to see Admin tab.");
+                          } else {
+                            toast.error("Failed to update role");
+                          }
+                        } catch (error) {
+                          toast.error("Failed to update role");
+                        }
+                      }}
+                      className="w-full py-2 px-4 bg-yellow-50 border border-yellow-200 rounded-xl text-xs font-semibold text-yellow-700 hover:bg-yellow-100 transition-colors"
+                      data-testid="button-become-admin"
+                    >
+                      🧪 Become Admin (Test)
+                    </button>
+                  )}
                 </div>
               )}
 

@@ -435,6 +435,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user role (for testing)
+  app.post("/api/user/role", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      const { userId, role } = req.body;
+
+      if (!userId || !role) {
+        return res.status(400).json({ message: "User ID and role are required" });
+      }
+
+      const db = getFirestore();
+      await db.collection("users").doc(userId).update({
+        role: role,
+      });
+
+      console.log(`✅ User ${userId} role updated to ${role}`);
+      res.json({ message: "User role updated successfully", role });
+    } catch (error: any) {
+      console.error("❌ Error updating user role:", error);
+      res.status(500).json({
+        message: "Failed to update user role",
+        error: error.message,
+      });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }
