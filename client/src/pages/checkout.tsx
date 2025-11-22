@@ -429,6 +429,8 @@ export default function CheckoutPage() {
                           setShippingType("saved");
                           setFormData(prev => ({ ...prev, address: userProfile.address, city: userProfile.zone, zipCode: userProfile.phone }));
                           setSelectedZone(userProfile.zone);
+                          const zone = shippingZones.find(z => z.name === userProfile.zone);
+                          if (zone) setShippingCost(zone.shippingCost);
                         }}
                         className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100 transition-colors"
                         data-testid="button-saved-address"
@@ -606,37 +608,6 @@ export default function CheckoutPage() {
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                   data-testid="input-email"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Address</label>
-                <input
-                  type="text"
-                  placeholder="123 Main Street"
-                  value={formData.address}
-                  onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  data-testid="input-address"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="City"
-                  value={formData.city}
-                  onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                  className="px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  data-testid="input-city"
-                />
-                <input
-                  type="text"
-                  placeholder="Zip Code"
-                  value={formData.zipCode}
-                  onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value }))}
-                  className="px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  data-testid="input-zip"
                 />
               </div>
 
