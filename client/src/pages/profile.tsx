@@ -65,6 +65,7 @@ export default function ProfilePage() {
   const [unitInput, setUnitInput] = useState("");
   const [sizeInput, setSizeInput] = useState("");
   const [colorInput, setColorInput] = useState("");
+  const [currentColorHex, setCurrentColorHex] = useState("#000000");
   const [users, setUsers] = useState<any[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
@@ -1175,20 +1176,17 @@ export default function ProfilePage() {
                             />
                             <input
                               type="color"
-                              value={newItemForm.colors && newItemForm.colors.length > 0 && typeof newItemForm.colors[newItemForm.colors.length - 1] === 'object' ? (newItemForm.colors[newItemForm.colors.length - 1] as any).hex || '#000000' : '#000000'}
-                              onChange={(e) => {
-                                // This is just for preview, will be combined with text on add
-                              }}
+                              value={currentColorHex}
+                              onChange={(e) => setCurrentColorHex(e.target.value)}
                               className="w-12 h-10 rounded-lg cursor-pointer border border-gray-200"
                               data-testid="input-item-color-picker"
                             />
                             <button
                               onClick={() => {
                                 if (colorInput.trim()) {
-                                  const colorValue = document.querySelector('[data-testid="input-item-color-picker"]') as HTMLInputElement;
-                                  const colorHex = colorValue?.value || '#000000';
-                                  setNewItemForm({ ...newItemForm, colors: [...newItemForm.colors, `${colorInput.trim()}|${colorHex}`] });
+                                  setNewItemForm({ ...newItemForm, colors: [...newItemForm.colors, `${colorInput.trim()}|${currentColorHex}`] });
                                   setColorInput("");
+                                  setCurrentColorHex("#000000");
                                 }
                               }}
                               className="px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-semibold"
@@ -1257,6 +1255,7 @@ export default function ProfilePage() {
                                   setUnitInput("");
                                   setSizeInput("");
                                   setColorInput("");
+                                  setCurrentColorHex("#000000");
                                 } else {
                                   toast.error("Failed to save product");
                                 }
@@ -1281,6 +1280,7 @@ export default function ProfilePage() {
                               setUnitInput("");
                               setSizeInput("");
                               setColorInput("");
+                              setCurrentColorHex("#000000");
                             }}
                             className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-300 transition-colors text-sm"
                             data-testid="button-cancel-item"
@@ -1341,9 +1341,7 @@ export default function ProfilePage() {
                                 setUnitInput("");
                                 setSizeInput("");
                                 setColorInput("");
-                                // Reset color picker to black
-                                const colorPicker = document.querySelector('[data-testid="input-item-color-picker"]') as HTMLInputElement;
-                                if (colorPicker) colorPicker.value = '#000000';
+                                setCurrentColorHex("#000000");
                               }}
                               className="flex-1 px-3 py-2 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center gap-1 hover:bg-amber-200 transition-colors text-xs font-semibold"
                               data-testid={`button-edit-item-${item.id}`}
@@ -1365,6 +1363,7 @@ export default function ProfilePage() {
                                       setUnitInput("");
                                       setSizeInput("");
                                       setColorInput("");
+                                      setCurrentColorHex("#000000");
                                     }
                                     toast.success("Product deleted!");
                                   } else {
