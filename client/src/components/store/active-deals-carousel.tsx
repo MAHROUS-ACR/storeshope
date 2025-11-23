@@ -98,7 +98,14 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-transparent flex flex-col justify-start p-4">
-            <div className="flex items-start justify-between w-full mb-4">
+            {/* Title - Top */}
+            <h3 className="font-bold text-lg line-clamp-1 drop-shadow-lg text-white mb-3">
+              {discountedProducts[carouselIndex].title ||
+                discountedProducts[carouselIndex].name}
+            </h3>
+            
+            {/* Discount and Price Row */}
+            <div className="flex items-start justify-between w-full">
               {/* Left: Discount Badge */}
               <div className="flex items-center gap-2">
                 {(() => {
@@ -132,12 +139,6 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
                 </span>
               </div>
             </div>
-            
-            {/* Title */}
-            <h3 className="font-bold text-lg line-clamp-1 drop-shadow-lg text-white">
-              {discountedProducts[carouselIndex].title ||
-                discountedProducts[carouselIndex].name}
-            </h3>
           </div>
         </motion.div>
 
