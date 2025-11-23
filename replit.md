@@ -14,17 +14,19 @@ Flux Wallet is a high-fidelity mobile e-commerce application built as a progress
 - User profile and settings management
 - Responsive mobile wrapper simulating iPhone device
 - Product variant selection (units, sizes, colors with hex codes)
-- **NEW: Complete discount/promotions system** - Admins can create, edit, and delete product-specific discounts with percentage values and time periods
+- **Complete discount/promotions system** - Integrated into admin panel, admins can create, edit, and delete product-specific discounts with percentage values and time periods
 
 ## Recent Changes (Nov 23, 2025)
 
-- **Discount System Implementation:**
-  - Created `/api/discounts` endpoints for CRUD operations (GET all, GET by productId, POST create, PUT update, DELETE)
-  - New admin page at `/discounts` for managing product discounts
-  - Discount button added to admin menu in profile with Zap icon
-  - Helper utility file `discountUtils.ts` with price calculation functions
-  - Full Arabic/English translations for discount UI
-  - Database schema includes discounts table with productId, percentage, and date range fields
+- **Discount System Refactoring:**
+  - **Moved discounts from separate page to Admin Tab** - Now integrated directly in profile.tsx admin panel
+  - Discounts button integrated into admin menu (Zap icon, yellow theme)
+  - Full CRUD operations: Create, Read, Update, Delete discounts
+  - API endpoints working: GET /api/discounts, POST, PUT, DELETE
+  - Database persistence using PostgreSQL + Drizzle ORM
+  - Real-time discount list with edit and delete functionality
+  - Date-range based discount activation
+  - Full Arabic/English translations
 
 ## User Preferences
 
@@ -49,13 +51,20 @@ Preferred communication style: Simple, everyday language.
 - **Mobile-First Approach:** The entire UI is wrapped in a `MobileWrapper` component that simulates an iPhone device (390x844px) with notch, status bar, and home indicator
 - **Component Architecture:** Atomic design pattern with reusable UI components in `components/ui/`
 - **Path Aliases:** Uses TypeScript path mapping (`@/`, `@shared/`, `@assets/`) for clean imports
+- **Admin Panel:** Tab-based interface within profile page for all admin functions (Orders, Products, Users, Store Settings, Shipping Zones, Discounts, Analytics)
 
 **Key Components:**
 - `MobileWrapper`: Simulates iPhone device chrome and constraints
 - `BottomNav`: Fixed navigation bar with active state animations
 - `CartProvider`: Global cart state with localStorage persistence
 - Product display components with lazy loading and animations
-- `DiscountsPage`: Admin page for managing promotions and discounts
+- **Admin Panel (profile.tsx)**: Integrated admin tab with sections for:
+  - Orders management
+  - Products management
+  - Users management
+  - Store settings
+  - Shipping zones
+  - **Discounts (NEW)** - With form and list views
 
 ### Backend Architecture
 
@@ -152,3 +161,4 @@ Preferred communication style: Simple, everyday language.
 - Configuration-driven: Firebase and external services configurable at runtime
 - Type-safe API contracts: Shared types between client and server via `@shared` package
 - Time-based promotions: Discount system respects date ranges for campaign management
+- Integrated admin panel: All admin functions in one tabbed interface for better UX

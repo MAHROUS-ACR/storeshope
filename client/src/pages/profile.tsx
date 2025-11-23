@@ -16,7 +16,6 @@ const getMenuItems = (language: any) => [
   { icon: Package, label: t("myOrders", language), path: "/orders", buttonBg: "bg-purple-50", borderColor: "border-purple-200 hover:border-purple-300", iconColor: "text-purple-600 bg-purple-100", textColor: "text-purple-900" },
   { icon: Bell, label: t("notifications", language), path: "/notifications", buttonBg: "bg-orange-50", borderColor: "border-orange-200 hover:border-orange-300", iconColor: "text-orange-600 bg-orange-100", textColor: "text-orange-900" },
   { icon: HelpCircle, label: t("helpSupport", language), path: "/help", buttonBg: "bg-green-50", borderColor: "border-green-200 hover:border-green-300", iconColor: "text-green-600 bg-green-100", textColor: "text-green-900" },
-  { icon: Zap, label: t("discounts", language), path: "/discounts", buttonBg: "bg-yellow-50", borderColor: "border-yellow-200 hover:border-yellow-300", iconColor: "text-yellow-600 bg-yellow-100", textColor: "text-yellow-900" },
 ];
 
 interface OrderItem {
@@ -116,6 +115,17 @@ export default function ProfilePage() {
   const [newZoneName, setNewZoneName] = useState("");
   const [newZoneCost, setNewZoneCost] = useState("");
   const [editingZoneId, setEditingZoneId] = useState<string | null>(null);
+
+  // Discounts States
+  const [showDiscounts, setShowDiscounts] = useState(false);
+  const [discounts, setDiscounts] = useState<any[]>([]);
+  const [editingDiscountId, setEditingDiscountId] = useState<string | null>(null);
+  const [discountFormData, setDiscountFormData] = useState({
+    productId: "",
+    discountPercentage: "",
+    startDate: "",
+    endDate: "",
+  });
 
   // User Profile States
   const [userAddress, setUserAddress] = useState("");
@@ -555,6 +565,74 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Error deleting shipping zone:", error);
       toast.error("Failed to delete shipping zone");
+    }
+  };
+
+  // Discounts Handlers
+  const fetchDiscounts = async () => {
+    try {
+      const [discountsRes, productsRes] = await Promise.all([
+        fetch("/api/discounts"),
+        fetch("/api/products"),
+      ]);
+
+      if (discountsRes.ok) {
+        const discountsData = await discountsRes.json();
+        setDiscounts(discountsData || []);
+      }
+    } catch (error) {
+      console.error("Error fetching discounts:", error);
+      toast.error("Failed to fetch discounts");
+    }
+  };
+
+  const handleSaveDiscount = async () => {
+    if (!discountFormData.productId || !discountFormData.discountPercentage || !discountFormData.startDate || !discountFormData.endDate) {
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    try {
+      const url = editingDiscountId ? `/api/discounts/${editingDiscountId}` : "/api/discounts";
+      const method = editingDiscountId ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: discountFormData.productId,
+          discountPercentage: parseFloat(discountFormData.discountPercentage),
+          startDate: new Date(discountFormData.startDate).toISOString(),
+          endDate: new Date(discountFormData.endDate).toISOString(),
+        }),
+      });
+
+      if (response.ok) {
+        toast.success(editingDiscountId ? "Discount updated!" : "Discount created!");
+        setDiscountFormData({ productId: "", discountPercentage: "", startDate: "", endDate: "" });
+        setEditingDiscountId(null);
+        fetchDiscounts();
+      } else {
+        toast.error("Failed to save discount");
+      }
+    } catch (error) {
+      console.error("Error saving discount:", error);
+      toast.error("Failed to save discount");
+    }
+  };
+
+  const handleDeleteDiscount = async (discountId: string) => {
+    try {
+      const response = await fetch(`/api/discounts/${discountId}`, { method: "DELETE" });
+      if (response.ok) {
+        toast.success("Discount deleted!");
+        fetchDiscounts();
+      } else {
+        toast.error("Failed to delete discount");
+      }
+    } catch (error) {
+      console.error("Error deleting discount:", error);
+      toast.error("Failed to delete discount");
     }
   };
 
@@ -1973,6 +2051,142 @@ export default function ProfilePage() {
                 </div>
               )}
 
+              {/* Discounts Section */}
+              <button
+                onClick={() => {
+                  setShowDiscounts(!showDiscounts);
+                  if (!showDiscounts) {
+                    fetchDiscounts();
+                  }
+                }}
+                className="w-full flex items-center justify-between p-4 bg-yellow-50 rounded-2xl border border-yellow-200 hover:border-yellow-300 transition-colors mb-6"
+                data-testid="button-toggle-discounts"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-yellow-100 text-yellow-600">
+                    <Zap className="w-6 h-6" />
+                  </div>
+                  <span className="font-semibold text-sm text-yellow-900">{t("discounts", language)}</span>
+                </div>
+                <ChevronRight className={`w-5 h-5 text-yellow-400 transition-transform ${showDiscounts ? "rotate-90" : ""}`} />
+              </button>
+
+              {showDiscounts && (
+                <div className="mb-6">
+                  {/* Add Discount Form */}
+                  <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4">
+                    <h3 className="text-sm font-bold mb-3">{editingDiscountId ? t("editButton", language) : t("addDiscount", language)}</h3>
+                    <div className="space-y-3">
+                      <select
+                        value={discountFormData.productId}
+                        onChange={(e) => setDiscountFormData({ ...discountFormData, productId: e.target.value })}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-200"
+                        data-testid="select-product-discount"
+                      >
+                        <option value="">Select Product</option>
+                        {items.map((item) => (
+                          <option key={item.id} value={item.id}>{item.title}</option>
+                        ))}
+                      </select>
+
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        placeholder={t("discountPercentage", language)}
+                        value={discountFormData.discountPercentage}
+                        onChange={(e) => setDiscountFormData({ ...discountFormData, discountPercentage: e.target.value })}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-200"
+                        data-testid="input-discount-percentage"
+                      />
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="date"
+                          value={discountFormData.startDate}
+                          onChange={(e) => setDiscountFormData({ ...discountFormData, startDate: e.target.value })}
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-200"
+                          data-testid="input-discount-start-date"
+                        />
+                        <input
+                          type="date"
+                          value={discountFormData.endDate}
+                          onChange={(e) => setDiscountFormData({ ...discountFormData, endDate: e.target.value })}
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-200"
+                          data-testid="input-discount-end-date"
+                        />
+                      </div>
+
+                      <button
+                        onClick={handleSaveDiscount}
+                        className="w-full bg-yellow-600 text-white py-2 rounded-lg font-semibold text-sm hover:bg-yellow-700"
+                        data-testid="button-save-discount"
+                      >
+                        {editingDiscountId ? t("updateZone", language) : t("addZone", language)}
+                      </button>
+                      {editingDiscountId && (
+                        <button
+                          onClick={() => {
+                            setEditingDiscountId(null);
+                            setDiscountFormData({ productId: "", discountPercentage: "", startDate: "", endDate: "" });
+                          }}
+                          className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold text-sm hover:bg-gray-300"
+                          data-testid="button-cancel-discount"
+                        >
+                          {t("cancelButton", language)}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Discounts List */}
+                  {discounts.length > 0 && (
+                    <div className="bg-white rounded-2xl p-4 border border-gray-200">
+                      <h3 className="text-sm font-bold mb-3">{t("activeDiscounts", language)}</h3>
+                      <div className="space-y-3">
+                        {discounts.map((discount) => {
+                          const product = items.find(p => String(p.id) === String(discount.productId));
+                          return (
+                            <div key={discount.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                              <div>
+                                <p className="text-sm font-semibold text-gray-900" data-testid={`text-discount-product-${discount.id}`}>{product?.title || discount.productId}</p>
+                                <p className="text-xs text-yellow-600 font-bold">{discount.discountPercentage}% OFF</p>
+                                <p className="text-xs text-gray-600">{new Date(discount.startDate).toLocaleDateString()} - {new Date(discount.endDate).toLocaleDateString()}</p>
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => {
+                                    setEditingDiscountId(discount.id);
+                                    setDiscountFormData({
+                                      productId: discount.productId,
+                                      discountPercentage: discount.discountPercentage,
+                                      startDate: discount.startDate.split("T")[0],
+                                      endDate: discount.endDate.split("T")[0],
+                                    });
+                                  }}
+                                  className="px-3 py-2 bg-amber-100 text-amber-700 rounded-lg text-xs font-semibold hover:bg-amber-200"
+                                  data-testid={`button-edit-discount-${discount.id}`}
+                                >
+                                  {t("editButton", language)}
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteDiscount(discount.id)}
+                                  className="px-3 py-2 bg-red-100 text-red-700 rounded-lg text-xs font-semibold hover:bg-red-200"
+                                  data-testid={`button-delete-discount-${discount.id}`}
+                                >
+                                  {t("deleteButton", language)}
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Shipping Zones Section */}
               <button
                 onClick={() => {
@@ -1986,7 +2200,7 @@ export default function ProfilePage() {
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-cyan-100 text-cyan-600">
-                    <Package className="w-6 h-6" />
+                    <Truck className="w-6 h-6" />
                   </div>
                   <span className="font-semibold text-sm text-cyan-900">{t("shippingZones", language)}</span>
                 </div>
