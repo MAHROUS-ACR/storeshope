@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
@@ -24,6 +24,7 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
   const { language } = useLanguage();
   const [, setLocation] = useLocation();
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get products with active discounts
   const discountedProducts = products.filter(product => {
@@ -35,12 +36,42 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
     return null;
   }
 
+  const startAutoScroll = () => {
+    // Clear existing timer
+    if (autoScrollRef.current) {
+      clearInterval(autoScrollRef.current);
+    }
+    // Set new timer - auto scroll every 5 seconds
+    autoScrollRef.current = setInterval(() => {
+      setCarouselIndex((prev) => (prev + 1) % discountedProducts.length);
+    }, 5000);
+  };
+
+  // Start auto scroll on mount and when discountedProducts changes
+  useEffect(() => {
+    if (discountedProducts.length > 1) {
+      startAutoScroll();
+    }
+    return () => {
+      if (autoScrollRef.current) {
+        clearInterval(autoScrollRef.current);
+      }
+    };
+  }, [discountedProducts.length]);
+
   const nextSlide = () => {
     setCarouselIndex((prev) => (prev + 1) % discountedProducts.length);
+    startAutoScroll(); // Restart timer
   };
 
   const prevSlide = () => {
     setCarouselIndex((prev) => (prev - 1 + discountedProducts.length) % discountedProducts.length);
+    startAutoScroll(); // Restart timer
+  };
+
+  const goToSlide = (index: number) => {
+    setCarouselIndex(index);
+    startAutoScroll(); // Restart timer
   };
 
   return (
@@ -132,7 +163,7 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
             {discountedProducts.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCarouselIndex(index)}
+                onClick={() => goToSlide(index)}
                 className={`h-1.5 rounded-full transition-all ${
                   index === carouselIndex
                     ? "bg-yellow-500 w-6"
