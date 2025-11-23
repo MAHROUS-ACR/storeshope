@@ -105,9 +105,9 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
         </div>
 
         {/* Middle: Variants + Image + Variants (Horizontal Layout) */}
-        <div className="flex-1 flex items-center gap-2 px-3 py-2">
+        <div className="flex-1 flex items-stretch gap-2 px-3 py-2">
           {/* Left side: Units and Sizes */}
-          <div className="flex flex-col gap-2 min-w-fit">
+          <div className="flex flex-col gap-2 min-w-fit justify-center">
             {product.units && product.units.length > 0 && (
               <div className="space-y-0.5">
                 <p className="text-[7px] font-semibold text-gray-500 uppercase">Units</p>
@@ -144,7 +144,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
 
           {/* Right side: Colors */}
           {product.colors && product.colors.length > 0 && (
-            <div className="flex flex-col gap-2 min-w-fit">
+            <div className="flex flex-col gap-2 min-w-fit justify-center">
               <p className="text-[7px] font-semibold text-gray-500 uppercase">Colors</p>
               <div className="flex flex-col gap-1">
                 {product.colors.map((c) => {
