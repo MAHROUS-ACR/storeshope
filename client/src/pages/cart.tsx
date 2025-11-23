@@ -172,7 +172,7 @@ export default function CartPage() {
             {totalWithDiscounts < total && (
               <>
                 <div className="flex justify-between text-sm text-green-600">
-                  <span>Discount Savings</span>
+                  <span>{t("discountSavings", language)}</span>
                   <span className="font-semibold">-${(total - totalWithDiscounts).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100 text-green-600">
