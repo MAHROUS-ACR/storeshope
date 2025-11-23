@@ -105,7 +105,7 @@ export default function CheckoutPage() {
 
   const validateDeliveryForm = () => {
     if (!shippingType || !selectedZone) {
-      toast.error("Please select shipping address and zone");
+      toast.error(t("selectShippingAddressAndZone", language));
       return false;
     }
     return true;
@@ -113,19 +113,19 @@ export default function CheckoutPage() {
 
   const validateCardForm = () => {
     if (!formData.cardNumber || formData.cardNumber.replace(/\s/g, "").length !== 16) {
-      toast.error("Invalid card number");
+      toast.error(t("invalidCardNumber", language));
       return false;
     }
     if (!formData.expiryDate || formData.expiryDate.length !== 5) {
-      toast.error("Invalid expiry date");
+      toast.error(t("invalidExpiryDate", language));
       return false;
     }
     if (!formData.cvv || formData.cvv.length !== 3) {
-      toast.error("Invalid CVV");
+      toast.error(t("invalidCVV", language));
       return false;
     }
     if (!formData.cardHolder.trim()) {
-      toast.error("Please enter cardholder name");
+      toast.error(t("enterCardholderName", language));
       return false;
     }
     return true;
@@ -145,7 +145,7 @@ export default function CheckoutPage() {
 
   const handleCardPayment = async () => {
     if (!shippingType || !selectedZone) {
-      toast.error("Please select shipping address and zone");
+      toast.error(t("selectShippingAddressAndZone", language));
       setIsProcessing(false);
       return;
     }
@@ -230,7 +230,7 @@ export default function CheckoutPage() {
       setTimeout(() => setLocation("/orders"), 1500);
     } catch (error) {
       console.error("Payment error:", error);
-      toast.error("Payment processing failed");
+      toast.error(t("failedToCheckout", language));
     } finally {
       setIsProcessing(false);
     }
@@ -238,7 +238,7 @@ export default function CheckoutPage() {
 
   const handleDeliveryPayment = async () => {
     if (!shippingType || !selectedZone) {
-      toast.error("Please select shipping address and zone");
+      toast.error(t("selectShippingAddressAndZone", language));
       setIsProcessing(false);
       return;
     }
@@ -465,7 +465,7 @@ export default function CheckoutPage() {
                       className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100 transition-colors"
                       data-testid="button-new-address"
                     >
-                      <p className="text-sm font-semibold">Ship to Another Address</p>
+                      <p className="text-sm font-semibold">{t("newAddress", language)}</p>
                     </button>
                   </div>
                 </div>
@@ -475,20 +475,20 @@ export default function CheckoutPage() {
               {shippingType === "new" && (
                 <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-4 space-y-3">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-sm">New Address</h3>
+                    <h3 className="font-semibold text-sm">{t("newAddress", language)}</h3>
                     <button
                       type="button"
                       onClick={() => setShippingType(null)}
                       className="text-xs text-primary"
                       data-testid="button-back-address"
                     >
-                      Change
+                      {t("change", language)}
                     </button>
                   </div>
                   
                   <input
                     type="text"
-                    placeholder="Street address"
+                    placeholder={t("streetAddress", language)}
                     value={newAddress}
                     onChange={(e) => setNewAddress(e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
@@ -497,7 +497,7 @@ export default function CheckoutPage() {
 
                   <input
                     type="tel"
-                    placeholder="Phone number"
+                    placeholder={t("phoneNumber", language)}
                     value={newPhone}
                     onChange={(e) => setNewPhone(e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
@@ -514,7 +514,7 @@ export default function CheckoutPage() {
                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
                     data-testid="select-new-zone"
                   >
-                    <option value="">Select Zone</option>
+                    <option value="">{t("selectZone", language)}</option>
                     {shippingZones.map((zone) => (
                       <option key={zone.id} value={zone.name}>{zone.name} (${zone.shippingCost})</option>
                     ))}
@@ -526,28 +526,28 @@ export default function CheckoutPage() {
               {shippingType === "saved" && (
                 <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4 space-y-3">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-sm">Delivery Address</h3>
+                    <h3 className="font-semibold text-sm">{t("deliveryAddress", language)}</h3>
                     <button
                       type="button"
                       onClick={() => setShippingType(null)}
                       className="text-xs text-primary"
                       data-testid="button-back-zone"
                     >
-                      Change Address
+                      {t("changeAddress", language)}
                     </button>
                   </div>
                   
                   <div className="bg-white border border-gray-200 rounded-lg p-3 text-sm space-y-2">
                     <div>
-                      <p className="text-xs text-gray-500">Address</p>
+                      <p className="text-xs text-gray-500">{t("address", language)}</p>
                       <p className="font-medium">{userProfile?.address}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">Phone</p>
+                      <p className="text-xs text-gray-500">{t("phone", language)}</p>
                       <p className="font-medium">{userProfile?.phone}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">Zone</p>
+                      <p className="text-xs text-gray-500">{t("zone", language)}</p>
                       <p className="font-medium">{selectedZone}</p>
                     </div>
                   </div>
@@ -558,7 +558,7 @@ export default function CheckoutPage() {
               {shippingType && selectedZone && (
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 text-sm">
                   <div className="flex justify-between font-semibold">
-                    <span>Shipping Cost:</span>
+                    <span>{t("shippingCost", language)}:</span>
                     <span>${shippingCost}</span>
                   </div>
                 </div>
@@ -567,7 +567,7 @@ export default function CheckoutPage() {
               {paymentMethod === "card" && (
                 <>
                   <div>
-                    <label className="block text-sm font-semibold mb-2">Card Number</label>
+                    <label className="block text-sm font-semibold mb-2">{t("cardNumber", language)}</label>
                     <input
                       type="text"
                       placeholder="4532 1234 5678 9010"
@@ -579,7 +579,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold mb-2">Cardholder Name</label>
+                    <label className="block text-sm font-semibold mb-2">{t("cardholderName", language)}</label>
                     <input
                       type="text"
                       placeholder="John Doe"
@@ -592,7 +592,7 @@ export default function CheckoutPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold mb-2">Expiry</label>
+                      <label className="block text-sm font-semibold mb-2">{t("expiry", language)}</label>
                       <input
                         type="text"
                         placeholder="MM/YY"
@@ -603,7 +603,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold mb-2">CVV</label>
+                      <label className="block text-sm font-semibold mb-2">{t("cvv", language)}</label>
                       <input
                         type="text"
                         placeholder="123"
@@ -620,7 +620,7 @@ export default function CheckoutPage() {
               {paymentMethod === "card" && (
                 <div className="bg-green-50 border border-green-200 rounded-2xl p-3 flex items-start gap-2">
                   <Lock className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-green-800">Your payment is secure and encrypted</p>
+                  <p className="text-xs text-green-800">{t("securePayment", language)}</p>
                 </div>
               )}
 
@@ -633,10 +633,10 @@ export default function CheckoutPage() {
                 {isProcessing ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Processing...
+                    {t("processingPayment", language)}
                   </>
                 ) : (
-                  `${paymentMethod === "card" ? "Pay" : "Place Order"} $${(total + shippingCost).toFixed(2)}`
+                  `${paymentMethod === "card" ? t("pay", language) : t("placeOrder", language)} $${(total + shippingCost).toFixed(2)}`
                 )}
               </button>
             </form>
