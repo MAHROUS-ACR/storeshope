@@ -155,8 +155,8 @@ export function NotificationCenter() {
           ref={menuRef}
           className="absolute bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-80 overflow-y-auto"
           style={{
-            width: "310px",
-            ...(language === "ar" ? { right: "0" } : { left: "0" }),
+            width: "280px",
+            ...(language === "ar" ? { right: "10px" } : { left: "10px" }),
             top: "120px",
           }}
         >
