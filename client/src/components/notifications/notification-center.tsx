@@ -156,7 +156,8 @@ export function NotificationCenter() {
           className="absolute top-full mt-2 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-80 overflow-y-auto"
           style={{
             width: "280px",
-            ...(language === "ar" ? { right: "0" } : { left: "0" }),
+            maxWidth: "calc(100vw - 20px)",
+            ...(language === "ar" ? { right: "-180px" } : { left: "-180px" }),
           }}
         >
           {/* Header */}
