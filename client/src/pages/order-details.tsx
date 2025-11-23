@@ -46,6 +46,7 @@ export default function OrderDetailsPage() {
   const [newStatus, setNewStatus] = useState("");
   const [totalOrders, setTotalOrders] = useState(0);
   const [completedOrders, setCompletedOrders] = useState(0);
+  const [completedOrdersValue, setCompletedOrdersValue] = useState(0);
 
   // Extract order ID from URL
   const orderId = location.split("/order/")[1]?.split("?")[0];
@@ -130,8 +131,11 @@ export default function OrderDetailsPage() {
         if (savedOrders) {
           const allOrders = JSON.parse(savedOrders);
           const userOrders = allOrders.filter((o: Order) => o.userId === order?.userId);
+          const completedOrdersList = userOrders.filter((o: Order) => o.status === 'completed');
           setTotalOrders(userOrders.length);
-          setCompletedOrders(userOrders.filter((o: Order) => o.status === 'completed').length);
+          setCompletedOrders(completedOrdersList.length);
+          const totalValue = completedOrdersList.reduce((sum: number, o: Order) => sum + (o.total || 0), 0);
+          setCompletedOrdersValue(totalValue);
         }
       } catch (e) {
         console.error("Error calculating statistics:", e);
@@ -439,6 +443,14 @@ export default function OrderDetailsPage() {
                           <p className="text-2xl font-bold text-blue-700 mt-1" data-testid="text-total-orders">{totalOrders}</p>
                         </div>
                       </div>
+
+                      {/* Completed Orders Value */}
+                      {completedOrdersValue > 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider">{language === "ar" ? "قيمة الأوردرات المكتملة" : "Completed Orders Value"}</p>
+                          <p className="text-3xl font-bold text-emerald-600 mt-2" data-testid="text-completed-orders-value">${completedOrdersValue.toFixed(2)}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
