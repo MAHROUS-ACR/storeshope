@@ -95,86 +95,168 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
       onClick={() => onProductClick?.(product.id)}
-      className="group relative bg-white rounded-3xl p-3 shadow-sm border border-gray-100 cursor-pointer transition-all hover:shadow-md hover:border-gray-200"
+      className="group relative bg-white rounded-3xl shadow-sm border border-gray-100 cursor-pointer transition-all hover:shadow-md hover:border-gray-200"
     >
-      <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-3">
-        <img 
-          src={productImage} 
-          alt={productTitle}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-        {activeDiscount && (
-          <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-[10px] font-bold" data-testid={`badge-discount-${product.id}`}>
-            {language === "ar" ? `وفر ${activeDiscount.discountPercentage}%` : `Save ${activeDiscount.discountPercentage}%`}
+      {/* Layout: Horizontal if variants, vertical otherwise */}
+      {hasVariants ? (
+        <div className="flex flex-col h-full">
+          {/* Top: Image with discount badge */}
+          <div className="relative w-full rounded-t-3xl overflow-hidden bg-gray-50">
+            <div className="aspect-video">
+              <img 
+                src={productImage} 
+                alt={productTitle}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              {activeDiscount && (
+                <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-[10px] font-bold" data-testid={`badge-discount-${product.id}`}>
+                  {language === "ar" ? `وفر ${activeDiscount.discountPercentage}%` : `Save ${activeDiscount.discountPercentage}%`}
+                </div>
+              )}
+            </div>
           </div>
-        )}
-        <button
-          onClick={handleAddToCart}
-          disabled={isAdding}
-          className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50"
-          data-testid={`button-add-to-cart-${product.id}`}
-        >
-          {isAdding ? (
-            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <ShoppingCart className="w-5 h-5" />
-          )}
-        </button>
-      </div>
-      
-      <div className="px-1">
-        <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1" data-testid={`text-category-${product.id}`}>{productCategory}</p>
-        <h3 className="font-semibold text-sm leading-tight mb-1 line-clamp-1" data-testid={`text-title-${product.id}`}>{productTitle}</h3>
-        
-        {/* Variants display */}
-        {hasVariants && (
-          <div className="space-y-1 mb-2">
-            {product.units && product.units.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {product.units.map((u) => <span key={u} className="inline-block px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px] font-medium">{u}</span>)}
+
+          {/* Middle: Title and Variants on sides */}
+          <div className="flex-1 flex gap-3 p-3">
+            {/* Left side: Title and text info */}
+            <div className="flex-1 flex flex-col gap-2 min-w-0">
+              <div>
+                <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-0.5" data-testid={`text-category-${product.id}`}>{productCategory}</p>
+                <h3 className="font-semibold text-xs leading-tight line-clamp-2" data-testid={`text-title-${product.id}`}>{productTitle}</h3>
               </div>
-            )}
-            {product.sizes && product.sizes.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {product.sizes.map((s) => <span key={s} className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-[9px] font-medium">{s}</span>)}
+              
+              {/* Availability */}
+              <div className="flex items-center gap-1 mt-auto">
+                {!isAvailable && (
+                  <p className="text-[10px] font-semibold text-red-600 bg-red-50 px-1.5 py-0.5 rounded whitespace-nowrap" data-testid={`text-unavailable-${product.id}`}>{t("unavailable", language)}</p>
+                )}
+                {isAvailable && (
+                  <p className="text-[10px] font-semibold text-green-600 bg-green-50 px-1.5 py-0.5 rounded whitespace-nowrap" data-testid={`text-available-${product.id}`}>{t("available", language)}</p>
+                )}
               </div>
-            )}
-            {product.colors && product.colors.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {product.colors.map((c) => {
-                  const colorName = typeof c === 'string' ? c.split('|')[0] : c;
-                  const colorHex = typeof c === 'string' ? c.split('|')[1] || '#000000' : '#000000';
-                  return (
-                    <span key={colorName} className="inline-block px-1.5 py-0.5 rounded text-[9px] font-medium" style={{backgroundColor: colorHex || '#000000', color: ['#ffffff', '#f0f0f0', '#e0e0e0'].includes((colorHex || '#000000').toLowerCase()) ? '#000000' : '#ffffff'}}>
-                      {colorName}
-                    </span>
-                  );
-                })}
-              </div>
-            )}
+            </div>
+
+            {/* Right side: Variants */}
+            <div className="flex flex-col gap-2 max-w-[120px]">
+              {product.units && product.units.length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-[8px] font-semibold text-gray-600 uppercase">Units</p>
+                  <div className="flex flex-wrap gap-1">
+                    {product.units.map((u) => <span key={u} className="inline-block px-1 py-0.5 bg-blue-100 text-blue-700 rounded text-[8px] font-medium">{u}</span>)}
+                  </div>
+                </div>
+              )}
+              {product.sizes && product.sizes.length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-[8px] font-semibold text-gray-600 uppercase">Sizes</p>
+                  <div className="flex flex-wrap gap-1">
+                    {product.sizes.map((s) => <span key={s} className="inline-block px-1 py-0.5 bg-green-100 text-green-700 rounded text-[8px] font-medium">{s}</span>)}
+                  </div>
+                </div>
+              )}
+              {product.colors && product.colors.length > 0 && (
+                <div className="space-y-1">
+                  <p className="text-[8px] font-semibold text-gray-600 uppercase">Colors</p>
+                  <div className="flex flex-wrap gap-1">
+                    {product.colors.map((c) => {
+                      const colorName = typeof c === 'string' ? c.split('|')[0] : c;
+                      const colorHex = typeof c === 'string' ? c.split('|')[1] || '#000000' : '#000000';
+                      return (
+                        <div key={colorName} className="flex items-center gap-1" title={colorName}>
+                          <span 
+                            style={{width: '16px', height: '16px', backgroundColor: colorHex, borderRadius: '3px', border: '1px solid rgba(0,0,0,0.1)'}}
+                            className="flex-shrink-0"
+                          />
+                          <span className="text-[8px] font-medium text-gray-700 line-clamp-1">{colorName}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        )}
-        
-        {/* Price and Availability */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex flex-col gap-0.5">
-            {activeDiscount ? (
-              <>
-                <p className="font-bold text-lg text-green-600" data-testid={`text-price-${product.id}`}>${discountedPrice.toFixed(2)}</p>
-                <p className="text-xs text-gray-400 line-through">${product.price.toFixed(2)}</p>
-              </>
-            ) : (
-              <p className="font-bold text-lg" data-testid={`text-price-${product.id}`}>${product.price.toFixed(2)}</p>
-            )}
+
+          {/* Bottom: Price and Add Button */}
+          <div className="px-3 pb-3 pt-0 border-t border-gray-100 flex items-center justify-between gap-2">
+            <div className="flex flex-col gap-0">
+              {activeDiscount ? (
+                <>
+                  <p className="font-bold text-sm text-green-600" data-testid={`text-price-${product.id}`}>${discountedPrice.toFixed(2)}</p>
+                  <p className="text-xs text-gray-400 line-through">${product.price.toFixed(2)}</p>
+                </>
+              ) : (
+                <p className="font-bold text-sm" data-testid={`text-price-${product.id}`}>${product.price.toFixed(2)}</p>
+              )}
+            </div>
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdding}
+              className="ml-auto w-9 h-9 bg-black text-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-900 transition-colors disabled:opacity-50"
+              data-testid={`button-add-to-cart-${product.id}`}
+            >
+              {isAdding ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Plus className="w-5 h-5" />
+              )}
+            </button>
           </div>
-          {!isAvailable && (
-            <p className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded whitespace-nowrap" data-testid={`text-unavailable-${product.id}`}>{t("unavailable", language)}</p>
-          )}
-          {isAvailable && (
-            <p className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded whitespace-nowrap" data-testid={`text-available-${product.id}`}>{t("available", language)}</p>
-          )}
         </div>
-      </div>
+      ) : (
+        // Vertical layout for products without variants
+        <div className="p-3">
+          <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-3">
+            <img 
+              src={productImage} 
+              alt={productTitle}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            {activeDiscount && (
+              <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-[10px] font-bold" data-testid={`badge-discount-${product.id}`}>
+                {language === "ar" ? `وفر ${activeDiscount.discountPercentage}%` : `Save ${activeDiscount.discountPercentage}%`}
+              </div>
+            )}
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdding}
+              className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50"
+              data-testid={`button-add-to-cart-${product.id}`}
+            >
+              {isAdding ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <ShoppingCart className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+          
+          <div className="px-1">
+            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1" data-testid={`text-category-${product.id}`}>{productCategory}</p>
+            <h3 className="font-semibold text-sm leading-tight mb-1 line-clamp-1" data-testid={`text-title-${product.id}`}>{productTitle}</h3>
+            
+            {/* Price and Availability */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col gap-0.5">
+                {activeDiscount ? (
+                  <>
+                    <p className="font-bold text-lg text-green-600" data-testid={`text-price-${product.id}`}>${discountedPrice.toFixed(2)}</p>
+                    <p className="text-xs text-gray-400 line-through">${product.price.toFixed(2)}</p>
+                  </>
+                ) : (
+                  <p className="font-bold text-lg" data-testid={`text-price-${product.id}`}>${product.price.toFixed(2)}</p>
+                )}
+              </div>
+              {!isAvailable && (
+                <p className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded whitespace-nowrap" data-testid={`text-unavailable-${product.id}`}>{t("unavailable", language)}</p>
+              )}
+              {isAvailable && (
+                <p className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded whitespace-nowrap" data-testid={`text-available-${product.id}`}>{t("available", language)}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Variant Selection Modal */}
       {showVariantModal && (
