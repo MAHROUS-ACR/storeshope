@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X, Save, Plus, Trash2, TrendingUp } from "lucide-react";
+import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X, Save, Plus, Trash2, TrendingUp, Globe } from "lucide-react";
 import { useLocation } from "wouter";
 import { useUser } from "@/lib/userContext";
+import { useLanguage } from "@/lib/languageContext";
 import { toast } from "sonner";
+import { t } from "@/lib/translations";
 import avatarImage from "@assets/generated_images/professional_user_avatar_portrait.png";
 import { saveFirebaseConfig, getFirebaseConfig, clearFirebaseConfig } from "@/lib/firebaseConfig";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
@@ -41,6 +43,7 @@ interface AdminOrder {
 export default function ProfilePage() {
   const [location, setLocation] = useLocation();
   const { user, isLoggedIn, logout, isLoading } = useUser();
+  const { language, setLanguage } = useLanguage();
   const [activeTab, setActiveTab] = useState<"profile" | "admin">("profile");
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
@@ -663,14 +666,24 @@ export default function ProfilePage() {
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="px-6 pb-4 pt-2 flex items-center justify-between gap-4 border-b border-gray-100 flex-shrink-0">
-          <h1 className="text-xl font-bold">Profile</h1>
-          <button 
-            onClick={() => setLocation("/settings")}
-            className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50"
-            data-testid="button-settings"
-          >
-            <Settings className="w-5 h-5 text-gray-600" />
-          </button>
+          <h1 className="text-xl font-bold">{t("profile", language)}</h1>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setLanguage(language === "en" ? "ar" : "en")}
+              className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50"
+              data-testid="button-toggle-language"
+              title={language === "en" ? "عربي" : "English"}
+            >
+              <Globe className="w-5 h-5 text-gray-600" />
+            </button>
+            <button 
+              onClick={() => setLocation("/settings")}
+              className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50"
+              data-testid="button-settings"
+            >
+              <Settings className="w-5 h-5 text-gray-600" />
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -685,7 +698,7 @@ export default function ProfilePage() {
               }`}
               data-testid="tab-profile"
             >
-              Account
+              {t("account", language)}
             </button>
             {user.role === "admin" && (
               <button
@@ -700,7 +713,7 @@ export default function ProfilePage() {
                 }`}
                 data-testid="tab-admin"
               >
-                Admin
+                {t("admin", language)}
               </button>
             )}
           </div>

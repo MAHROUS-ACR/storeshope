@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/lib/cartContext";
 import { UserProvider } from "@/lib/userContext";
+import { LanguageProvider } from "@/lib/languageContext";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import ProfilePage from "@/pages/profile";
@@ -37,14 +38,16 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <UserProvider>
-        <CartProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
-        </CartProvider>
-      </UserProvider>
+      <LanguageProvider>
+        <UserProvider>
+          <CartProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </CartProvider>
+        </UserProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

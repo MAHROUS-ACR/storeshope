@@ -3,16 +3,19 @@ import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useCart } from "@/lib/cartContext";
+import { useLanguage } from "@/lib/languageContext";
+import { t } from "@/lib/translations";
 
 export function BottomNav() {
   const [location, setLocation] = useLocation();
   const { items } = useCart();
+  const { language } = useLanguage();
 
   const tabs = [
-    { id: "/", icon: Home, label: "Home" },
-    { id: "/search", icon: Search, label: "Search" },
-    { id: "/cart", icon: ShoppingCart, label: "Cart" },
-    { id: "/profile", icon: User, label: "Profile" },
+    { id: "/", icon: Home, label: t("home", language) },
+    { id: "/search", icon: Search, label: t("search", language) },
+    { id: "/cart", icon: ShoppingCart, label: t("cart", language) },
+    { id: "/profile", icon: User, label: t("profile", language) },
   ];
 
   return (
