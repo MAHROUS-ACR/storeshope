@@ -49,6 +49,7 @@ export default function OrderDetailsPage() {
   const [completedOrdersValue, setCompletedOrdersValue] = useState(0);
   const [orderUser, setOrderUser] = useState<any>(null);
   const [userLoading, setUserLoading] = useState(false);
+  const [userProfileImage, setUserProfileImage] = useState<string | null>(null);
 
   // Extract order ID from URL
   const orderId = location.split("/order/")[1]?.split("?")[0];
@@ -145,6 +146,10 @@ export default function OrderDetailsPage() {
             username: userData.username,
             email: userData.email
           });
+          if (userData.profileImage) {
+            setUserProfileImage(userData.profileImage);
+            console.log("User profile image set");
+          }
         } else {
           console.log("User fetch failed:", response.statusText);
         }
@@ -445,10 +450,19 @@ export default function OrderDetailsPage() {
                   <h3 className="font-semibold text-sm mb-5">{language === "ar" ? "بيانات المستخدم" : "Customer Information"}</h3>
                   
                   <div className="flex items-center gap-6">
-                    {/* User Avatar */}
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-5xl font-bold flex-shrink-0 shadow-lg ring-4 ring-blue-100" data-testid="avatar-user">
-                      {userLoading ? "..." : (orderUser?.username?.charAt(0).toUpperCase() || "U")}
-                    </div>
+                    {/* User Avatar or Profile Image */}
+                    {userProfileImage ? (
+                      <img 
+                        src={userProfileImage} 
+                        alt="User Profile" 
+                        className="w-24 h-24 rounded-full object-cover shadow-lg ring-4 ring-blue-100 flex-shrink-0" 
+                        data-testid="avatar-user-image"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-5xl font-bold flex-shrink-0 shadow-lg ring-4 ring-blue-100" data-testid="avatar-user">
+                        {userLoading ? "..." : (orderUser?.username?.charAt(0).toUpperCase() || "U")}
+                      </div>
+                    )}
                     
                     {/* User Details */}
                     <div className="flex-1 min-w-0">

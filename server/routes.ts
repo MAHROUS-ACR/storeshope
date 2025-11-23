@@ -664,6 +664,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email: data?.email || "",
         username: data?.username || "",
         role: data?.role || "user",
+        profileImage: data?.profileImage || null,
       };
 
       console.log(`✅ Fetched user ${userId} from Firestore`);
