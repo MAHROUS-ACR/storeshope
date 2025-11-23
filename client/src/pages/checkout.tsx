@@ -230,7 +230,12 @@ export default function CheckoutPage() {
         createdAt: new Date().toISOString(),
       };
 
-      const orderWithUser = { ...orderData, userId: user?.id };
+      const orderWithUser = { 
+        ...orderData, 
+        userId: user?.id,
+        userName: user?.username,
+        userEmail: user?.email
+      };
 
       try {
         const existingOrders = localStorage.getItem("orders");
@@ -302,7 +307,12 @@ export default function CheckoutPage() {
         createdAt: new Date().toISOString(),
       };
 
-      const orderWithUser = { ...orderData, userId: user?.id };
+      const orderWithUser = { 
+        ...orderData, 
+        userId: user?.id,
+        userName: user?.username,
+        userEmail: user?.email
+      };
 
       try {
         const allOrders = localStorage.getItem("orders");
