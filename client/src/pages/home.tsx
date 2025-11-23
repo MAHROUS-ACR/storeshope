@@ -73,6 +73,7 @@ export default function Home() {
 
   const fetchProductsData = async () => {
     setIsLoading(true);
+    setProducts([]); // Clear products immediately while loading
     try {
       // Check Firebase status
       const statusResponse = await fetch("/api/firebase/status");
