@@ -145,7 +145,7 @@ export default function ProductDetailsPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto no-scrollbar pb-32 w-full">
+        <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
           <div className="w-full px-6 py-4">
             {/* Product Image */}
             <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-4">

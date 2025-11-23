@@ -206,7 +206,7 @@ export default function OrderDetailsPage() {
             </button>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto no-scrollbar pb-32 w-full">
+          <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
             <div className="w-full px-6 py-4 space-y-4">
               {/* Order Header */}
               <div className="bg-white rounded-2xl border border-gray-100 p-4">

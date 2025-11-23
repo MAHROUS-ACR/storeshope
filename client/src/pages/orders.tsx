@@ -181,7 +181,7 @@ export default function OrdersPage() {
             </button>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto no-scrollbar pb-32 w-full">
+          <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
             <div className="w-full px-6 py-4 space-y-3">
               {orders.filter(order => !user || !(order as any).userId || (order as any).userId === user.id).map((order) => (
                 <div key={order.id}>

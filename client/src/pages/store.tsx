@@ -67,7 +67,7 @@ export default function StorePage() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto no-scrollbar pb-32">
+      <div className="flex-1 overflow-y-auto no-scrollbar pb-40">
         <PromoBanner />
         
         <div className="mb-2 px-6">

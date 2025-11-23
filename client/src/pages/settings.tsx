@@ -182,7 +182,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto no-scrollbar pb-32 w-full">
+        <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
           <div className="w-full px-6 py-6">
             {/* Firebase Data Configuration Section */}
             <div className="mb-8">

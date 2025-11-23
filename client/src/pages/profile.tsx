@@ -712,7 +712,7 @@ export default function ProfilePage() {
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto no-scrollbar pb-32 w-full">
+        <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
           {activeTab === "profile" ? (
             // Profile Tab
             <>

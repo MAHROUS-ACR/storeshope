@@ -339,7 +339,7 @@ export default function CheckoutPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto no-scrollbar pb-32 w-full">
+        <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
           <div className="w-full px-6 py-4">
           {/* Order Summary */}
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6">
