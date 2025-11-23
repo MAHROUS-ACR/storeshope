@@ -149,19 +149,19 @@ export function NotificationCenter() {
         )}
       </button>
 
-      {/* Dropdown Menu - Absolute positioning centered from button */}
+      {/* Dropdown Menu - Absolute positioning */}
       {isOpen && (
         <div
           ref={menuRef}
           className="absolute top-12 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-80 overflow-y-auto"
           style={{
-            width: "340px",
-            left: "-40px",
+            width: "310px",
+            right: "-120px",
           }}
         >
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 p-4">
-            <h3 className="font-semibold text-gray-900">
+          <div className="sticky top-0 bg-white border-b border-gray-200 px-3 py-2">
+            <h3 className="font-semibold text-gray-900 text-sm">
               {language === "ar" ? "الإشعارات" : "Notifications"}
             </h3>
             {unreadCount > 0 && (
@@ -175,7 +175,7 @@ export function NotificationCenter() {
 
           {/* Notifications List */}
           {notifications.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-6 text-center text-gray-500">
               <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
               <p>{language === "ar" ? "لا توجد إشعارات" : "No notifications"}</p>
             </div>
@@ -234,7 +234,7 @@ export function NotificationCenter() {
 
           {/* Footer */}
           {notifications.length > 0 && (
-            <div className="border-t border-gray-200 p-3 bg-gray-50">
+            <div className="border-t border-gray-200 p-2 bg-gray-50">
               <button
                 onClick={() => {
                   setNotifications([]);
