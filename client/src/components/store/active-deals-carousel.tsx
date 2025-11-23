@@ -124,12 +124,12 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
                 })()}
               </div>
               
-              {/* Right: Price */}
-              <div className="flex flex-col items-end gap-1 text-white">
-                <span className="text-sm line-through opacity-70 drop-shadow-lg">
+              {/* Right: Price on one line */}
+              <div className="text-white text-right drop-shadow-lg">
+                <span className="text-sm line-through opacity-70 mr-2">
                   ${discountedProducts[carouselIndex].price.toFixed(2)}
                 </span>
-                <span className="text-lg font-bold text-yellow-300 drop-shadow-lg">
+                <span className="text-lg font-bold text-yellow-300">
                   $
                   {calculateDiscountedPrice(
                     discountedProducts[carouselIndex].price,
