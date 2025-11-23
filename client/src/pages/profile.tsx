@@ -816,7 +816,7 @@ export default function ProfilePage() {
                     <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-indigo-100 text-indigo-600">
                       <Package className="w-6 h-6" />
                     </div>
-                    <span className="font-semibold text-sm text-indigo-900">Delivery Address / عنوان التسليم</span>
+                    <span className="font-semibold text-sm text-indigo-900">{t("deliveryAddress", language)}</span>
                   </div>
                   <ChevronRight className={`w-5 h-5 text-indigo-400 transition-transform ${showUserProfile ? "rotate-90" : ""}`} />
                 </button>
@@ -882,7 +882,7 @@ export default function ProfilePage() {
                     <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-red-100 text-red-600">
                       <LogOut className="w-6 h-6" />
                     </div>
-                    <span className="font-semibold text-sm text-red-600">Log Out</span>
+                    <span className="font-semibold text-sm text-red-600">{t("logout", language)}</span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-red-400 group-hover:text-red-600 transition-colors" />
                 </button>
@@ -901,7 +901,7 @@ export default function ProfilePage() {
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-purple-100 text-purple-600">
                     <Package className="w-6 h-6" />
                   </div>
-                  <span className="font-semibold text-sm text-purple-900">Orders Management</span>
+                  <span className="font-semibold text-sm text-purple-900">{t("ordersPanel", language)}</span>
                 </div>
                 <ChevronRight className={`w-5 h-5 text-purple-400 transition-transform ${showOrders ? "rotate-90" : ""}`} />
               </button>
@@ -912,7 +912,7 @@ export default function ProfilePage() {
                   {/* Status Filters */}
                   {orders.length > 0 && (
                     <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4">
-                      <p className="text-xs font-semibold text-gray-500 mb-3">Filter by Status</p>
+                      <p className="text-xs font-semibold text-gray-500 mb-3">{t("filterByStatus", language)}</p>
                       <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => setSelectedStatusFilter(null)}
@@ -923,7 +923,7 @@ export default function ProfilePage() {
                           }`}
                           data-testid="filter-all"
                         >
-                          All
+                          {t("all", language)}
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("pending")}
@@ -934,7 +934,7 @@ export default function ProfilePage() {
                           }`}
                           data-testid="filter-pending"
                         >
-                          Pending
+                          {t("pending", language)}
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("confirmed")}
@@ -945,7 +945,7 @@ export default function ProfilePage() {
                           }`}
                           data-testid="filter-confirmed"
                         >
-                          Confirmed
+                          {t("confirmed", language)}
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("processing")}
@@ -956,7 +956,7 @@ export default function ProfilePage() {
                           }`}
                           data-testid="filter-processing"
                         >
-                          Processing
+                          {t("processing", language)}
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("shipped")}
@@ -967,7 +967,7 @@ export default function ProfilePage() {
                           }`}
                           data-testid="filter-shipped"
                         >
-                          Shipped
+                          {t("shipped", language)}
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("completed")}
@@ -978,7 +978,7 @@ export default function ProfilePage() {
                           }`}
                           data-testid="filter-completed"
                         >
-                          Completed
+                          {t("completed", language)}
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("cancelled")}
@@ -1233,7 +1233,7 @@ export default function ProfilePage() {
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-cyan-100 text-cyan-600">
                     <Database className="w-6 h-6" />
                   </div>
-                  <span className="font-semibold text-sm text-cyan-900">User Management</span>
+                  <span className="font-semibold text-sm text-cyan-900">{t("usersPanel", language)}</span>
                 </div>
                 <ChevronRight className={`w-5 h-5 text-cyan-400 transition-transform ${showUsers ? "rotate-90" : ""}`} />
               </button>
@@ -1258,7 +1258,7 @@ export default function ProfilePage() {
                       <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                     </div>
                   ) : users.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">No users found</div>
+                    <div className="text-center py-8 text-gray-500">{t("noUsersFound", language)}</div>
                   ) : (
                     <div className="space-y-3">
                       {users.filter(u => u.email.toLowerCase().includes(userSearchQuery.toLowerCase())).map((u) => (
@@ -1320,7 +1320,7 @@ export default function ProfilePage() {
                               data-testid={`button-edit-user-role-${u.id}`}
                             >
                               <Edit2 className="w-3 h-3" />
-                              Change Role
+                              {t("changeRole", language)}
                             </button>
                           )}
                         </div>
@@ -1343,7 +1343,7 @@ export default function ProfilePage() {
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-green-100 text-green-600">
                     <Package className="w-6 h-6" />
                   </div>
-                  <span className="font-semibold text-sm text-green-900">Categories</span>
+                  <span className="font-semibold text-sm text-green-900">{t("categoriesPanel", language)}</span>
                 </div>
                 <ChevronRight className={`w-5 h-5 text-green-400 transition-transform ${showCategories ? "rotate-90" : ""}`} />
               </button>
@@ -1353,7 +1353,7 @@ export default function ProfilePage() {
                 <div className="mb-6">
                   {/* Add New Category */}
                   <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4">
-                    <h3 className="text-sm font-bold mb-3">Add New Category</h3>
+                    <h3 className="text-sm font-bold mb-3">{t("addNewCategory", language)}</h3>
                     <div className="flex gap-2">
                       <input
                         type="text"
@@ -1397,7 +1397,7 @@ export default function ProfilePage() {
 
                   {/* Categories List */}
                   {categories.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">No categories yet</div>
+                    <div className="text-center py-8 text-gray-500">{t("noCategoriesYet", language)}</div>
                   ) : (
                     <div className="space-y-2">
                       {categories.map((cat) => (
@@ -1514,7 +1514,7 @@ export default function ProfilePage() {
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-blue-100 text-blue-600">
                     <Package className="w-6 h-6" />
                   </div>
-                  <span className="font-semibold text-sm text-blue-900">Products</span>
+                  <span className="font-semibold text-sm text-blue-900">{t("productsPanel", language)}</span>
                 </div>
                 <ChevronRight className={`w-5 h-5 text-blue-400 transition-transform ${showItems ? "rotate-90" : ""}`} />
               </button>

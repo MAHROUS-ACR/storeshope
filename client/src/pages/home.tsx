@@ -198,7 +198,7 @@ export default function Home() {
             {/* Categories */}
             {categories.length > 0 && (
               <div className="mt-5 mb-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Categories</h3>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">{t("categories", language)}</h3>
                 <CategoryFilter active={activeCategory} onChange={setActiveCategory} categories={categories} />
               </div>
             )}
