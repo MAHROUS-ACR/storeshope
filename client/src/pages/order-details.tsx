@@ -222,13 +222,13 @@ export default function OrderDetailsPage() {
                         onChange={(e) => setNewStatus(e.target.value)}
                         className="px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-primary/20"
                       >
-                        <option value="">Select Status</option>
-                        <option value="pending">Pending</option>
+                        <option value="">{t("selectStatus", language)}</option>
+                        <option value="pending">{t("pending", language)}</option>
                         <option value="confirmed">Confirmed</option>
                         <option value="processing">Processing</option>
-                        <option value="shipped">Shipped</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
+                        <option value="shipped">{t("shipped", language)}</option>
+                        <option value="completed">{t("completed", language)}</option>
+                        <option value="cancelled">{t("cancelled", language)}</option>
                       </select>
                       <button
                         onClick={() => handleStatusUpdate(newStatus)}

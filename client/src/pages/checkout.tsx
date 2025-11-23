@@ -313,7 +313,7 @@ export default function CheckoutPage() {
             onClick={() => setLocation("/cart")}
             className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold mt-4"
           >
-            Back to Cart
+            {t("backToCart", language)}
           </button>
         </div>
         <div className="absolute bottom-0 left-0 right-0">
@@ -335,7 +335,7 @@ export default function CheckoutPage() {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-xl font-bold">Payment</h1>
+          <h1 className="text-xl font-bold">{t("payment", language)}</h1>
         </div>
 
         {/* Content */}
@@ -343,7 +343,7 @@ export default function CheckoutPage() {
           <div className="w-full px-6 py-4">
           {/* Order Summary */}
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6">
-            <h3 className="font-semibold text-sm mb-3">Order Summary</h3>
+            <h3 className="font-semibold text-sm mb-3">{t("orderSummary", language)}</h3>
             <div className="space-y-2 text-sm">
               {items.map((item, idx) => (
                 <div key={`${item.id}-${idx}`} className="flex flex-col gap-1">
@@ -374,17 +374,17 @@ export default function CheckoutPage() {
               ))}
               <div className="border-t border-blue-200 pt-2 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Subtotal:</span>
+                  <span>{t("subtotal", language)}</span>
                   <span>${total.toFixed(2)}</span>
                 </div>
                 {shippingCost > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span>Shipping:</span>
+                    <span>{t("shipping", language)}</span>
                     <span>${shippingCost.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between font-bold text-base">
-                  <span>Total:</span>
+                  <span>{t("total", language)}</span>
                   <span>${(total + shippingCost).toFixed(2)}</span>
                 </div>
               </div>
@@ -394,7 +394,7 @@ export default function CheckoutPage() {
           {/* Payment Method Selection */}
           {!paymentMethod ? (
             <div className="space-y-3">
-              <h3 className="font-semibold text-sm mb-4">Select Payment Method</h3>
+              <h3 className="font-semibold text-sm mb-4">{t("selectPaymentMethod", language)}</h3>
               
               <button
                 onClick={() => setPaymentMethod("card")}
@@ -404,8 +404,8 @@ export default function CheckoutPage() {
                 <div className="flex items-center gap-3">
                   <CreditCard className="w-6 h-6 text-primary" />
                   <div>
-                    <p className="font-semibold">Pay with Card</p>
-                    <p className="text-xs text-muted-foreground">Instant payment with debit/credit card</p>
+                    <p className="font-semibold">{t("payWithCard", language)}</p>
+                    <p className="text-xs text-muted-foreground">{t("instantPayment", language)}</p>
                   </div>
                 </div>
               </button>
@@ -418,8 +418,8 @@ export default function CheckoutPage() {
                 <div className="flex items-center gap-3">
                   <Truck className="w-6 h-6 text-primary" />
                   <div>
-                    <p className="font-semibold">Pay on Delivery</p>
-                    <p className="text-xs text-muted-foreground">Pay when your order arrives</p>
+                    <p className="font-semibold">{t("payOnDelivery", language)}</p>
+                    <p className="text-xs text-muted-foreground">{t("payWhenArrives", language)}</p>
                   </div>
                 </div>
               </button>
@@ -432,14 +432,14 @@ export default function CheckoutPage() {
                   onClick={() => setPaymentMethod(null)}
                   className="text-primary text-sm font-semibold"
                 >
-                  ← Change Method
+                  {t("changeMethod", language)}
                 </button>
               </div>
 
               {/* Shipping Options */}
               {!shippingType && (
                 <div className="bg-cyan-50 border border-cyan-200 rounded-2xl p-4 mb-4">
-                  <h3 className="font-semibold text-sm mb-3">Shipping Address</h3>
+                  <h3 className="font-semibold text-sm mb-3">{t("shippingAddress", language)}</h3>
                   <div className="space-y-2">
                     {userProfile?.address && (
                       <button
@@ -454,7 +454,7 @@ export default function CheckoutPage() {
                         className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100 transition-colors"
                         data-testid="button-saved-address"
                       >
-                        <p className="text-sm font-semibold">Use My Saved Address</p>
+                        <p className="text-sm font-semibold">{t("useSavedAddress", language)}</p>
                         <p className="text-xs text-gray-600">{userProfile.address} • {userProfile.zone}</p>
                       </button>
                     )}

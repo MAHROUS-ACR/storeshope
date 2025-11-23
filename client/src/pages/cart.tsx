@@ -3,15 +3,18 @@ import { BottomNav } from "@/components/bottom-nav";
 import { ArrowLeft, Trash2, Minus, Plus } from "lucide-react";
 import { useLocation } from "wouter";
 import { useCart } from "@/lib/cartContext";
+import { useLanguage } from "@/lib/languageContext";
+import { t } from "@/lib/translations";
 import { toast } from "sonner";
 
 export default function CartPage() {
   const [, setLocation] = useLocation();
   const { items, removeItem, updateQuantity, total } = useCart();
+  const { language } = useLanguage();
 
   const handleCheckout = () => {
     if (items.length === 0) {
-      toast.error("Your cart is empty");
+      toast.error(t("cartIsEmpty", language));
       return;
     }
     setLocation("/checkout");
@@ -22,14 +25,14 @@ export default function CartPage() {
       <MobileWrapper>
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           <span className="text-6xl mb-4">🛒</span>
-          <h2 className="text-lg font-bold mb-2">Your cart is empty</h2>
+          <h2 className="text-lg font-bold mb-2">{t("cartIsEmpty", language)}</h2>
           <p className="text-sm text-muted-foreground mb-6 text-center">Start shopping to add items</p>
           <button
             onClick={() => setLocation("/")}
             className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold"
             data-testid="button-continue-shopping"
           >
-            Continue Shopping
+            {t("continueShoppingButton", language)}
           </button>
         </div>
         <div className="absolute bottom-0 left-0 right-0">
@@ -119,11 +122,11 @@ export default function CartPage() {
         <div className="px-6 py-4 border-t border-gray-100 bg-white flex-shrink-0 space-y-3">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Subtotal</span>
+              <span className="text-muted-foreground">{t("subtotal", language)}</span>
               <span className="font-semibold">${total.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100">
-              <span>Total</span>
+              <span>{t("total", language)}</span>
               <span>${total.toFixed(2)}</span>
             </div>
           </div>
@@ -132,7 +135,7 @@ export default function CartPage() {
             className="w-full bg-black text-white py-4 rounded-2xl font-semibold hover:bg-neutral-800 active:bg-neutral-900 transition-colors"
             data-testid="button-checkout"
           >
-            Proceed to Payment
+            {t("proceedToPayment", language)}
           </button>
         </div>
       </div>
