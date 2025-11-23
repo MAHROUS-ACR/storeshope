@@ -85,7 +85,7 @@ export default function DiscountsPage() {
         productId: formData.productId,
         discountPercentage: parseFloat(formData.discountPercentage),
         startDate: new Date(formData.startDate + "T00:00:00Z").toISOString(),
-        endDate: new Date(formData.endDate + "T00:00:00Z").toISOString(),
+        endDate: new Date(formData.endDate + "T23:59:59Z").toISOString(),
       };
 
       if (editingId) {

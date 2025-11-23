@@ -597,7 +597,7 @@ export default function ProfilePage() {
         productId: discountFormData.productId,
         discountPercentage: parseFloat(discountFormData.discountPercentage),
         startDate: new Date(discountFormData.startDate + "T00:00:00Z").toISOString(),
-        endDate: new Date(discountFormData.endDate + "T00:00:00Z").toISOString(),
+        endDate: new Date(discountFormData.endDate + "T23:59:59Z").toISOString(),
       };
 
       const db = getFirestore();

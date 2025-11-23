@@ -57,8 +57,41 @@ export function getDiscountAmount(originalPrice: number, discountPercentage: num
 export function isDiscountActive(discount: Discount | null): boolean {
   if (!discount) return false;
   const now = new Date();
-  const start = discount.startDate instanceof Date ? discount.startDate : new Date(discount.startDate);
-  const end = discount.endDate instanceof Date ? discount.endDate : new Date(discount.endDate);
+  
+  // Convert to Date, handling Firestore Timestamp objects
+  let start: Date;
+  let end: Date;
+  
+  if (discount.startDate instanceof Date) {
+    start = discount.startDate;
+  } else if (typeof discount.startDate === 'string') {
+    start = new Date(discount.startDate);
+  } else if (discount.startDate && typeof discount.startDate === 'object' && 'toDate' in discount.startDate) {
+    // Firestore Timestamp
+    start = (discount.startDate as any).toDate();
+  } else {
+    start = new Date(String(discount.startDate));
+  }
+  
+  if (discount.endDate instanceof Date) {
+    end = discount.endDate;
+  } else if (typeof discount.endDate === 'string') {
+    end = new Date(discount.endDate);
+  } else if (discount.endDate && typeof discount.endDate === 'object' && 'toDate' in discount.endDate) {
+    // Firestore Timestamp
+    end = (discount.endDate as any).toDate();
+  } else {
+    end = new Date(String(discount.endDate));
+  }
+  
+  console.log("🔍 Discount check:", {
+    productId: discount.productId,
+    now: now.toISOString(),
+    start: start.toISOString(),
+    end: end.toISOString(),
+    isActive: now >= start && now <= end
+  });
+  
   return now >= start && now <= end;
 }
 
