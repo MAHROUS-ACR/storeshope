@@ -370,43 +370,28 @@ export default function SettingsPage() {
 
             {/* Firebase Cloud Messaging Section */}
             <div className="mb-8 pt-8 border-t border-gray-200">
-              <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <Bell className="w-5 h-5" />
-                Firebase Cloud Messaging
-              </h2>
+              <h2 className="text-lg font-bold mb-4">Firebase Cloud Messaging</h2>
               <p className="text-sm text-muted-foreground mb-6">
-                Push notifications configuration for instant order alerts
+                Configure push notifications for instant order alerts
               </p>
 
-              <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-2xl p-5 space-y-4">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">Messaging Sender ID</p>
-                    <p className="text-xs text-gray-600 mt-1">{firebaseMessagingSenderId || "Not configured"}</p>
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-orange-100">
-                  <p className="text-xs text-orange-900 leading-relaxed mb-3">
-                    ✅ Cloud Messaging is enabled in Firebase Console
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-2" htmlFor="firebaseMessagingSenderId">
+                    Messaging Sender ID
+                  </label>
+                  <input
+                    id="firebaseMessagingSenderId"
+                    type="text"
+                    value={firebaseMessagingSenderId}
+                    onChange={(e) => setFirebaseMessagingSenderId(e.target.value)}
+                    placeholder="123456789012"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    data-testid="input-firebase-messaging-sender-id"
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Find this in Firebase Console → Cloud Messaging → Project credentials
                   </p>
-                  <button
-                    onClick={() => setLocation("/notification-setup")}
-                    className="w-full bg-orange-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-orange-700 transition-colors"
-                    data-testid="button-notification-setup"
-                  >
-                    View Setup Guide
-                  </button>
-                </div>
-
-                <div className="bg-white/50 rounded-lg p-3 text-xs text-orange-900 space-y-2">
-                  <p className="font-semibold">What's Cloud Messaging?</p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>Push notifications even when app is closed</li>
-                    <li>Admin notified instantly on new orders</li>
-                    <li>Customers notified on order status updates</li>
-                  </ul>
                 </div>
               </div>
             </div>
