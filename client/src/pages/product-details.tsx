@@ -301,7 +301,7 @@ export default function ProductDetailsPage() {
             className="flex-1 px-4 py-3 border border-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
             data-testid="button-continue-shopping"
           >
-            Continue Shopping
+            {t("continueShoppingButton", language)}
           </button>
           <button
             onClick={handleAddToCart}
