@@ -44,6 +44,8 @@ export default function OrderDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [editingStatus, setEditingStatus] = useState(false);
   const [newStatus, setNewStatus] = useState("");
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [completedOrders, setCompletedOrders] = useState(0);
 
   // Extract order ID from URL
   const orderId = location.split("/order/")[1]?.split("?")[0];
@@ -120,7 +122,22 @@ export default function OrderDetailsPage() {
     };
 
     fetchOrder();
-  }, [orderId, user]);
+    
+    // Calculate user order statistics
+    if (user?.role === 'admin') {
+      try {
+        const savedOrders = localStorage.getItem("orders");
+        if (savedOrders) {
+          const allOrders = JSON.parse(savedOrders);
+          const userOrders = allOrders.filter((o: Order) => o.userId === order?.userId);
+          setTotalOrders(userOrders.length);
+          setCompletedOrders(userOrders.filter((o: Order) => o.status === 'completed').length);
+        }
+      } catch (e) {
+        console.error("Error calculating statistics:", e);
+      }
+    }
+  }, [orderId, user, order?.userId]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -387,25 +404,41 @@ export default function OrderDetailsPage() {
 
               {/* User Information (Admin View) */}
               {user?.role === 'admin' && (
-                <div className="bg-white rounded-2xl border border-gray-100 p-4">
-                  <h3 className="font-semibold text-sm mb-4">{language === "ar" ? "بيانات المستخدم" : "Customer Information"}</h3>
-                  <div className="flex items-center gap-4">
+                <div className="bg-white rounded-2xl border border-gray-100 p-5">
+                  <h3 className="font-semibold text-sm mb-5">{language === "ar" ? "بيانات المستخدم" : "Customer Information"}</h3>
+                  
+                  <div className="flex items-start gap-5">
                     {/* User Avatar */}
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-3xl font-bold flex-shrink-0 shadow-md">
                       {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
                     </div>
                     
-                    {/* User Details */}
+                    {/* User Details and Stats */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-muted-foreground">{language === "ar" ? "الاسم" : "Name"}</p>
-                      <p className="font-semibold text-sm mb-2" data-testid="text-username">{user?.username || "N/A"}</p>
+                      {/* Name and Email */}
+                      <div className="mb-4">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{language === "ar" ? "الاسم" : "Name"}</p>
+                        <p className="font-semibold text-sm mb-2" data-testid="text-username">{user?.username || "N/A"}</p>
+                        
+                        {user?.email && (
+                          <>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">{language === "ar" ? "البريد الإلكتروني" : "Email"}</p>
+                            <p className="font-medium text-sm text-blue-600 break-all" data-testid="text-email">{user.email}</p>
+                          </>
+                        )}
+                      </div>
                       
-                      {user?.email && (
-                        <>
-                          <p className="text-sm text-muted-foreground">{language === "ar" ? "البريد الإلكتروني" : "Email"}</p>
-                          <p className="font-medium text-sm text-blue-600 break-all" data-testid="text-email">{user.email}</p>
-                        </>
-                      )}
+                      {/* Order Statistics */}
+                      <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100">
+                        <div className="bg-emerald-50 rounded-xl p-3">
+                          <p className="text-xs text-emerald-600 font-semibold uppercase tracking-wider">{language === "ar" ? "الأوردرات المكتملة" : "Completed Orders"}</p>
+                          <p className="text-2xl font-bold text-emerald-700 mt-1" data-testid="text-completed-orders">{completedOrders}</p>
+                        </div>
+                        <div className="bg-blue-50 rounded-xl p-3">
+                          <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider">{language === "ar" ? "إجمالي الأوردرات" : "Total Orders"}</p>
+                          <p className="text-2xl font-bold text-blue-700 mt-1" data-testid="text-total-orders">{totalOrders}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
