@@ -83,7 +83,7 @@ export default function CartPage() {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-lg font-bold">{language === "ar" ? "السلة" : "Cart"} ({items.length})</h1>
+          <h1 className="text-lg font-bold">{language === "ar" ? "السلة" : "Cart"}</h1>
         </div>
 
         {/* Items List - Scrollable */}
