@@ -238,7 +238,7 @@ export function ProductCard({ product, index, onProductClick }: { product: Produ
                 className="flex-1 px-4 py-3 border border-gray-200 rounded-lg font-semibold text-sm"
                 data-testid={`button-cancel-variant-${product.id}`}
               >
-                Cancel
+                {t("cancelButton", language)}
               </button>
               <button
                 onClick={addItemToCart}
@@ -246,7 +246,7 @@ export function ProductCard({ product, index, onProductClick }: { product: Produ
                 className="flex-1 px-4 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50"
                 data-testid={`button-add-variant-${product.id}`}
               >
-                {isAdding ? "Adding..." : "Add to Cart"}
+                {isAdding ? t("addingToCart", language) : t("addToCart", language)}
               </button>
             </div>
           </motion.div>
