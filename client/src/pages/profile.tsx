@@ -603,8 +603,8 @@ export default function ProfilePage() {
         body: JSON.stringify({
           productId: discountFormData.productId,
           discountPercentage: parseFloat(discountFormData.discountPercentage),
-          startDate: new Date(discountFormData.startDate).toISOString(),
-          endDate: new Date(discountFormData.endDate).toISOString(),
+          startDate: new Date(discountFormData.startDate + "T00:00:00Z").toISOString(),
+          endDate: new Date(discountFormData.endDate + "T00:00:00Z").toISOString(),
         }),
       });
 
