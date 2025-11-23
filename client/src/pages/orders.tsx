@@ -170,14 +170,14 @@ export default function OrdersPage() {
             </div>
             <h2 className="text-lg font-bold mb-2">{t("noOrdersYet", language)}</h2>
             <p className="text-sm text-muted-foreground mb-6 text-center">
-              Your orders will appear here once you place one
+              {t("noOrdersFound", language)}
             </p>
             <button
               onClick={() => setLocation("/")}
               className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold"
               data-testid="button-start-shopping"
             >
-              Start Shopping
+              {t("startShopping", language)}
             </button>
           </div>
         ) : (
@@ -217,7 +217,7 @@ export default function OrdersPage() {
                     <div className="mt-3 bg-white rounded-2xl border border-gray-100 p-4">
                       <div className="flex items-start justify-between mb-3 pb-3 border-b border-gray-100">
                         <div>
-                          <p className="text-xs font-semibold text-gray-500">Order Details</p>
+                          <p className="text-xs font-semibold text-gray-500">{t("orderDetailsLabel", language)}</p>
                           <p className="text-sm font-bold text-gray-900">#{selectedOrder.orderNumber || "N/A"}</p>
                         </div>
                         <button
@@ -231,7 +231,7 @@ export default function OrdersPage() {
 
                       {/* Items Details */}
                       <div className="mt-3 pt-3 border-t border-gray-100">
-                        <p className="text-xs font-semibold text-gray-500 mb-2">Items</p>
+                        <p className="text-xs font-semibold text-gray-500 mb-2">{t("items", language)}</p>
                         <div className="space-y-2">
                           {selectedOrder.items.map((item, idx) => (
                             <div key={`${item.id}-${idx}`} className="flex flex-col gap-1">
@@ -265,29 +265,29 @@ export default function OrdersPage() {
                       {/* Shipping Information */}
                       {(selectedOrder.shippingAddress || selectedOrder.shippingPhone || selectedOrder.shippingZone) && (
                         <div className="mt-3 pt-3 border-t border-gray-100">
-                          <p className="text-xs font-semibold text-gray-500 mb-2">Delivery Information</p>
+                          <p className="text-xs font-semibold text-gray-500 mb-2">{t("deliveryInfoLabel", language)}</p>
                           <div className="space-y-1.5">
                             {selectedOrder.shippingAddress && (
                               <div>
-                                <p className="text-xs text-gray-500">Address</p>
+                                <p className="text-xs text-gray-500">{t("address", language)}</p>
                                 <p className="text-xs font-medium text-gray-900">{selectedOrder.shippingAddress}</p>
                               </div>
                             )}
                             {selectedOrder.shippingPhone && (
                               <div>
-                                <p className="text-xs text-gray-500">Phone</p>
+                                <p className="text-xs text-gray-500">{t("phone", language)}</p>
                                 <p className="text-xs font-medium text-gray-900">{selectedOrder.shippingPhone}</p>
                               </div>
                             )}
                             {selectedOrder.shippingZone && (
                               <div>
-                                <p className="text-xs text-gray-500">Zone</p>
+                                <p className="text-xs text-gray-500">{t("zone", language)}</p>
                                 <p className="text-xs font-medium text-gray-900">{selectedOrder.shippingZone}</p>
                               </div>
                             )}
                             {selectedOrder.shippingCost !== undefined && selectedOrder.shippingCost > 0 && (
                               <div>
-                                <p className="text-xs text-gray-500">Shipping Cost</p>
+                                <p className="text-xs text-gray-500">{t("shippingCost", language)}</p>
                                 <p className="text-xs font-medium text-gray-900">${selectedOrder.shippingCost.toFixed(2)}</p>
                               </div>
                             )}
@@ -297,29 +297,29 @@ export default function OrdersPage() {
 
                       {/* Order Summary */}
                       <div className="mt-3 pt-3 border-t border-gray-100">
-                        <p className="text-xs font-semibold text-gray-500 mb-2">Summary</p>
+                        <p className="text-xs font-semibold text-gray-500 mb-2">{t("orderSummary", language)}</p>
                         <div className="space-y-1 text-xs">
                           {selectedOrder.subtotal !== undefined && (
                             <div className="flex justify-between">
-                              <span className="text-gray-500">Subtotal</span>
+                              <span className="text-gray-500">{t("subtotal", language)}</span>
                               <span className="font-medium text-gray-900">${selectedOrder.subtotal.toFixed(2)}</span>
                             </div>
                           )}
                           {selectedOrder.shippingCost !== undefined && selectedOrder.shippingCost > 0 && (
                             <div className="flex justify-between">
-                              <span className="text-gray-500">Shipping</span>
+                              <span className="text-gray-500">{t("shipping", language)}</span>
                               <span className="font-medium text-gray-900">${selectedOrder.shippingCost.toFixed(2)}</span>
                             </div>
                           )}
                           <div className="flex justify-between font-semibold text-gray-900 pt-2 border-t border-gray-100">
-                            <span>Total</span>
+                            <span>{t("total", language)}</span>
                             <span>${selectedOrder.total.toFixed(2)}</span>
                           </div>
                         </div>
                       </div>
 
                       <div className="mt-3 text-xs text-gray-500">
-                        <p>Placed: {new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                        <p>{t("placedAt", language)} {new Date(selectedOrder.createdAt).toLocaleString()}</p>
                       </div>
                     </div>
                   )}

@@ -1886,7 +1886,7 @@ export default function ProfilePage() {
                               data-testid={`button-delete-item-${item.id}`}
                             >
                               <Trash2 className="w-3 h-3" />
-                              Delete
+                              {t("deleteButton", language)}
                             </button>
                           </div>
                         </div>
@@ -1906,7 +1906,7 @@ export default function ProfilePage() {
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-yellow-100 text-yellow-600">
                     <Package className="w-6 h-6" />
                   </div>
-                  <span className="font-semibold text-sm text-yellow-900">Store Settings</span>
+                  <span className="font-semibold text-sm text-yellow-900">{t("storeSettings", language)}</span>
                 </div>
                 <ChevronRight className={`w-5 h-5 text-yellow-400 transition-transform ${showStoreSettings ? "rotate-90" : ""}`} />
               </button>
@@ -1914,7 +1914,7 @@ export default function ProfilePage() {
               {showStoreSettings && (
                 <div className="mb-6 bg-white rounded-2xl p-4 border border-gray-200 space-y-4">
                   <div>
-                    <label className="text-xs font-semibold mb-1 block">Store Logo</label>
+                    <label className="text-xs font-semibold mb-1 block">{t("storeLogo", language)}</label>
                     <div className="flex items-center gap-3 mb-3">
                       {storeLogo ? (
                         <img src={storeLogo} alt="Logo" className="w-12 h-12 rounded-lg object-cover border border-gray-200" />
@@ -1935,7 +1935,7 @@ export default function ProfilePage() {
 
                   <input
                     type="text"
-                    placeholder="Store Name"
+                    placeholder={t("storeName", language)}
                     value={storeName}
                     onChange={(e) => setStoreName(e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -1944,7 +1944,7 @@ export default function ProfilePage() {
 
                   <input
                     type="text"
-                    placeholder="Store Address"
+                    placeholder={t("storeAddressPlaceholder", language)}
                     value={storeAddress}
                     onChange={(e) => setStoreAddress(e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -1953,7 +1953,7 @@ export default function ProfilePage() {
 
                   <input
                     type="text"
-                    placeholder="Store Phone"
+                    placeholder={t("storePhone", language)}
                     value={storePhone}
                     onChange={(e) => setStorePhone(e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -1962,7 +1962,7 @@ export default function ProfilePage() {
 
                   <input
                     type="email"
-                    placeholder="Store Email"
+                    placeholder={t("storeEmail", language)}
                     value={storeEmail}
                     onChange={(e) => setStoreEmail(e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -1995,7 +1995,7 @@ export default function ProfilePage() {
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-cyan-100 text-cyan-600">
                     <Package className="w-6 h-6" />
                   </div>
-                  <span className="font-semibold text-sm text-cyan-900">Shipping Zones</span>
+                  <span className="font-semibold text-sm text-cyan-900">{t("shippingZones", language)}</span>
                 </div>
                 <ChevronRight className={`w-5 h-5 text-cyan-400 transition-transform ${showShippingZones ? "rotate-90" : ""}`} />
               </button>
@@ -2008,7 +2008,7 @@ export default function ProfilePage() {
                     <div className="space-y-3">
                       <input
                         type="text"
-                        placeholder="Zone Name (e.g., Cairo, Alexandria)"
+                        placeholder={t("zoneNamePlaceholder", language)}
                         value={newZoneName}
                         onChange={(e) => setNewZoneName(e.target.value)}
                         className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-200"
@@ -2016,7 +2016,7 @@ export default function ProfilePage() {
                       />
                       <input
                         type="number"
-                        placeholder="Shipping Cost"
+                        placeholder={t("shippingCostPlaceholder", language)}
                         value={newZoneCost}
                         onChange={(e) => setNewZoneCost(e.target.value)}
                         className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-cyan-200"
@@ -2039,7 +2039,7 @@ export default function ProfilePage() {
                           className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold text-sm hover:bg-gray-300"
                           data-testid="button-cancel-edit-zone"
                         >
-                          Cancel
+                          {t("cancelButton", language)}
                         </button>
                       )}
                     </div>
@@ -2048,7 +2048,7 @@ export default function ProfilePage() {
                   {/* Zones List */}
                   {shippingZones.length > 0 && (
                     <div className="bg-white rounded-2xl p-4 border border-gray-200">
-                      <h3 className="text-sm font-bold mb-3">Shipping Zones</h3>
+                      <h3 className="text-sm font-bold mb-3">{t("shippingZones", language)}</h3>
                       <div className="space-y-3">
                         {shippingZones.map((zone) => (
                           <div key={zone.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -2066,14 +2066,14 @@ export default function ProfilePage() {
                                 className="px-3 py-2 bg-amber-100 text-amber-700 rounded-lg text-xs font-semibold hover:bg-amber-200"
                                 data-testid={`button-edit-zone-${zone.id}`}
                               >
-                                Edit
+                                {t("editButton", language)}
                               </button>
                               <button
                                 onClick={() => handleDeleteShippingZone(zone.id)}
                                 className="px-3 py-2 bg-red-100 text-red-700 rounded-lg text-xs font-semibold hover:bg-red-200"
                                 data-testid={`button-delete-zone-${zone.id}`}
                               >
-                                Delete
+                                {t("deleteButton", language)}
                               </button>
                             </div>
                           </div>
