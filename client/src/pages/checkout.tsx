@@ -232,9 +232,7 @@ export default function CheckoutPage() {
 
       const orderWithUser = { 
         ...orderData, 
-        userId: user?.id,
-        userName: user?.username,
-        userEmail: user?.email
+        userId: user?.id
       };
 
       try {
@@ -309,9 +307,7 @@ export default function CheckoutPage() {
 
       const orderWithUser = { 
         ...orderData, 
-        userId: user?.id,
-        userName: user?.username,
-        userEmail: user?.email
+        userId: user?.id
       };
 
       try {

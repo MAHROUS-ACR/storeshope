@@ -639,6 +639,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get specific user by ID
+  app.get("/api/users/:userId", async (req, res) => {
+    try {
+      if (!isFirebaseConfigured()) {
+        return res.status(503).json({ message: "Firebase not configured" });
+      }
+
+      const { userId } = req.params;
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      const db = getFirestore();
+      const doc = await db.collection("users").doc(userId).get();
+      
+      if (!doc.exists) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const data = doc.data();
+      const user = {
+        id: doc.id,
+        email: data?.email || "",
+        username: data?.username || "",
+        role: data?.role || "user",
+      };
+
+      console.log(`✅ Fetched user ${userId} from Firestore`);
+      res.json(user);
+    } catch (error: any) {
+      console.error("❌ Error fetching user:", error);
+      res.status(500).json({
+        message: "Failed to fetch user",
+        error: error.message,
+      });
+    }
+  });
+
   // Update user role
   app.post("/api/user/role", async (req, res) => {
     try {

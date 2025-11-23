@@ -23,8 +23,6 @@ interface Order {
   id: string;
   orderNumber?: number;
   userId?: string;
-  userName?: string;
-  userEmail?: string;
   items: CartItem[];
   total: number;
   status: string;
@@ -50,6 +48,7 @@ export default function OrderDetailsPage() {
   const [completedOrders, setCompletedOrders] = useState(0);
   const [completedOrdersValue, setCompletedOrdersValue] = useState(0);
   const [orderUser, setOrderUser] = useState<any>(null);
+  const [userLoading, setUserLoading] = useState(false);
 
   // Extract order ID from URL
   const orderId = location.split("/order/")[1]?.split("?")[0];
@@ -130,18 +129,31 @@ export default function OrderDetailsPage() {
 
   // Separate effect to handle order user and statistics once order is loaded
   useEffect(() => {
-    if (!order) return;
+    if (!order || !order.userId) return;
 
-    // If order has stored userName, use it directly
-    if (order.userName && order.userEmail) {
-      setOrderUser({
-        username: order.userName,
-        email: order.userEmail
-      });
-    }
+    // Fetch user data from Firestore using userId
+    const fetchUserData = async () => {
+      try {
+        setUserLoading(true);
+        const response = await fetch(`/api/users/${order.userId}`);
+        if (response.ok) {
+          const userData = await response.json();
+          setOrderUser({
+            username: userData.username,
+            email: userData.email
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    fetchUserData();
 
     // Calculate user order statistics for admin
-    if (user?.role === 'admin' && order.userId) {
+    if (user?.role === 'admin') {
       try {
         const savedOrders = localStorage.getItem("orders");
         if (savedOrders) {
