@@ -23,6 +23,8 @@ interface Order {
   id: string;
   orderNumber?: number;
   userId?: string;
+  userName?: string;
+  userEmail?: string;
   items: CartItem[];
   total: number;
   status: string;
@@ -405,6 +407,35 @@ export default function OrderDetailsPage() {
                   </div>
                 </div>
               </div>
+
+              {/* User Information */}
+              {order?.userName && (
+                <div className="bg-white rounded-2xl border border-gray-100 p-5">
+                  <h3 className="font-semibold text-sm mb-5">{language === "ar" ? "بيانات المستخدم" : "Customer Information"}</h3>
+                  
+                  <div className="flex items-center gap-6">
+                    {/* User Avatar */}
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-5xl font-bold flex-shrink-0 shadow-lg ring-4 ring-blue-100" data-testid="avatar-user">
+                      {order.userName?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                    
+                    {/* User Details */}
+                    <div className="flex-1 min-w-0">
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{language === "ar" ? "الاسم" : "Name"}</p>
+                        <p className="font-semibold text-sm mb-3" data-testid="text-username">{order.userName}</p>
+                      </div>
+                      
+                      {order.userEmail && (
+                        <div>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider">{language === "ar" ? "البريد الإلكتروني" : "Email"}</p>
+                          <p className="font-medium text-sm text-blue-600 break-all" data-testid="text-email">{order.userEmail}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Admin Statistics (Admin View) */}
               {user?.role === 'admin' && (
