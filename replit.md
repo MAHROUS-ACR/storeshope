@@ -14,6 +14,17 @@ Flux Wallet is a high-fidelity mobile e-commerce application built as a progress
 - User profile and settings management
 - Responsive mobile wrapper simulating iPhone device
 - Product variant selection (units, sizes, colors with hex codes)
+- **NEW: Complete discount/promotions system** - Admins can create, edit, and delete product-specific discounts with percentage values and time periods
+
+## Recent Changes (Nov 23, 2025)
+
+- **Discount System Implementation:**
+  - Created `/api/discounts` endpoints for CRUD operations (GET all, GET by productId, POST create, PUT update, DELETE)
+  - New admin page at `/discounts` for managing product discounts
+  - Discount button added to admin menu in profile with Zap icon
+  - Helper utility file `discountUtils.ts` with price calculation functions
+  - Full Arabic/English translations for discount UI
+  - Database schema includes discounts table with productId, percentage, and date range fields
 
 ## User Preferences
 
@@ -44,6 +55,7 @@ Preferred communication style: Simple, everyday language.
 - `BottomNav`: Fixed navigation bar with active state animations
 - `CartProvider`: Global cart state with localStorage persistence
 - Product display components with lazy loading and animations
+- `DiscountsPage`: Admin page for managing promotions and discounts
 
 ### Backend Architecture
 
@@ -52,7 +64,7 @@ Preferred communication style: Simple, everyday language.
 - **Development Server:** Vite dev server with HMR in development
 - **Production Build:** ESBuild for server-side bundling
 - **Database ORM:** Drizzle ORM configured for PostgreSQL
-- **Session Storage:** In-memory storage (MemStorage) with interface for future database integration
+- **Session Storage:** Database-backed with Drizzle ORM
 
 **Design Decisions:**
 - **Dual Server Setup:** 
@@ -61,6 +73,12 @@ Preferred communication style: Simple, everyday language.
 - **Storage Abstraction:** `IStorage` interface allows switching between in-memory and database storage without changing business logic
 - **API Structure:** RESTful endpoints under `/api/*` namespace
 - **Request Logging:** Custom middleware logs API requests with response details and timing
+- **Discount Endpoints:**
+  - `GET /api/discounts` - Get all discounts
+  - `GET /api/discounts/:productId` - Get active discount for specific product
+  - `POST /api/discounts` - Create new discount
+  - `PUT /api/discounts/:id` - Update discount
+  - `DELETE /api/discounts/:id` - Delete discount
 
 **Server Configuration:**
 - Raw body capture for webhook verification (Stripe integration ready)
@@ -72,18 +90,19 @@ Preferred communication style: Simple, everyday language.
 
 **Database Schema (Drizzle ORM):**
 - `users` table with UUID primary keys, username, and password fields
+- `discounts` table with productId, discountPercentage, startDate, endDate fields
 - Schema validation using Zod for type-safe inserts
 - Migration support via `drizzle-kit`
 
 **Current Implementation:**
-- In-memory storage for development/testing
-- PostgreSQL ready via Drizzle configuration
+- PostgreSQL with Drizzle ORM for data persistence
+- Discounts calculated in real-time based on active date ranges
 - LocalStorage for client-side cart persistence
 
 **Storage Strategy:**
-- Server-side: Pluggable storage interface (currently MemStorage)
+- Server-side: Drizzle ORM with PostgreSQL database
 - Client-side: Browser localStorage for cart state
-- Future: Database-backed storage with session management
+- Time-based discount activation: Automatically checks if discount is within valid date range
 
 ### Authentication
 
@@ -93,8 +112,8 @@ Preferred communication style: Simple, everyday language.
 - **User ID:** Firebase UID stored as `user.id`
 - **Session:** Managed by Firebase Auth service
 - **Persistence:** User data cached in localStorage
-- **Status:** Primary authentication method (Nov 22, 2025)
-- **Previous System:** Server-side database authentication (deprecated)
+- **Status:** Primary authentication method (Nov 23, 2025)
+- **Role-Based Access:** Admin and user roles for discount management
 
 ### External Dependencies
 
@@ -115,7 +134,7 @@ Preferred communication style: Simple, everyday language.
 - **Stripe:** Payment processing infrastructure (partially integrated)
   - React Stripe.js components available
   - Webhook endpoint structure in place
-- **Neon Database:** Serverless PostgreSQL provider (configured but not actively used)
+- **Neon Database:** Serverless PostgreSQL provider (configured and actively used)
 
 **UI Component Libraries:**
 - Radix UI: Accessible, unstyled component primitives
@@ -132,3 +151,4 @@ Preferred communication style: Simple, everyday language.
 - Graceful degradation: Error states with user-friendly messages
 - Configuration-driven: Firebase and external services configurable at runtime
 - Type-safe API contracts: Shared types between client and server via `@shared` package
+- Time-based promotions: Discount system respects date ranges for campaign management

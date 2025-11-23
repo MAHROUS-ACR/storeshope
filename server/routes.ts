@@ -823,6 +823,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all discounts
+  app.get("/api/discounts", async (req, res) => {
+    try {
+      const discounts = await storage.getAllDiscounts();
+      res.json(discounts);
+    } catch (error: any) {
+      console.error("Error fetching discounts:", error);
+      res.status(500).json({ message: "Failed to fetch discounts" });
+    }
+  });
+
+  // Get discount for a specific product
+  app.get("/api/discounts/:productId", async (req, res) => {
+    try {
+      const { productId } = req.params;
+      const discount = await storage.getDiscountByProductId(productId);
+      res.json(discount || null);
+    } catch (error: any) {
+      console.error("Error fetching discount:", error);
+      res.status(500).json({ message: "Failed to fetch discount" });
+    }
+  });
+
+  // Create discount
+  app.post("/api/discounts", async (req, res) => {
+    try {
+      const { productId, discountPercentage, startDate, endDate } = req.body;
+      
+      if (!productId || !discountPercentage || !startDate || !endDate) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const discount = await storage.createDiscount({
+        productId,
+        discountPercentage: discountPercentage.toString(),
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+      });
+
+      res.json(discount);
+    } catch (error: any) {
+      console.error("Error creating discount:", error);
+      res.status(500).json({ message: "Failed to create discount" });
+    }
+  });
+
+  // Update discount
+  app.put("/api/discounts/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { discountPercentage, startDate, endDate } = req.body;
+      
+      const updateData: any = {};
+      if (discountPercentage !== undefined) updateData.discountPercentage = discountPercentage.toString();
+      if (startDate !== undefined) updateData.startDate = new Date(startDate);
+      if (endDate !== undefined) updateData.endDate = new Date(endDate);
+
+      const discount = await storage.updateDiscount(id, updateData);
+      
+      if (!discount) {
+        return res.status(404).json({ message: "Discount not found" });
+      }
+
+      res.json(discount);
+    } catch (error: any) {
+      console.error("Error updating discount:", error);
+      res.status(500).json({ message: "Failed to update discount" });
+    }
+  });
+
+  // Delete discount
+  app.delete("/api/discounts/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteDiscount(id);
+      res.json({ message: "Discount deleted successfully" });
+    } catch (error: any) {
+      console.error("Error deleting discount:", error);
+      res.status(500).json({ message: "Failed to delete discount" });
+    }
+  });
+
   const server = createServer(app);
   return server;
 }

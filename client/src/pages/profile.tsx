@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X, Save, Plus, Trash2, TrendingUp, Globe, ShoppingBag, Store, Users, Truck, BarChart3, MapPin } from "lucide-react";
+import { Settings, Database, Package, Bell, HelpCircle, LogOut, ChevronRight, Edit2, Check, X, Save, Plus, Trash2, TrendingUp, Globe, ShoppingBag, Store, Users, Truck, BarChart3, MapPin, Zap } from "lucide-react";
 import { useLocation } from "wouter";
 import { useUser } from "@/lib/userContext";
 import { useLanguage } from "@/lib/languageContext";
@@ -16,6 +16,7 @@ const getMenuItems = (language: any) => [
   { icon: Package, label: t("myOrders", language), path: "/orders", buttonBg: "bg-purple-50", borderColor: "border-purple-200 hover:border-purple-300", iconColor: "text-purple-600 bg-purple-100", textColor: "text-purple-900" },
   { icon: Bell, label: t("notifications", language), path: "/notifications", buttonBg: "bg-orange-50", borderColor: "border-orange-200 hover:border-orange-300", iconColor: "text-orange-600 bg-orange-100", textColor: "text-orange-900" },
   { icon: HelpCircle, label: t("helpSupport", language), path: "/help", buttonBg: "bg-green-50", borderColor: "border-green-200 hover:border-green-300", iconColor: "text-green-600 bg-green-100", textColor: "text-green-900" },
+  { icon: Zap, label: t("discounts", language), path: "/discounts", buttonBg: "bg-yellow-50", borderColor: "border-yellow-200 hover:border-yellow-300", iconColor: "text-yellow-600 bg-yellow-100", textColor: "text-yellow-900" },
 ];
 
 interface OrderItem {

@@ -16,6 +16,7 @@ import OrdersPage from "@/pages/orders";
 import OrderDetailsPage from "@/pages/order-details";
 import ProductDetailsPage from "@/pages/product-details";
 import LoginPage from "@/pages/login";
+import DiscountsPage from "@/pages/discounts";
 
 function Router() {
   return (
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/orders" component={OrdersPage} />
       <Route path="/order/:id" component={OrderDetailsPage} />
       <Route path="/product/:id" component={ProductDetailsPage} />
+      <Route path="/discounts" component={DiscountsPage} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
