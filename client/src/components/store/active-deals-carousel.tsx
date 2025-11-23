@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
@@ -26,15 +26,13 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
   const [carouselIndex, setCarouselIndex] = useState(0);
   const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Get products with active discounts
-  const discountedProducts = products.filter(product => {
-    const activeDiscount = getActiveDiscount(String(product.id), discounts);
-    return activeDiscount !== null;
-  }).slice(0, 6); // Limit to 6 products
-
-  if (discountedProducts.length === 0) {
-    return null;
-  }
+  // Get products with active discounts (memoized to prevent re-filtering on every render)
+  const discountedProducts = useMemo(() => {
+    return products.filter(product => {
+      const activeDiscount = getActiveDiscount(String(product.id), discounts);
+      return activeDiscount !== null;
+    }).slice(0, 6); // Limit to 6 products
+  }, [products, discounts]);
 
   const startAutoScroll = () => {
     // Clear existing timer
@@ -42,22 +40,26 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
       clearInterval(autoScrollRef.current);
     }
     // Set new timer - auto scroll every 5 seconds
-    autoScrollRef.current = setInterval(() => {
-      setCarouselIndex((prev) => (prev + 1) % discountedProducts.length);
-    }, 5000);
+    if (discountedProducts.length > 1) {
+      autoScrollRef.current = setInterval(() => {
+        setCarouselIndex((prev) => (prev + 1) % discountedProducts.length);
+      }, 5000);
+    }
   };
 
   // Start auto scroll on mount and when discountedProducts changes
   useEffect(() => {
-    if (discountedProducts.length > 1) {
-      startAutoScroll();
-    }
+    startAutoScroll();
     return () => {
       if (autoScrollRef.current) {
         clearInterval(autoScrollRef.current);
       }
     };
-  }, [discountedProducts.length]);
+  }, [discountedProducts]);
+
+  if (discountedProducts.length === 0) {
+    return null;
+  }
 
   const nextSlide = () => {
     setCarouselIndex((prev) => (prev + 1) % discountedProducts.length);
