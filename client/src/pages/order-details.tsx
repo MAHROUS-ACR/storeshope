@@ -384,6 +384,32 @@ export default function OrderDetailsPage() {
                   </div>
                 </div>
               </div>
+
+              {/* User Information (Admin View) */}
+              {user?.role === 'admin' && (
+                <div className="bg-white rounded-2xl border border-gray-100 p-4">
+                  <h3 className="font-semibold text-sm mb-4">{language === "ar" ? "بيانات المستخدم" : "Customer Information"}</h3>
+                  <div className="flex items-center gap-4">
+                    {/* User Avatar */}
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
+                      {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
+                    </div>
+                    
+                    {/* User Details */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-muted-foreground">{language === "ar" ? "الاسم" : "Name"}</p>
+                      <p className="font-semibold text-sm mb-2" data-testid="text-username">{user?.username || "N/A"}</p>
+                      
+                      {user?.email && (
+                        <>
+                          <p className="text-sm text-muted-foreground">{language === "ar" ? "البريد الإلكتروني" : "Email"}</p>
+                          <p className="font-medium text-sm text-blue-600 break-all" data-testid="text-email">{user.email}</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
