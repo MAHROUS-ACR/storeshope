@@ -295,7 +295,7 @@ export default function ProductDetailsPage() {
         </div>
 
         {/* Bottom Actions */}
-        <div className="absolute bottom-20 left-0 right-0 px-6 py-4 bg-white border-t border-gray-100 flex gap-3">
+        <div className="absolute bottom-28 left-0 right-0 px-6 py-4 bg-white border-t border-gray-100 flex gap-3">
           <button
             onClick={() => setLocation("/")}
             className="flex-1 px-4 py-3 border border-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
