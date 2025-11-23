@@ -97,7 +97,7 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
             alt={discountedProducts[carouselIndex].title || discountedProducts[carouselIndex].name}
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-transparent flex flex-col justify-start p-4">
             <div className="text-white">
               <div className="flex items-center gap-2 mb-1">
                 {(() => {
