@@ -129,7 +129,7 @@ export function NotificationCenter() {
   if (!user?.id) return null;
 
   return (
-    <div className="relative">
+    <div className="relative inline-block">
       {/* Bell Icon Button */}
       <button
         ref={buttonRef}
@@ -149,15 +149,14 @@ export function NotificationCenter() {
         )}
       </button>
 
-      {/* Dropdown Menu - Absolute positioning */}
+      {/* Dropdown Menu - Positioned below button */}
       {isOpen && (
         <div
           ref={menuRef}
-          className="absolute bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-80 overflow-y-auto"
+          className="absolute top-full mt-2 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-80 overflow-y-auto"
           style={{
             width: "280px",
-            ...(language === "ar" ? { right: "10px" } : { left: "10px" }),
-            top: "120px",
+            ...(language === "ar" ? { right: "0" } : { left: "0" }),
           }}
         >
           {/* Header */}
