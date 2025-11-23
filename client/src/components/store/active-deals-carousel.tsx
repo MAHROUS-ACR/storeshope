@@ -130,12 +130,15 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
                   discounts
                 );
                 return activeDiscount ? (
-                  <motion.span 
-                    animate={{ scale: [1, 1.05, 1] }}
+                  <motion.div 
+                    animate={{ scale: [1, 1.08, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="inline-block bg-gradient-to-br from-red-500 to-red-600 text-white px-3 py-2 rounded-lg text-base font-black shadow-lg shadow-red-500/50 border-2 border-yellow-300">
-                    -{activeDiscount.discountPercentage}%
-                  </motion.span>
+                    className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-red-600 to-orange-600 rounded-full blur-lg opacity-60"></div>
+                    <div className="relative bg-gradient-to-br from-red-500 via-red-600 to-red-700 text-white px-5 py-3 rounded-full text-2xl font-black shadow-2xl shadow-red-600/60 border-2 border-yellow-300 flex items-center gap-1">
+                      <span>-{activeDiscount.discountPercentage}%</span>
+                    </div>
+                  </motion.div>
                 ) : null;
               })()}
             </div>
