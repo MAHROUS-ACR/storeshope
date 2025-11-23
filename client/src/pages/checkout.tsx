@@ -399,6 +399,18 @@ export default function CheckoutPage() {
                   <span>{t("subtotal", language)}</span>
                   <span>${total.toFixed(2)}</span>
                 </div>
+                {calculateTotalWithDiscounts() < total && (
+                  <div className="flex justify-between text-sm text-green-600 font-semibold">
+                    <span>{language === "ar" ? "الخصم" : "Discount"}</span>
+                    <span>-${(total - calculateTotalWithDiscounts()).toFixed(2)}</span>
+                  </div>
+                )}
+                {calculateTotalWithDiscounts() < total && (
+                  <div className="flex justify-between text-sm font-semibold">
+                    <span>{language === "ar" ? "بعد الخصم" : "After Discount"}</span>
+                    <span className="text-green-600">${calculateTotalWithDiscounts().toFixed(2)}</span>
+                  </div>
+                )}
                 {shippingCost > 0 && (
                   <div className="flex justify-between text-sm">
                     <span>{t("shipping", language)}</span>
@@ -407,7 +419,7 @@ export default function CheckoutPage() {
                 )}
                 <div className="flex justify-between font-bold text-base">
                   <span>{t("total", language)}</span>
-                  <span>${(total + shippingCost).toFixed(2)}</span>
+                  <span>${(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -658,7 +670,7 @@ export default function CheckoutPage() {
                     {t("processingPayment", language)}
                   </>
                 ) : (
-                  `${paymentMethod === "card" ? t("pay", language) : t("placeOrder", language)} $${(total + shippingCost).toFixed(2)}`
+                  `${paymentMethod === "card" ? t("pay", language) : t("placeOrder", language)} $${(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}`
                 )}
               </button>
             </form>
