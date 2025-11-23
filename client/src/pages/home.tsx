@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { Search, ShoppingCart, AlertCircle } from "lucide-react";
+import { Search, ShoppingCart, AlertCircle, Globe } from "lucide-react";
 import { PromoBanner } from "@/components/store/promo-banner";
 import { CategoryFilter } from "@/components/store/category-filter";
 import { ProductCard } from "@/components/store/product-card";
@@ -48,7 +48,7 @@ const fallbackProducts = [
 export default function Home() {
   const [location, setLocation] = useLocation();
   const { items } = useCart();
-  const { language } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState<any[]>([]);
@@ -148,18 +148,28 @@ export default function Home() {
               )}
               <h1 className="text-base font-bold text-gray-900">{storeName}</h1>
             </div>
-            <button 
-              onClick={() => setLocation("/cart")}
-              className="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center relative hover:bg-gray-900 transition-colors flex-shrink-0"
-              data-testid="button-cart"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              {items.length > 0 && (
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white">
-                  {items.length}
-                </div>
-              )}
-            </button>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setLanguage(language === "en" ? "ar" : "en")}
+                className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50"
+                data-testid="button-toggle-language"
+                title={language === "en" ? "عربي" : "English"}
+              >
+                <Globe className="w-5 h-5 text-gray-600" />
+              </button>
+              <button 
+                onClick={() => setLocation("/cart")}
+                className="w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center relative hover:bg-gray-900 transition-colors flex-shrink-0"
+                data-testid="button-cart"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                {items.length > 0 && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white">
+                    {items.length}
+                  </div>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Search */}
