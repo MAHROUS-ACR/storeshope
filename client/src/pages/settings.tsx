@@ -47,7 +47,7 @@ export default function SettingsPage() {
           setFirebaseAppId(serverConfig.firebaseAppId || "");
           setFirebaseAuthDomain(serverConfig.firebaseAuthDomain || "");
           setFirebaseStorageBucket(serverConfig.firebaseStorageBucket || "");
-          setFirebaseMessagingSenderId(serverConfig.firebaseMessagingSenderId || "");
+          setFirebaseMessagingSenderId((serverConfig.firebaseMessagingSenderId || "").trim());
           setFirebaseMeasurementId(serverConfig.firebaseMeasurementId || "");
         }
 
@@ -64,16 +64,16 @@ export default function SettingsPage() {
         console.error("Failed to load config from server:", error);
       }
 
-      // Also check localStorage for any locally saved config
+      // Also check localStorage for any locally saved config - only if server values are empty
       const localConfig = getFirebaseConfig();
       if (localConfig) {
-        setFirebaseApiKey(localConfig.apiKey || "");
-        setFirebaseProjectId(localConfig.projectId || "");
-        setFirebaseAppId(localConfig.appId || "");
-        setFirebaseAuthDomain(localConfig.authDomain || "");
-        setFirebaseStorageBucket(localConfig.storageBucket || "");
-        setFirebaseMessagingSenderId(localConfig.messagingSenderId || "");
-        setFirebaseMeasurementId(localConfig.measurementId || "");
+        setFirebaseApiKey(prev => prev || localConfig.apiKey || "");
+        setFirebaseProjectId(prev => prev || localConfig.projectId || "");
+        setFirebaseAppId(prev => prev || localConfig.appId || "");
+        setFirebaseAuthDomain(prev => prev || localConfig.authDomain || "");
+        setFirebaseStorageBucket(prev => prev || localConfig.storageBucket || "");
+        setFirebaseMessagingSenderId(prev => prev || localConfig.messagingSenderId || "");
+        setFirebaseMeasurementId(prev => prev || localConfig.measurementId || "");
       }
     };
 
