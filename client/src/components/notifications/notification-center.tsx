@@ -153,7 +153,7 @@ export function NotificationCenter() {
       {isOpen && (
         <div
           ref={menuRef}
-          className="absolute top-12 right-0 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-80 overflow-y-auto"
+          className="absolute top-12 left-0 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-80 overflow-y-auto"
           style={{
             width: "340px",
           }}
