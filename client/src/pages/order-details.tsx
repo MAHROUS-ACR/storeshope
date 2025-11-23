@@ -184,7 +184,7 @@ export default function OrderDetailsPage() {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-xl font-bold">Order Details</h1>
+          <h1 className="text-xl font-bold">{t("orderDetails", language)}</h1>
         </div>
 
         {/* Content */}
@@ -197,12 +197,12 @@ export default function OrderDetailsPage() {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <span className="text-2xl">❌</span>
             </div>
-            <h2 className="text-lg font-bold mb-2">Order not found</h2>
+            <h2 className="text-lg font-bold mb-2">{t("orderNotFound", language)}</h2>
             <button
               onClick={handleBack}
               className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold mt-4"
             >
-              {user?.role === 'admin' ? 'Back to Admin' : 'Back to Account'}
+              {user?.role === 'admin' ? t("backToAdmin", language) : t("backToAccount", language)}
             </button>
           </div>
         ) : (
@@ -212,7 +212,7 @@ export default function OrderDetailsPage() {
               <div className="bg-white rounded-2xl border border-gray-100 p-4">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <p className="text-sm text-muted-foreground">Order Number</p>
+                    <p className="text-sm text-muted-foreground">{t("orderNumber", language)}</p>
                     <p className="font-semibold text-lg font-mono">#{order.orderNumber || order.id.slice(0, 8).toUpperCase()}</p>
                   </div>
                   {editingStatus ? (
@@ -224,8 +224,8 @@ export default function OrderDetailsPage() {
                       >
                         <option value="">{t("selectStatus", language)}</option>
                         <option value="pending">{t("pending", language)}</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="processing">Processing</option>
+                        <option value="confirmed">{t("confirmed", language)}</option>
+                        <option value="processing">{t("processing", language)}</option>
                         <option value="shipped">{t("shipped", language)}</option>
                         <option value="completed">{t("completed", language)}</option>
                         <option value="cancelled">{t("cancelled", language)}</option>
@@ -270,14 +270,14 @@ export default function OrderDetailsPage() {
                 </p>
                 {order.paymentMethod && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    {order.paymentMethod === "card" ? "💳 Card Payment" : "🚚 Pay on Delivery"}
+                    {order.paymentMethod === "card" ? t("cardPayment", language) : t("payOnDelivery", language)}
                   </p>
                 )}
               </div>
 
               {/* Items */}
               <div className="bg-white rounded-2xl border border-gray-100 p-4">
-                <h3 className="font-semibold text-sm mb-3">Items</h3>
+                <h3 className="font-semibold text-sm mb-3">{t("items", language)}</h3>
                 <div className="space-y-3">
                   {order.items && order.items.length > 0 ? (
                     order.items.map((item, idx) => (
@@ -317,7 +317,7 @@ export default function OrderDetailsPage() {
                       </div>
                     ))
                   ) : (
-                    <p className="text-xs text-muted-foreground">No items</p>
+                    <p className="text-xs text-muted-foreground">{t("noItems", language)}</p>
                   )}
                 </div>
               </div>
@@ -325,23 +325,23 @@ export default function OrderDetailsPage() {
               {/* Shipping Details */}
               {(order.shippingAddress || order.shippingPhone || order.shippingZone) && (
                 <div className="bg-white rounded-2xl border border-gray-100 p-4">
-                  <h3 className="font-semibold text-sm mb-3">Delivery Information</h3>
+                  <h3 className="font-semibold text-sm mb-3">{t("deliveryInfo", language)}</h3>
                   <div className="space-y-3">
                     {order.shippingAddress && (
                       <div>
-                        <p className="text-xs text-muted-foreground">Address</p>
+                        <p className="text-xs text-muted-foreground">{t("address", language)}</p>
                         <p className="text-sm font-medium">{order.shippingAddress}</p>
                       </div>
                     )}
                     {order.shippingPhone && (
                       <div>
-                        <p className="text-xs text-muted-foreground">Phone</p>
+                        <p className="text-xs text-muted-foreground">{t("phone", language)}</p>
                         <p className="text-sm font-medium">{order.shippingPhone}</p>
                       </div>
                     )}
                     {order.shippingZone && (
                       <div>
-                        <p className="text-xs text-muted-foreground">Zone</p>
+                        <p className="text-xs text-muted-foreground">{t("zone", language)}</p>
                         <p className="text-sm font-medium">{order.shippingZone}</p>
                       </div>
                     )}
@@ -351,22 +351,22 @@ export default function OrderDetailsPage() {
 
               {/* Order Summary */}
               <div className="bg-white rounded-2xl border border-gray-100 p-4">
-                <h3 className="font-semibold text-sm mb-3">Order Summary</h3>
+                <h3 className="font-semibold text-sm mb-3">{t("orderSummary", language)}</h3>
                 <div className="space-y-2">
                   {order.subtotal !== undefined && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Subtotal</span>
+                      <span className="text-muted-foreground">{t("subtotal", language)}</span>
                       <span>${order.subtotal.toFixed(2)}</span>
                     </div>
                   )}
                   {order.shippingCost !== undefined && order.shippingCost > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Shipping</span>
+                      <span className="text-muted-foreground">{t("shipping", language)}</span>
                       <span>${order.shippingCost.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-lg font-bold border-t border-gray-100 pt-2 mt-2">
-                    <span>Total</span>
+                    <span>{t("total", language)}</span>
                     <span>${order.total.toFixed(2)}</span>
                   </div>
                 </div>

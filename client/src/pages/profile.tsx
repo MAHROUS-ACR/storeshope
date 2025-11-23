@@ -824,7 +824,7 @@ export default function ProfilePage() {
                 {showUserProfile && (
                   <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-4 mb-4">
                     <div>
-                      <label className="text-xs font-semibold mb-1 block">Main Address *</label>
+                      <label className="text-xs font-semibold mb-1 block">{t("mainAddress", language)} *</label>
                       <input
                         type="text"
                         placeholder="Street address"
@@ -851,7 +851,7 @@ export default function ProfilePage() {
                     </div>
 
                     <div>
-                      <label className="text-xs font-semibold mb-1 block">Phone Number *</label>
+                      <label className="text-xs font-semibold mb-1 block">{t("phoneNumber", language)} *</label>
                       <input
                         type="tel"
                         placeholder="Mobile number"
@@ -1528,7 +1528,7 @@ export default function ProfilePage() {
                     <div className="space-y-3">
                       {/* Product Image */}
                       <div>
-                        <label className="text-xs font-semibold mb-2 block">Product Image</label>
+                        <label className="text-xs font-semibold mb-2 block">{t("productImage", language)}</label>
                         <div className="flex items-center gap-3 mb-2">
                           {newItemForm.image ? (
                             <img src={newItemForm.image} alt="Product" className="w-16 h-16 rounded-lg object-cover border border-gray-200" />
