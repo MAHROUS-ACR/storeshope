@@ -156,7 +156,7 @@ export function NotificationCenter() {
           className="absolute bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-80 overflow-y-auto"
           style={{
             width: "310px",
-            right: language === "ar" ? "-80px" : "-120px",
+            ...(language === "ar" ? { right: "0" } : { left: "0" }),
             top: "120px",
           }}
         >
