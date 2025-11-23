@@ -5,7 +5,7 @@ export interface CartItem {
   title: string;
   price: number;
   quantity: number;
-  image: string;
+  image?: string;
   selectedColor?: string;
   selectedSize?: string;
   selectedUnit?: string;
@@ -54,7 +54,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   const addItem = (newItem: CartItem) => {
+    console.log("CartContext addItem called with:", newItem);
     setItems(prev => {
+      console.log("Current items before adding:", prev);
       // Check if item with same id AND same variants already exists
       const existing = prev.find(item => 
         item.id === newItem.id &&
@@ -63,6 +65,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         item.selectedUnit === newItem.selectedUnit
       );
       if (existing) {
+        console.log("Item exists, updating quantity");
         return prev.map(item =>
           item.id === newItem.id &&
           item.selectedColor === newItem.selectedColor &&
@@ -72,7 +75,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : item
         );
       }
-      return [...prev, newItem];
+      console.log("New item, adding to cart");
+      const newItems = [...prev, newItem];
+      console.log("Updated items:", newItems);
+      return newItems;
     });
   };
 

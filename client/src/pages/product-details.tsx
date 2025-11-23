@@ -63,9 +63,10 @@ export default function ProductDetailsPage() {
     }
 
     setIsAdding(true);
+    console.log("Adding to cart from product details:", { productId: product.id, quantity });
     try {
       for (let i = 0; i < quantity; i++) {
-        addItem({
+        const itemData = {
           id: String(product.id),
           title: product.title || product.name || "Product",
           price: product.price,
@@ -74,11 +75,15 @@ export default function ProductDetailsPage() {
           selectedColor: selectedColor || undefined,
           selectedSize: selectedSize || undefined,
           selectedUnit: selectedUnit || undefined,
-        });
+        };
+        console.log("Adding item:", itemData);
+        addItem(itemData);
       }
+      console.log("All items added successfully");
       toast.success(`تمت إضافة ${quantity} من المنتج إلى السلة`);
       setTimeout(() => setLocation("/cart"), 1000);
     } catch (error) {
+      console.error("Error adding to cart:", error);
       toast.error("فشل إضافة المنتج");
     } finally {
       setIsAdding(false);
