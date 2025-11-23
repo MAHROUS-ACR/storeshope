@@ -135,13 +135,18 @@ export default function OrderDetailsPage() {
     const fetchUserData = async () => {
       try {
         setUserLoading(true);
+        console.log("Fetching user data for userId:", order.userId);
         const response = await fetch(`/api/users/${order.userId}`);
+        console.log("User fetch response status:", response.status);
         if (response.ok) {
           const userData = await response.json();
+          console.log("User data fetched:", userData);
           setOrderUser({
             username: userData.username,
             email: userData.email
           });
+        } else {
+          console.log("User fetch failed:", response.statusText);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -435,14 +440,14 @@ export default function OrderDetailsPage() {
               </div>
 
               {/* User Information */}
-              {orderUser?.username && (
+              {(orderUser?.username || order?.userId) && (
                 <div className="bg-white rounded-2xl border border-gray-100 p-5">
                   <h3 className="font-semibold text-sm mb-5">{language === "ar" ? "بيانات المستخدم" : "Customer Information"}</h3>
                   
                   <div className="flex items-center gap-6">
                     {/* User Avatar */}
                     <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-5xl font-bold flex-shrink-0 shadow-lg ring-4 ring-blue-100" data-testid="avatar-user">
-                      {orderUser.username?.charAt(0).toUpperCase() || "U"}
+                      {userLoading ? "..." : (orderUser?.username?.charAt(0).toUpperCase() || "U")}
                     </div>
                     
                     {/* User Details */}
