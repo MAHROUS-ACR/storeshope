@@ -1156,7 +1156,7 @@ export default function ProfilePage() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => setAnalyticsDateRange("all")}
-                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors L.E 
+                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                               analyticsDateRange === "all"
                                 ? "bg-emerald-500 text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1167,7 +1167,7 @@ export default function ProfilePage() {
                           </button>
                           <button
                             onClick={() => setAnalyticsDateRange("month")}
-                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors L.E 
+                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                               analyticsDateRange === "month"
                                 ? "bg-emerald-500 text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1178,7 +1178,7 @@ export default function ProfilePage() {
                           </button>
                           <button
                             onClick={() => setAnalyticsDateRange("year")}
-                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors L.E 
+                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                               analyticsDateRange === "year"
                                 ? "bg-emerald-500 text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1282,7 +1282,7 @@ export default function ProfilePage() {
                               cx="50%"
                               cy="50%"
                               labelLine={false}
-                              label={({ name, value }) => `L.E name}: $L.E value}`}
+                              label={({ name, value }) => `${name}: L.E ${value}`}
                               outerRadius={80}
                               fill="#8884d8"
                               dataKey="value"
@@ -1294,7 +1294,7 @@ export default function ProfilePage() {
                                 <Cell key={`cell-L.E index}`} fill={color} />
                               ))}
                             </Pie>
-                            <Tooltip formatter={(value) => `$L.E typeof value === 'number' ? value.toFixed(2) : value}`} />
+                            <Tooltip formatter={(value) => typeof value === 'number' ? `L.E ${value.toFixed(2)}` : value} />
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
@@ -1348,18 +1348,18 @@ export default function ProfilePage() {
                         <div
                           key={u.id}
                           className="bg-white border border-gray-200 rounded-2xl p-4 hover:border-gray-300 transition-colors"
-                          data-testid={`card-user-L.E u.id}`}
+                          data-testid={`card-user-${u.id}`}
                         >
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1">
-                              <p className="text-sm font-bold text-gray-900" data-testid={`text-user-email-L.E u.id}`}>{u.email}</p>
+                              <p className="text-sm font-bold text-gray-900" data-testid={`text-user-email-${u.id}`}>{u.email}</p>
                               <p className="text-xs text-gray-500 truncate">{u.id.substring(0, 12)}...</p>
                             </div>
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold L.E 
+                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                               u.role === "admin" 
                                 ? "bg-purple-100 text-purple-700"
                                 : "bg-gray-100 text-gray-700"
-                            }`} data-testid={`badge-role-L.E u.id}`}>
+                            }`} data-testid={`badge-role-${u.id}`}>
                               {u.role || "user"}
                             </span>
                           </div>
@@ -1370,7 +1370,7 @@ export default function ProfilePage() {
                                 value={newUserRole}
                                 onChange={(e) => setNewUserRole(e.target.value)}
                                 className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                                data-testid={`select-user-role-L.E u.id}`}
+                                data-testid={`select-user-role-${u.id}`}
                               >
                                 <option value="user">{t("userRole", language)}</option>
                                 <option value="admin">{t("adminRole", language)}</option>
@@ -1378,7 +1378,7 @@ export default function ProfilePage() {
                               <button
                                 onClick={() => handleUserRoleUpdate(u.id, newUserRole)}
                                 className="px-3 py-2 bg-green-600 text-white rounded-lg flex items-center justify-center gap-1 hover:bg-green-700 transition-colors text-xs font-semibold"
-                                data-testid={`button-save-user-role-L.E u.id}`}
+                                data-testid={`button-save-user-role-${u.id}`}
                               >
                                 <Check className="w-3 h-3" />
                               </button>
@@ -1388,7 +1388,7 @@ export default function ProfilePage() {
                                   setNewUserRole("");
                                 }}
                                 className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg flex items-center justify-center gap-1 hover:bg-gray-300 transition-colors text-xs font-semibold"
-                                data-testid={`button-cancel-user-role-L.E u.id}`}
+                                data-testid={`button-cancel-user-role-${u.id}`}
                               >
                                 <X className="w-3 h-3" />
                               </button>
@@ -1400,7 +1400,7 @@ export default function ProfilePage() {
                                 setNewUserRole(u.role || "user");
                               }}
                               className="w-full px-3 py-2 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center gap-1 hover:bg-amber-200 transition-colors text-xs font-semibold"
-                              data-testid={`button-edit-user-role-L.E u.id}`}
+                              data-testid={`button-edit-user-role-${u.id}`}
                             >
                               <Edit2 className="w-3 h-3" />
                               {t("changeRole", language)}
