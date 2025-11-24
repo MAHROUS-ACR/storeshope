@@ -343,7 +343,7 @@ export default function CheckoutPage() {
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
           <div className="w-full px-6 py-6">
           {/* Order Summary */}
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-8">
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 mb-12">
             <h3 className="font-semibold text-sm mb-3">{t("orderSummary", language)}</h3>
             <div className="space-y-2 text-sm">
               {items.map((item, idx) => (

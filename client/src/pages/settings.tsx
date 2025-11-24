@@ -173,12 +173,12 @@ export default function SettingsPage() {
 
             {/* Firebase Configuration Section */}
             <div className="mb-10">
-              <h2 className="text-xl font-bold mb-5">Firebase Authentication</h2>
+              <h2 className="text-xl font-bold mb-8">Firebase Authentication</h2>
               <p className="text-base text-muted-foreground mb-8">
                 Configure your Firebase project for client-side authentication (sign up/login)
               </p>
 
-              <div className="space-y-5">
+              <div className="space-y-8">
                 <div>
                   <label className="block text-base font-semibold mb-3" htmlFor="firebaseApiKey">
                     Firebase API Key
@@ -288,12 +288,12 @@ export default function SettingsPage() {
 
             {/* Store Settings Section */}
             <div className="mb-10 pt-10 border-t border-gray-200">
-              <h2 className="text-xl font-bold mb-5">Store Information</h2>
+              <h2 className="text-xl font-bold mb-8">Store Information</h2>
               <p className="text-base text-muted-foreground mb-8">
                 Configure your store details
               </p>
 
-              <div className="space-y-5">
+              <div className="space-y-8">
                 <div>
                   <label className="block text-base font-semibold mb-3" htmlFor="storeName">
                     Store Name

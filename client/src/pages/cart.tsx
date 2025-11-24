@@ -87,7 +87,7 @@ export default function CartPage() {
 
         {/* Items List - Scrollable */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-6 py-6 space-y-4">
+          <div className="w-full px-6 py-10 space-y-8">
             {items.map((item) => (
               <div
                 key={item.id}
@@ -162,7 +162,7 @@ export default function CartPage() {
         </div>
 
         {/* Order Summary & Checkout Button - Fixed at bottom */}
-        <div className="absolute bottom-32 left-0 right-0 px-6 py-6 border-t border-gray-100 bg-white space-y-4">
+        <div className="absolute bottom-32 left-0 right-0 px-6 py-6 border-t border-gray-100 bg-white space-y-8">
           <div className="space-y-3">
             <div className="flex justify-between text-base">
               <span className="text-muted-foreground">{t("subtotal", language)}</span>

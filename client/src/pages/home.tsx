@@ -144,8 +144,8 @@ export default function Home() {
   return (
     <div className="w-full h-full relative flex flex-col overflow-hidden bg-white">
       {/* Header */}
-      <div className="px-6 pt-5 pb-6 flex-shrink-0 border-b border-gray-100">
-          <div className="flex items-center justify-between gap-4 mb-6">
+      <div className="px-6 pt-8 pb-10 flex-shrink-0 border-b border-gray-100">
+          <div className="flex items-center justify-between gap-6 mb-10">
             {storeName ? (
               <div className="flex items-center gap-3">
                 {storeLogo ? (

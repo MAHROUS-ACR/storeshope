@@ -164,7 +164,7 @@ export default function OrdersPage() {
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-            <div className="w-full px-6 py-6 space-y-4">
+            <div className="w-full px-6 py-10 space-y-8">
               {orders.filter(order => !user || !(order as any).userId || (order as any).userId === user.id)
                 .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                 .map((order) => (
