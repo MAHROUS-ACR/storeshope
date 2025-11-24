@@ -1,11 +1,12 @@
 /**
- * Firebase Config Storage - JSON File Only
- * Reads/writes from public/firebase-config.json
- * Simple file-based config shared by all users
+ * Firebase Config Storage - Environment Variables Only
+ * Simple: read from env vars (import.meta.env)
+ * If no env vars, show Setup page
  */
 
+import { initializeApp, getApps } from "firebase/app";
+
 export interface FirebaseConfigData {
-  configured: boolean;
   firebaseApiKey: string;
   firebaseProjectId: string;
   firebaseAppId: string;
@@ -15,44 +16,62 @@ export interface FirebaseConfigData {
   firebaseMeasurementId?: string;
 }
 
-const CONFIG_URL = "/firebase-config.json";
-
 /**
- * Read Firebase config from JSON file
+ * Get config from environment variables
  */
-export async function getFirebaseConfig(): Promise<FirebaseConfigData | null> {
-  try {
-    const response = await fetch(CONFIG_URL);
-    if (!response.ok) return null;
-    
-    const config = await response.json() as FirebaseConfigData;
-    
-    // Check if configured
-    if (config.configured && config.firebaseApiKey && config.firebaseProjectId && config.firebaseAppId) {
-      return config;
-    }
-    return null;
-  } catch (error) {
-    console.error("Error reading firebase config:", error);
+export function getConfigFromEnv(): FirebaseConfigData | null {
+  const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+  const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+  const appId = import.meta.env.VITE_FIREBASE_APP_ID;
+  const authDomain = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN;
+
+  // Must have at least these 4 fields
+  if (!apiKey || !projectId || !appId || !authDomain) {
     return null;
   }
-}
 
-/**
- * Check if config is configured
- */
-export async function isConfigured(): Promise<boolean> {
-  const config = await getFirebaseConfig();
-  return config !== null;
-}
-
-/**
- * Save Firebase config to JSON file (requires backend)
- * Client-side only approach: return the config object
- */
-export function prepareConfigForSave(config: FirebaseConfigData): FirebaseConfigData {
   return {
-    ...config,
-    configured: true,
+    firebaseApiKey: apiKey,
+    firebaseProjectId: projectId,
+    firebaseAppId: appId,
+    firebaseAuthDomain: authDomain,
+    firebaseStorageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    firebaseMessagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    firebaseMeasurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
   };
+}
+
+/**
+ * Check if Firebase is configured
+ */
+export function isFirebaseConfigured(): boolean {
+  return getConfigFromEnv() !== null;
+}
+
+/**
+ * Initialize Firebase with config
+ */
+export function initializeFirebase(): boolean {
+  try {
+    const config = getConfigFromEnv();
+    if (!config) return false;
+
+    if (getApps().length === 0) {
+      initializeApp({
+        apiKey: config.firebaseApiKey,
+        authDomain: config.firebaseAuthDomain,
+        projectId: config.firebaseProjectId,
+        storageBucket: config.firebaseStorageBucket || "",
+        messagingSenderId: config.firebaseMessagingSenderId || "",
+        appId: config.firebaseAppId,
+        measurementId: config.firebaseMeasurementId,
+      });
+    }
+    return true;
+  } catch (error: any) {
+    if (!error.message?.includes('duplicate-app')) {
+      console.error("Error initializing Firebase:", error);
+    }
+    return false;
+  }
 }

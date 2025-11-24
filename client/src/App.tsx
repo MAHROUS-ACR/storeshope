@@ -20,7 +20,7 @@ import LoginPage from "@/pages/login";
 import DiscountsPage from "@/pages/discounts";
 import NotificationSetupPage from "@/pages/notification-setup";
 import SetupPage from "@/pages/setup";
-import { isConfigured } from "@/lib/firebaseConfigStorage";
+import { isFirebaseConfigured, initializeFirebase } from "@/lib/firebaseConfigStorage";
 
 function Router() {
   const [location] = useLocation();
@@ -28,13 +28,14 @@ function Router() {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    const checkConfig = async () => {
-      const configured = await isConfigured();
-      setNeedsSetup(!configured);
-      setIsChecking(false);
-    };
-
-    checkConfig();
+    // Check if configured and initialize
+    if (isFirebaseConfigured()) {
+      initializeFirebase();
+      setNeedsSetup(false);
+    } else {
+      setNeedsSetup(true);
+    }
+    setIsChecking(false);
   }, []);
 
   if (isChecking) {
