@@ -308,11 +308,11 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <MobileWrapper>
-        <div className="flex-1 flex flex-col items-center justify-center px-8">
+        <div className="flex-1 flex flex-col items-center justify-center px-6">
           <h2 className="text-lg font-bold mb-2">{t("noItemsCheckout", language)}</h2>
           <button
             onClick={() => setLocation("/cart")}
-            className="px-8 py-2 bg-black text-white rounded-full text-sm font-semibold mt-4"
+            className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold mt-4"
           >
             {t("backToCart", language)}
           </button>
@@ -328,7 +328,7 @@ export default function CheckoutPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-8 pb-6 pt-4 flex items-center gap-8 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-6 pt-4 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/cart")}
             className="w-11 h-11 rounded-full bg-white border border-gray-100 flex items-center justify-center"
@@ -341,9 +341,9 @@ export default function CheckoutPage() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-8 py-6">
+          <div className="w-full px-6 py-6">
           {/* Order Summary */}
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 mb-12">
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 mb-6">
             <h3 className="font-semibold text-sm mb-3">{t("orderSummary", language)}</h3>
             <div className="space-y-2 text-sm">
               {items.map((item, idx) => (
@@ -414,7 +414,7 @@ export default function CheckoutPage() {
                 className="w-full p-4 border-2 border-gray-200 rounded-2xl hover:border-primary hover:bg-primary/5 transition-colors text-left"
                 data-testid="button-payment-card"
               >
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3">
                   <CreditCard className="w-6 h-6 text-primary" />
                   <div>
                     <p className="font-semibold">{t("payWithCard", language)}</p>
@@ -428,7 +428,7 @@ export default function CheckoutPage() {
                 className="w-full p-4 border-2 border-gray-200 rounded-2xl hover:border-primary hover:bg-primary/5 transition-colors text-left"
                 data-testid="button-payment-delivery"
               >
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3">
                   <Truck className="w-6 h-6 text-primary" />
                   <div>
                     <p className="font-semibold">{t("payOnDelivery", language)}</p>
@@ -603,7 +603,7 @@ export default function CheckoutPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-8">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold mb-2">{t("expiry", language)}</label>
                       <input

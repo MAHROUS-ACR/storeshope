@@ -153,7 +153,7 @@ export default function SettingsPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-8 pb-6 pt-4 flex items-center gap-8 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-6 pt-4 flex items-center gap-8 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/")}
             className="w-11 h-11 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50"
@@ -169,16 +169,16 @@ export default function SettingsPage() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-8 py-6">
+          <div className="w-full px-6 py-6">
 
             {/* Firebase Configuration Section */}
             <div className="mb-10">
-              <h2 className="text-xl font-bold mb-8">Firebase Authentication</h2>
-              <p className="text-base text-muted-foreground mb-8">
+              <h2 className="text-xl font-bold mb-4">Firebase Authentication</h2>
+              <p className="text-base text-muted-foreground mb-4">
                 Configure your Firebase project for client-side authentication (sign up/login)
               </p>
 
-              <div className="space-y-8">
+              <div className="space-y-4">
                 <div>
                   <label className="block text-base font-semibold mb-3" htmlFor="firebaseApiKey">
                     Firebase API Key
@@ -288,12 +288,12 @@ export default function SettingsPage() {
 
             {/* Store Settings Section */}
             <div className="mb-10 pt-10 border-t border-gray-200">
-              <h2 className="text-xl font-bold mb-8">Store Information</h2>
-              <p className="text-base text-muted-foreground mb-8">
+              <h2 className="text-xl font-bold mb-4">Store Information</h2>
+              <p className="text-base text-muted-foreground mb-4">
                 Configure your store details
               </p>
 
-              <div className="space-y-8">
+              <div className="space-y-4">
                 <div>
                   <label className="block text-base font-semibold mb-3" htmlFor="storeName">
                     Store Name

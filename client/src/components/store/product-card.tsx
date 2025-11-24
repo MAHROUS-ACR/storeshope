@@ -99,13 +99,13 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
     >
       <div className="flex flex-col h-full">
         {/* Top: Category and Title */}
-        <div className="px-5 pt-4 pb-3">
+        <div className="px-3 pt-4 pb-3">
           <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5" data-testid={`text-category-${product.id}`}>{productCategory}</p>
           <h3 className="font-semibold text-sm leading-snug line-clamp-2" data-testid={`text-title-${product.id}`}>{productTitle}</h3>
         </div>
 
         {/* Middle: Full-width Image */}
-        <div className="relative flex-1 px-5 py-3 min-h-0">
+        <div className="relative flex-1 px-3 py-3 min-h-0">
           <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gray-50">
             <img 
               src={productImage} 
@@ -116,7 +116,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
               <motion.div 
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="absolute top-3 left-3 bg-gradient-to-br from-red-500 to-red-600 text-white px-5 py-2 rounded-full text-base font-black shadow-lg shadow-red-500/50 border-2 border-yellow-300" 
+                className="absolute top-3 left-3 bg-gradient-to-br from-red-500 to-red-600 text-white px-3 py-2 rounded-full text-base font-black shadow-lg shadow-red-500/50 border-2 border-yellow-300" 
                 data-testid={`badge-discount-${product.id}`}
               >
                 {activeDiscount.discountPercentage}%
@@ -127,7 +127,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
 
         {/* Variants: Below Image in Horizontal Scroll */}
         {hasVariants && (
-          <div className="px-5 py-3 flex gap-6 overflow-x-auto no-scrollbar flex-shrink-0">
+          <div className="px-3 py-3 flex gap-3 overflow-x-auto no-scrollbar flex-shrink-0">
             {product.units && product.units.length > 0 && (
               <div className="flex flex-col gap-1 flex-shrink-0">
                 <p className="text-[8px] font-semibold text-gray-500 uppercase">Units</p>
@@ -168,7 +168,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
         )}
 
         {/* Bottom: Price, Availability and Add Button */}
-        <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between gap-6">
+        <div className="px-3 py-2 border-t border-gray-100 flex items-center justify-between gap-3">
           <div className="flex flex-col gap-1">
             {activeDiscount ? (
               <>
@@ -179,7 +179,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
               <p className="font-bold text-base" data-testid={`text-price-${product.id}`}>${product.price.toFixed(2)}</p>
             )}
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
             {!isAvailable && (
               <p className="text-[10px] font-semibold text-red-600 bg-red-50 px-1.5 py-0.5 rounded whitespace-nowrap" data-testid={`text-unavailable-${product.id}`}>{t("unavailable", language)}</p>
             )}
@@ -220,7 +220,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
                 <select
                   value={selectedUnit}
                   onChange={(e) => setSelectedUnit(e.target.value)}
-                  className="w-full px-5 py-2 border border-gray-200 rounded-lg text-sm"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
                   data-testid={`select-variant-unit-${product.id}`}
                 >
                   <option value="">اختر وحدة</option>
@@ -237,7 +237,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
                 <select
                   value={selectedSize}
                   onChange={(e) => setSelectedSize(e.target.value)}
-                  className="w-full px-5 py-2 border border-gray-200 rounded-lg text-sm"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
                   data-testid={`select-variant-size-${product.id}`}
                 >
                   <option value="">اختر مقاس</option>
@@ -251,7 +251,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
             {product.colors && product.colors.length > 0 && (
               <div className="mb-4">
                 <p className="text-sm font-semibold mb-2">لون (Color)</p>
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-2">
                   {product.colors.map((color) => {
                     const colorName = typeof color === 'string' ? color.split('|')[0] : (color || '');
                     const colorHex = typeof color === 'string' ? color.split('|')[1] || '#000000' : '#000000';
@@ -259,7 +259,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
                       <button
                         key={colorName}
                         onClick={() => setSelectedColor(color || '')}
-                        className={`flex items-center gap-4 px-5 py-2 rounded-lg border-2 transition-all ${
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${
                           selectedColor === color
                             ? 'border-gray-800 bg-gray-50'
                             : 'border-gray-200 bg-white hover:border-gray-300'
@@ -277,10 +277,10 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
               </div>
             )}
             
-            <div className="flex gap-4">
+            <div className="flex gap-2">
               <button
                 onClick={() => setShowVariantModal(false)}
-                className="flex-1 px-5 py-3 border border-gray-200 rounded-lg font-semibold text-sm"
+                className="flex-1 px-3 py-3 border border-gray-200 rounded-lg font-semibold text-sm"
                 data-testid={`button-cancel-variant-${product.id}`}
               >
                 {t("cancelButton", language)}
@@ -288,7 +288,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
               <button
                 onClick={addItemToCart}
                 disabled={isAdding}
-                className="flex-1 px-5 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50"
+                className="flex-1 px-3 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50"
                 data-testid={`button-add-variant-${product.id}`}
               >
                 {isAdding ? t("addingToCart", language) : t("addToCart", language)}

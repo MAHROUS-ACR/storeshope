@@ -66,18 +66,18 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center px-8 pb-20">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-4">Flux Wallet</h1>
+    <div className="w-full h-full flex flex-col items-center justify-center px-6 pb-20">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-2">Flux Wallet</h1>
           <p className="text-muted-foreground text-base">
             {isSignup ? "Create an account" : "Welcome back"}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="w-full space-y-8">
+        <form onSubmit={handleSubmit} className="w-full space-y-4">
           {isSignup && (
             <div>
-              <label className="block text-base font-semibold mb-4" htmlFor="username">
+              <label className="block text-base font-semibold mb-2" htmlFor="username">
                 Username
               </label>
               <input
@@ -93,7 +93,7 @@ export default function LoginPage() {
           )}
 
           <div>
-            <label className="block text-base font-semibold mb-4" htmlFor="email">
+            <label className="block text-base font-semibold mb-2" htmlFor="email">
               Email
             </label>
             <input
@@ -108,7 +108,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-base font-semibold mb-4" htmlFor="password">
+            <label className="block text-base font-semibold mb-2" htmlFor="password">
               Password
             </label>
             <input

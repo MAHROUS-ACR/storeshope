@@ -123,7 +123,7 @@ export default function OrdersPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-8 pb-6 pt-4 flex items-center gap-8 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-6 pt-4 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => {
               // Check if there's a previousPage stored in sessionStorage
@@ -146,7 +146,7 @@ export default function OrdersPage() {
             <div className="w-8 h-8 border-4 border-gray-200 border-t-primary rounded-full animate-spin" />
           </div>
         ) : orders.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center px-8">
+          <div className="flex-1 flex flex-col items-center justify-center px-6">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <span className="text-2xl">📦</span>
             </div>
@@ -156,7 +156,7 @@ export default function OrdersPage() {
             </p>
             <button
               onClick={() => setLocation("/")}
-              className="px-8 py-2 bg-black text-white rounded-full text-sm font-semibold"
+              className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold"
               data-testid="button-start-shopping"
             >
               {t("startShopping", language)}
@@ -164,7 +164,7 @@ export default function OrdersPage() {
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-            <div className="w-full px-8 py-10 space-y-8">
+            <div className="w-full px-6 py-6 space-y-4">
               {orders.filter(order => !user || !(order as any).userId || (order as any).userId === user.id)
                 .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                 .map((order) => (
