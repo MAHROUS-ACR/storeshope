@@ -38,25 +38,6 @@ Flux Wallet is a high-fidelity mobile e-commerce application built as a progress
 - Reduced latency and complexity
 - **Can switch Firebase projects without code changes** ⭐
 
-## First-Time Setup Flow (Nov 24, 2025)
-
-**Smart Setup System:**
-- **First Visit**: If no Firebase credentials in env vars, shows Setup page with 7 input fields
-- **Setup Form**: User enters Firebase project credentials
-- **Cloud Storage**: Config saved to Firestore (settings/firebase doc) - NOT localStorage
-- **Shared Access**: All users (any device/browser) see same config from Firestore
-- **Automatic**: After saving, app reloads and connects to configured Firebase project
-- **Production Use**: Each deployment gets its own env vars, or users set up via UI
-
-**Setup Page Fields** (`/setup`):
-1. Firebase API Key
-2. Firebase Project ID
-3. Firebase App ID
-4. Firebase Auth Domain
-5. Firebase Storage Bucket (optional)
-6. Firebase Messaging Sender ID (optional)
-7. Firebase Measurement ID (optional)
-
 ## Recent Changes (Nov 24, 2025)
 
 ### Firebase Configuration Management

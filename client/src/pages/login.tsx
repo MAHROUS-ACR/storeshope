@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MobileWrapper } from "@/components/mobile-wrapper";
 import { useLocation } from "wouter";
 import { useUser } from "@/lib/userContext";
 import { toast } from "sonner";
@@ -59,17 +60,20 @@ export default function LoginPage() {
 
   if (isLoading) {
     return (
-      <div className="w-full h-full flex items-center justify-center">
-        <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-      </div>
+      <MobileWrapper>
+        <div className="w-full flex-1 flex items-center justify-center">
+          <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+      </MobileWrapper>
     );
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center px-6 pb-20">
+    <MobileWrapper>
+      <div className="w-full flex-1 flex flex-col items-center justify-center px-6 pb-20">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">Flux Wallet</h1>
-          <p className="text-muted-foreground text-base">
+          <h1 className="text-3xl font-bold mb-2">Flux Wallet</h1>
+          <p className="text-muted-foreground">
             {isSignup ? "Create an account" : "Welcome back"}
           </p>
         </div>
@@ -77,7 +81,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="w-full space-y-4">
           {isSignup && (
             <div>
-              <label className="block text-base font-semibold mb-2" htmlFor="username">
+              <label className="block text-sm font-semibold mb-2" htmlFor="username">
                 Username
               </label>
               <input
@@ -86,14 +90,14 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your name"
-                className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 data-testid="input-username"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-base font-semibold mb-2" htmlFor="email">
+            <label className="block text-sm font-semibold mb-2" htmlFor="email">
               Email
             </label>
             <input
@@ -102,13 +106,13 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               data-testid="input-email"
             />
           </div>
 
           <div>
-            <label className="block text-base font-semibold mb-2" htmlFor="password">
+            <label className="block text-sm font-semibold mb-2" htmlFor="password">
               Password
             </label>
             <input
@@ -117,7 +121,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               data-testid="input-password"
             />
           </div>
@@ -125,7 +129,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={formLoading}
-            className="w-full bg-black text-white py-4 rounded-2xl font-semibold flex items-center justify-center gap-4 hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-black text-white py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             data-testid={`button-${isSignup ? "signup" : "login"}`}
           >
             {formLoading ? (
@@ -155,6 +159,7 @@ export default function LoginPage() {
             ? "Already have an account? Sign in"
             : "Don't have an account? Sign up"}
         </button>
-    </div>
+      </div>
+    </MobileWrapper>
   );
 }

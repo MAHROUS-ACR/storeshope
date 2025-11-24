@@ -1,5 +1,4 @@
-import { Switch, Route, useLocation, Redirect } from "wouter";
-import { useState, useEffect } from "react";
+import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -19,40 +18,10 @@ import ProductDetailsPage from "@/pages/product-details";
 import LoginPage from "@/pages/login";
 import DiscountsPage from "@/pages/discounts";
 import NotificationSetupPage from "@/pages/notification-setup";
-import SetupPage from "@/pages/setup";
-import { isFirebaseConfigured, initializeFirebase } from "@/lib/firebaseConfigStorage";
 
 function Router() {
-  const [location] = useLocation();
-  const [needsSetup, setNeedsSetup] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    // Check if configured and initialize
-    if (isFirebaseConfigured()) {
-      initializeFirebase();
-      setNeedsSetup(false);
-    } else {
-      setNeedsSetup(true);
-    }
-  }, []);
-
-  // Still checking config
-  if (needsSetup === null) {
-    return (
-      <div className="w-full h-full flex items-center justify-center bg-white">
-        <div className="w-5 h-5 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  // Needs setup but not on setup page - redirect
-  if (needsSetup && location !== "/setup") {
-    return <Redirect to="/setup" />;
-  }
-
   return (
     <Switch>
-      <Route path="/setup" component={SetupPage} />
       <Route path="/" component={Home} />
       <Route path="/login" component={LoginPage} />
       <Route path="/profile" component={ProfilePage} />
@@ -64,6 +33,7 @@ function Router() {
       <Route path="/product/:id" component={ProductDetailsPage} />
       <Route path="/discounts" component={DiscountsPage} />
       <Route path="/notification-setup" component={NotificationSetupPage} />
+      {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
   );

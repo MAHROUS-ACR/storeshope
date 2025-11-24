@@ -107,23 +107,8 @@
   * {
     @apply border-border;
   }
-  
   body {
-    @apply font-sans antialiased bg-neutral-100 text-foreground h-screen w-screen overflow-hidden;
-    font-size: 16px;
-    line-height: 1.5;
-  }
-  
-  p {
-    @apply leading-relaxed;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply leading-snug;
-  }
-  
-  #root {
-    @apply w-full h-full;
+    @apply font-sans antialiased bg-neutral-100 text-foreground h-screen w-screen overflow-hidden flex items-center justify-center;
   }
   
   /* Hide scrollbar for Chrome, Safari and Opera */

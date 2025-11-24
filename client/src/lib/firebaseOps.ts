@@ -20,7 +20,7 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-// Get Firebase config from environment variables
+// Get Firebase config - first from environment variables, can be overridden from Firestore
 function getFirebaseConfig() {
   return {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,

@@ -328,22 +328,22 @@ export default function CheckoutPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 pb-6 pt-4 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/cart")}
-            className="w-11 h-11 rounded-full bg-white border border-gray-100 flex items-center justify-center"
+            className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center"
             data-testid="button-back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-bold">{t("payment", language)}</h1>
+          <h1 className="text-xl font-bold">{t("payment", language)}</h1>
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-6 py-6">
+          <div className="w-full px-6 py-4">
           {/* Order Summary */}
-          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 mb-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6">
             <h3 className="font-semibold text-sm mb-3">{t("orderSummary", language)}</h3>
             <div className="space-y-2 text-sm">
               {items.map((item, idx) => (
@@ -439,7 +439,7 @@ export default function CheckoutPage() {
             </div>
           ) : (
             <form onSubmit={handlePaymentSubmit} className="space-y-4">
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex items-center gap-2 mb-6">
                 <button
                   type="button"
                   onClick={() => setPaymentMethod(null)}
@@ -631,7 +631,7 @@ export default function CheckoutPage() {
               )}
 
               {paymentMethod === "card" && (
-                <div className="bg-green-50 border border-green-200 rounded-2xl p-3 flex items-start gap-4">
+                <div className="bg-green-50 border border-green-200 rounded-2xl p-3 flex items-start gap-2">
                   <Lock className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-green-800">{t("securePayment", language)}</p>
                 </div>
@@ -640,7 +640,7 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={isProcessing}
-                className="w-full bg-black text-white py-4 rounded-2xl font-semibold hover:bg-neutral-800 disabled:opacity-50 flex items-center justify-center gap-4"
+                className="w-full bg-black text-white py-4 rounded-2xl font-semibold hover:bg-neutral-800 disabled:opacity-50 flex items-center justify-center gap-2"
                 data-testid="button-pay"
               >
                 {isProcessing ? (

@@ -1,10 +1,11 @@
+import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
 import { WalletCard } from "@/components/wallet-card";
 import { Plus } from "lucide-react";
 
 export default function WalletPage() {
   return (
-    <div className="w-full h-full relative flex flex-col overflow-hidden bg-white">
+    <MobileWrapper>
       <div className="px-6 pb-6">
         <h1 className="text-2xl font-bold mb-6">My Cards</h1>
         
@@ -23,9 +24,9 @@ export default function WalletPage() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0">
+       <div className="absolute bottom-0 left-0 right-0">
         <BottomNav />
       </div>
-    </div>
+    </MobileWrapper>
   );
 }

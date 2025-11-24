@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
 import { Search, ShoppingCart } from "lucide-react";
 import { PromoBanner } from "@/components/store/promo-banner";
@@ -48,7 +49,7 @@ export default function StorePage() {
     : products.filter(p => p.category === activeCategory);
 
   return (
-    <div className="w-full h-full relative flex flex-col overflow-hidden bg-white">
+    <MobileWrapper>
       {/* Header */}
       <div className="px-6 pb-4 pt-2 flex items-center justify-between gap-4">
         <div className="flex-1 relative">
@@ -84,6 +85,6 @@ export default function StorePage() {
       <div className="absolute bottom-0 left-0 right-0">
         <BottomNav />
       </div>
-    </div>
+    </MobileWrapper>
   );
 }

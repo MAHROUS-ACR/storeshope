@@ -153,17 +153,17 @@ export default function SettingsPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 pb-6 pt-4 flex items-center gap-8 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/")}
-            className="w-11 h-11 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50"
+            className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50"
             data-testid="button-back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold">Settings</h1>
-            <p className="text-sm text-muted-foreground">Configure your application</p>
+            <h1 className="text-xl font-bold">Settings</h1>
+            <p className="text-xs text-muted-foreground">Configure your application</p>
           </div>
         </div>
 
@@ -172,15 +172,15 @@ export default function SettingsPage() {
           <div className="w-full px-6 py-6">
 
             {/* Firebase Configuration Section */}
-            <div className="mb-10">
-              <h2 className="text-xl font-bold mb-4">Firebase Authentication</h2>
-              <p className="text-base text-muted-foreground mb-4">
+            <div className="mb-8">
+              <h2 className="text-lg font-bold mb-4">Firebase Authentication</h2>
+              <p className="text-sm text-muted-foreground mb-6">
                 Configure your Firebase project for client-side authentication (sign up/login)
               </p>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-base font-semibold mb-3" htmlFor="firebaseApiKey">
+                  <label className="block text-sm font-semibold mb-2" htmlFor="firebaseApiKey">
                     Firebase API Key
                   </label>
                   <input
@@ -189,13 +189,13 @@ export default function SettingsPage() {
                     value={firebaseApiKey}
                     onChange={(e) => setFirebaseApiKey(e.target.value)}
                     placeholder="AIza..."
-                    className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-api-key"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-base font-semibold mb-3" htmlFor="firebaseProjectId">
+                  <label className="block text-sm font-semibold mb-2" htmlFor="firebaseProjectId">
                     Firebase Project ID
                   </label>
                   <input
@@ -204,13 +204,13 @@ export default function SettingsPage() {
                     value={firebaseProjectId}
                     onChange={(e) => setFirebaseProjectId(e.target.value)}
                     placeholder="your-project-id"
-                    className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-project-id"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-base font-semibold mb-3" htmlFor="firebaseAppId">
+                  <label className="block text-sm font-semibold mb-2" htmlFor="firebaseAppId">
                     Firebase App ID
                   </label>
                   <input
@@ -219,13 +219,13 @@ export default function SettingsPage() {
                     value={firebaseAppId}
                     onChange={(e) => setFirebaseAppId(e.target.value)}
                     placeholder="1:123456789:web:abcd1234efgh5678ijkl"
-                    className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-app-id"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-base font-semibold mb-3" htmlFor="firebaseAuthDomain">
+                  <label className="block text-sm font-semibold mb-2" htmlFor="firebaseAuthDomain">
                     Auth Domain
                   </label>
                   <input
@@ -234,13 +234,13 @@ export default function SettingsPage() {
                     value={firebaseAuthDomain}
                     onChange={(e) => setFirebaseAuthDomain(e.target.value)}
                     placeholder="your-project.firebaseapp.com"
-                    className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-auth-domain"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-base font-semibold mb-3" htmlFor="firebaseStorageBucket">
+                  <label className="block text-sm font-semibold mb-2" htmlFor="firebaseStorageBucket">
                     Storage Bucket
                   </label>
                   <input
@@ -249,13 +249,13 @@ export default function SettingsPage() {
                     value={firebaseStorageBucket}
                     onChange={(e) => setFirebaseStorageBucket(e.target.value)}
                     placeholder="your-project.appspot.com"
-                    className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-storage-bucket"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-base font-semibold mb-3" htmlFor="firebaseMessagingSenderId">
+                  <label className="block text-sm font-semibold mb-2" htmlFor="firebaseMessagingSenderId">
                     Messaging Sender ID
                   </label>
                   <input
@@ -264,13 +264,13 @@ export default function SettingsPage() {
                     value={firebaseMessagingSenderId}
                     onChange={(e) => setFirebaseMessagingSenderId(e.target.value)}
                     placeholder="123456789012"
-                    className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-messaging-sender-id"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-base font-semibold mb-3" htmlFor="firebaseMeasurementId">
+                  <label className="block text-sm font-semibold mb-2" htmlFor="firebaseMeasurementId">
                     Measurement ID
                   </label>
                   <input
@@ -279,7 +279,7 @@ export default function SettingsPage() {
                     value={firebaseMeasurementId}
                     onChange={(e) => setFirebaseMeasurementId(e.target.value)}
                     placeholder="G-XXXXXXXXXX"
-                    className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-measurement-id"
                   />
                 </div>
@@ -287,15 +287,15 @@ export default function SettingsPage() {
             </div>
 
             {/* Store Settings Section */}
-            <div className="mb-10 pt-10 border-t border-gray-200">
-              <h2 className="text-xl font-bold mb-4">Store Information</h2>
-              <p className="text-base text-muted-foreground mb-4">
+            <div className="mb-8 pt-8 border-t border-gray-200">
+              <h2 className="text-lg font-bold mb-4">Store Information</h2>
+              <p className="text-sm text-muted-foreground mb-6">
                 Configure your store details
               </p>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-base font-semibold mb-3" htmlFor="storeName">
+                  <label className="block text-sm font-semibold mb-2" htmlFor="storeName">
                     Store Name
                   </label>
                   <input
@@ -304,13 +304,13 @@ export default function SettingsPage() {
                     value={storeName}
                     onChange={(e) => setStoreName(e.target.value)}
                     placeholder="Your Store Name"
-                    className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-store-name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-base font-semibold mb-3" htmlFor="storeAddress">
+                  <label className="block text-sm font-semibold mb-2" htmlFor="storeAddress">
                     Address
                   </label>
                   <input
@@ -319,13 +319,13 @@ export default function SettingsPage() {
                     value={storeAddress}
                     onChange={(e) => setStoreAddress(e.target.value)}
                     placeholder="Store Address"
-                    className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-store-address"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-base font-semibold mb-3" htmlFor="storePhone">
+                  <label className="block text-sm font-semibold mb-2" htmlFor="storePhone">
                     Phone Number
                   </label>
                   <input
@@ -334,13 +334,13 @@ export default function SettingsPage() {
                     value={storePhone}
                     onChange={(e) => setStorePhone(e.target.value)}
                     placeholder="+1 234 567 8900"
-                    className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-store-phone"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-base font-semibold mb-3" htmlFor="storeEmail">
+                  <label className="block text-sm font-semibold mb-2" htmlFor="storeEmail">
                     Email
                   </label>
                   <input
@@ -349,7 +349,7 @@ export default function SettingsPage() {
                     value={storeEmail}
                     onChange={(e) => setStoreEmail(e.target.value)}
                     placeholder="info@store.com"
-                    className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-store-email"
                   />
                 </div>
@@ -361,7 +361,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleSaveAllSettings}
                 disabled={isLoading}
-                className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-semibold flex items-center justify-center gap-4 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="button-save-all-settings"
               >
                 {isLoading ? (

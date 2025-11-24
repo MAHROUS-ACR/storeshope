@@ -1,3 +1,4 @@
+import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
 import { ArrowLeft, Trash2, Minus, Plus } from "lucide-react";
 import { useLocation } from "wouter";
@@ -50,7 +51,7 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="w-full h-full relative flex flex-col overflow-hidden bg-white">
+      <MobileWrapper>
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           <span className="text-6xl mb-4">🛒</span>
           <h2 className="text-lg font-bold mb-2">{t("cartIsEmpty", language)}</h2>
@@ -66,23 +67,23 @@ export default function CartPage() {
         <div className="absolute bottom-0 left-0 right-0">
           <BottomNav />
         </div>
-      </div>
+      </MobileWrapper>
     );
   }
 
   return (
-    <div className="w-full h-full relative flex flex-col overflow-hidden bg-white">
+    <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 pb-6 pt-4 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/")}
-            className="w-11 h-11 rounded-full bg-white border border-gray-100 flex items-center justify-center"
+            className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center"
             data-testid="button-back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-xl font-bold">{language === "ar" ? "السلة" : "Cart"} ({items.length})</h1>
+          <h1 className="text-lg font-bold">{language === "ar" ? "السلة" : "Cart"} ({items.length})</h1>
         </div>
 
         {/* Items List - Scrollable */}
@@ -121,7 +122,7 @@ export default function CartPage() {
                     return (
                       <div className="mt-1">
                         {activeDiscount ? (
-                          <div className="flex items-baseline gap-4">
+                          <div className="flex items-baseline gap-2">
                             <p className="text-lg font-bold text-green-600">${discountedPrice.toFixed(2)}</p>
                             <p className="text-xs text-gray-400 line-through">${item.price.toFixed(2)}</p>
                           </div>
@@ -131,7 +132,7 @@ export default function CartPage() {
                       </div>
                     );
                   })()}
-                  <div className="flex items-center gap-4 mt-2">
+                  <div className="flex items-center gap-2 mt-2">
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       className="p-1 rounded-lg bg-gray-100 hover:bg-gray-200"
@@ -162,26 +163,26 @@ export default function CartPage() {
         </div>
 
         {/* Order Summary & Checkout Button - Fixed at bottom */}
-        <div className="absolute bottom-32 left-0 right-0 px-6 py-6 border-t border-gray-100 bg-white space-y-4">
-          <div className="space-y-3">
-            <div className="flex justify-between text-base">
+        <div className="absolute bottom-32 left-0 right-0 px-6 py-4 border-t border-gray-100 bg-white space-y-3">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t("subtotal", language)}</span>
               <span className="font-semibold">${total.toFixed(2)}</span>
             </div>
             {totalWithDiscounts < total && (
               <>
-                <div className="flex justify-between text-base text-green-600">
+                <div className="flex justify-between text-sm text-green-600">
                   <span>{t("discountSavings", language)}</span>
                   <span className="font-semibold">-${(total - totalWithDiscounts).toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-100 text-green-600">
+                <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100 text-green-600">
                   <span>{t("total", language)}</span>
                   <span>${totalWithDiscounts.toFixed(2)}</span>
                 </div>
               </>
             )}
             {totalWithDiscounts === total && (
-              <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-100">
+              <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100">
                 <span>{t("total", language)}</span>
                 <span>${total.toFixed(2)}</span>
               </div>
@@ -199,6 +200,6 @@ export default function CartPage() {
       <div className="absolute bottom-0 left-0 right-0">
         <BottomNav />
       </div>
-    </div>
+    </MobileWrapper>
   );
 }
