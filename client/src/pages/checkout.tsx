@@ -97,14 +97,14 @@ export default function CheckoutPage() {
 
   const handleCardNumberChange = (e: string) => {
     const value = e.replace(/\s/g, "").slice(0, 16);
-    const formatted = value.replace(/(\d{4})/g, "L.E 1 ").trim();
+    const formatted = value.replace(/(\d{4})/g, "$1 ").trim();
     setFormData(prev => ({ ...prev, cardNumber: formatted }));
   };
 
   const handleExpiryChange = (e: string) => {
     const value = e.replace(/\D/g, "").slice(0, 4);
     if (value.length >= 2) {
-      setFormData(prev => ({ ...prev, expiryDate: `L.E {value.slice(0, 2)}/L.E {value.slice(2)}` }));
+      setFormData(prev => ({ ...prev, expiryDate: `${value.slice(0, 2)}/${value.slice(2)}` }));
     } else {
       setFormData(prev => ({ ...prev, expiryDate: value }));
     }
@@ -176,7 +176,7 @@ export default function CheckoutPage() {
       const finalTotal = totalWithDiscounts + shippingCost;
 
       // Simulate payment success - in production, use Stripe
-      const paymentId = `card_L.E {Date.now()}`;
+      const paymentId = `card_${Date.now()}`;
       
       let shippingAddress = formData.address;
       let shippingPhone = formData.zipCode;
@@ -190,7 +190,7 @@ export default function CheckoutPage() {
       const nextOrderNumber = Math.max(0, ...savedOrders.map((o: any) => o.orderNumber || 0)) + 1;
 
       const orderData = {
-        id: `order-L.E {Date.now()}`,
+        id: `order-${Date.now()}`,
         orderNumber: nextOrderNumber,
         items,
         subtotal: total,
@@ -260,7 +260,7 @@ export default function CheckoutPage() {
       const nextOrderNumber = Math.max(0, ...savedOrders.map((o: any) => o.orderNumber || 0)) + 1;
 
       const orderData = {
-        id: `order-L.E {Date.now()}`,
+        id: `order-${Date.now()}`,
         orderNumber: nextOrderNumber,
         items,
         subtotal: total,
@@ -347,7 +347,7 @@ export default function CheckoutPage() {
             <h3 className="font-semibold text-sm mb-3">{t("orderSummary", language)}</h3>
             <div className="space-y-2 text-sm">
               {items.map((item, idx) => (
-                <div key={`L.E {item.id}-L.E {idx}`} className="flex flex-col gap-1">
+                <div key={`${item.id}-${idx}`} className="flex flex-col gap-1">
                   <div className="flex justify-between">
                     <span>{item.quantity}x {item.title}</span>
                     <span>L.E {(item.price * item.quantity).toFixed(2)}</span>
@@ -649,7 +649,7 @@ export default function CheckoutPage() {
                     {t("processingPayment", language)}
                   </>
                 ) : (
-                  `L.E {paymentMethod === "card" ? t("pay", language) : t("placeOrder", language)} $L.E {(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}`
+                  `${paymentMethod === "card" ? t("pay", language) : t("placeOrder", language)} L.E ${(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}`
                 )}
               </button>
             </form>

@@ -68,7 +68,7 @@ export function TransactionList() {
             </div>
             <div className="text-right">
               <p className={`font-semibold ${tx.amount > 0 ? "text-emerald-600" : "text-foreground"}`}>
-                {tx.amount > 0 ? "+" : ""}{tx.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                {tx.amount > 0 ? "+" : ""}L.E {Math.abs(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
               <p className="text-xs text-muted-foreground">{tx.category}</p>
             </div>
