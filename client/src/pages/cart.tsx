@@ -87,8 +87,8 @@ export default function CartPage() {
         </div>
 
         {/* Items List - Scrollable */}
-        <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-5 py-4 space-y-3">
+        <div className="flex-1 overflow-y-auto no-scrollbar pb-96 w-full">
+          <div className="w-full px-5 py-4 space-y-3 pb-12">
             {items.map((item) => (
               <div
                 key={item._uniqueId}
