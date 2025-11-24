@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="width: 100%; height: 100%; margin: 0; padding: 0;">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
 
     <meta property="og:title" content="Flux Wallet" />
-    <meta property="og:description" content="A high-fidelity mobile app mockup built with React" />
+    <meta property="og:description" content="A high-fidelity mobile e-commerce app powered by Firebase" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://replit.com/public/images/opengraph.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@replit" />
     <meta name="twitter:title" content="Flux Wallet" />
-    <meta name="twitter:description" content="A high-fidelity mobile app mockup built with React" />
+    <meta name="twitter:description" content="A high-fidelity mobile e-commerce app powered by Firebase" />
     <meta name="twitter:image" content="https://replit.com/public/images/opengraph.png" />
 
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -26,18 +26,25 @@
         box-sizing: border-box;
       }
       
-      body {
-        font-family: 'Outfit', sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        padding: 20px;
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
       }
       
       #root {
         width: 100%;
         height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      body {
+        font-family: 'Outfit', sans-serif;
       }
     </style>
+    <title>Flux Wallet</title>
   </head>
   <body>
     <div id="root"></div>
