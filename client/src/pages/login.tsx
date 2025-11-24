@@ -130,7 +130,7 @@ export default function LoginPage() {
             type="submit"
             disabled={formLoading}
             className="w-full bg-black text-white py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            data-testid={`button-${isSignup ? "signup" : "login"}`}
+            data-testid={`button-L.E isSignup ? "signup" : "login"}`}
           >
             {formLoading ? (
               <>

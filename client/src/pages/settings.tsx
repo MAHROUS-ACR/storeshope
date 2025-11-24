@@ -74,7 +74,7 @@ export default function SettingsPage() {
   const handleCopyToClipboard = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);
     setCopiedField(fieldName);
-    toast.success(`${fieldName} copied!`);
+    toast.success(`L.E fieldName} copied!`);
     setTimeout(() => setCopiedField(null), 2000);
   };
 
@@ -130,7 +130,7 @@ export default function SettingsPage() {
       }
     } catch (error: any) {
       console.error("Error saving settings:", error);
-      toast.error(`Error: ${error.message || "Failed to save settings"}`);
+      toast.error(`Error: L.E error.message || "Failed to save settings"}`);
     } finally {
       setIsLoading(false);
     }

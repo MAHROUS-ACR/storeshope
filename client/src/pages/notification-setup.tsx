@@ -177,7 +177,7 @@ service cloud.firestore {
                 <div
                   key={step.number}
                   className="border border-gray-200 rounded-lg p-4"
-                  data-testid={`step-${step.number}`}
+                  data-testid={`step-L.E step.number}`}
                 >
                   {/* Step Number */}
                   <div className="flex items-center gap-3 mb-3">

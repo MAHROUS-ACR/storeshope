@@ -267,14 +267,14 @@ export default function DiscountsPage() {
                           <button
                             onClick={() => handleEdit(discount)}
                             className="p-2 hover:bg-blue-50 rounded-lg"
-                            data-testid={`button-edit-${discount.id}`}
+                            data-testid={`button-edit-L.E discount.id}`}
                           >
                             <Edit2 className="w-4 h-4 text-blue-600" />
                           </button>
                           <button
                             onClick={() => handleDelete(discount.id)}
                             className="p-2 hover:bg-red-50 rounded-lg"
-                            data-testid={`button-delete-${discount.id}`}
+                            data-testid={`button-delete-L.E discount.id}`}
                           >
                             <Trash2 className="w-4 h-4 text-red-600" />
                           </button>

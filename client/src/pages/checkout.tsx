@@ -97,14 +97,14 @@ export default function CheckoutPage() {
 
   const handleCardNumberChange = (e: string) => {
     const value = e.replace(/\s/g, "").slice(0, 16);
-    const formatted = value.replace(/(\d{4})/g, "$1 ").trim();
+    const formatted = value.replace(/(\d{4})/g, "L.E 1 ").trim();
     setFormData(prev => ({ ...prev, cardNumber: formatted }));
   };
 
   const handleExpiryChange = (e: string) => {
     const value = e.replace(/\D/g, "").slice(0, 4);
     if (value.length >= 2) {
-      setFormData(prev => ({ ...prev, expiryDate: `${value.slice(0, 2)}/${value.slice(2)}` }));
+      setFormData(prev => ({ ...prev, expiryDate: `L.E {value.slice(0, 2)}/L.E {value.slice(2)}` }));
     } else {
       setFormData(prev => ({ ...prev, expiryDate: value }));
     }
@@ -176,7 +176,7 @@ export default function CheckoutPage() {
       const finalTotal = totalWithDiscounts + shippingCost;
 
       // Simulate payment success - in production, use Stripe
-      const paymentId = `card_${Date.now()}`;
+      const paymentId = `card_L.E {Date.now()}`;
       
       let shippingAddress = formData.address;
       let shippingPhone = formData.zipCode;
@@ -190,7 +190,7 @@ export default function CheckoutPage() {
       const nextOrderNumber = Math.max(0, ...savedOrders.map((o: any) => o.orderNumber || 0)) + 1;
 
       const orderData = {
-        id: `order-${Date.now()}`,
+        id: `order-L.E {Date.now()}`,
         orderNumber: nextOrderNumber,
         items,
         subtotal: total,
@@ -260,7 +260,7 @@ export default function CheckoutPage() {
       const nextOrderNumber = Math.max(0, ...savedOrders.map((o: any) => o.orderNumber || 0)) + 1;
 
       const orderData = {
-        id: `order-${Date.now()}`,
+        id: `order-L.E {Date.now()}`,
         orderNumber: nextOrderNumber,
         items,
         subtotal: total,
@@ -347,10 +347,10 @@ export default function CheckoutPage() {
             <h3 className="font-semibold text-sm mb-3">{t("orderSummary", language)}</h3>
             <div className="space-y-2 text-sm">
               {items.map((item, idx) => (
-                <div key={`${item.id}-${idx}`} className="flex flex-col gap-1">
+                <div key={`L.E {item.id}-L.E {idx}`} className="flex flex-col gap-1">
                   <div className="flex justify-between">
                     <span>{item.quantity}x {item.title}</span>
-                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+                    <span>L.E {(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                   {(item.selectedColor || item.selectedSize || item.selectedUnit) && (
                     <div className="flex flex-wrap gap-1 ml-2">
@@ -376,29 +376,29 @@ export default function CheckoutPage() {
               <div className="border-t border-blue-200 pt-2 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>{t("subtotal", language)}</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>L.E {total.toFixed(2)}</span>
                 </div>
                 {calculateTotalWithDiscounts() < total && (
                   <div className="flex justify-between text-sm text-green-600 font-semibold">
                     <span>{t("discount", language)}</span>
-                    <span>-${(total - calculateTotalWithDiscounts()).toFixed(2)}</span>
+                    <span>-L.E {(total - calculateTotalWithDiscounts()).toFixed(2)}</span>
                   </div>
                 )}
                 {calculateTotalWithDiscounts() < total && (
                   <div className="flex justify-between text-sm font-semibold">
                     <span>{t("afterDiscount", language)}</span>
-                    <span className="text-green-600">${calculateTotalWithDiscounts().toFixed(2)}</span>
+                    <span className="text-green-600">L.E {calculateTotalWithDiscounts().toFixed(2)}</span>
                   </div>
                 )}
                 {shippingCost > 0 && (
                   <div className="flex justify-between text-sm">
                     <span>{t("shipping", language)}</span>
-                    <span>${shippingCost.toFixed(2)}</span>
+                    <span>L.E {shippingCost.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between font-bold text-base">
                   <span>{t("total", language)}</span>
-                  <span>${(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}</span>
+                  <span>L.E {(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -529,7 +529,7 @@ export default function CheckoutPage() {
                   >
                     <option value="">{t("selectZone", language)}</option>
                     {shippingZones.map((zone) => (
-                      <option key={zone.id} value={zone.name}>{zone.name} (${zone.shippingCost})</option>
+                      <option key={zone.id} value={zone.name}>{zone.name} (L.E {zone.shippingCost})</option>
                     ))}
                   </select>
                 </div>
@@ -572,7 +572,7 @@ export default function CheckoutPage() {
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 text-sm">
                   <div className="flex justify-between font-semibold">
                     <span>{t("shippingCost", language)}:</span>
-                    <span>${shippingCost}</span>
+                    <span>L.E {shippingCost}</span>
                   </div>
                 </div>
               )}
@@ -649,7 +649,7 @@ export default function CheckoutPage() {
                     {t("processingPayment", language)}
                   </>
                 ) : (
-                  `${paymentMethod === "card" ? t("pay", language) : t("placeOrder", language)} $${(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}`
+                  `L.E {paymentMethod === "card" ? t("pay", language) : t("placeOrder", language)} $L.E {(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}`
                 )}
               </button>
             </form>

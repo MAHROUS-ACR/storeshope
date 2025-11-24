@@ -317,7 +317,7 @@ export default function OrderDetailsPage() {
                       <div key={idx} className="pb-3 border-b border-gray-100 last:border-b-0 last:pb-0">
                         <div className="flex justify-between mb-1">
                           <p className="text-sm font-medium">{item.quantity}x {item.title}</p>
-                          <p className="text-sm font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                          <p className="text-sm font-semibold">L.E {(item.price * item.quantity).toFixed(2)}</p>
                         </div>
                         {(item.selectedColor || item.selectedSize || item.selectedUnit) && (
                           <div className="flex flex-wrap gap-1 mt-2">
@@ -389,30 +389,30 @@ export default function OrderDetailsPage() {
                   {order.subtotal !== undefined && (
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t("subtotal", language)}</span>
-                      <span>${order.subtotal.toFixed(2)}</span>
+                      <span>L.E {order.subtotal.toFixed(2)}</span>
                     </div>
                   )}
                   {order.discountedTotal !== undefined && order.subtotal !== undefined && order.discountedTotal < order.subtotal && (
                     <>
                       <div className="flex justify-between text-sm text-green-600 font-semibold">
                         <span>{language === "ar" ? "الخصم" : "Discount"}</span>
-                        <span>-${(order.subtotal - order.discountedTotal).toFixed(2)}</span>
+                        <span>-L.E {(order.subtotal - order.discountedTotal).toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm font-semibold text-green-600">
                         <span>{language === "ar" ? "بعد الخصم" : "After Discount"}</span>
-                        <span>${order.discountedTotal.toFixed(2)}</span>
+                        <span>L.E {order.discountedTotal.toFixed(2)}</span>
                       </div>
                     </>
                   )}
                   {order.shippingCost !== undefined && order.shippingCost > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t("shipping", language)}</span>
-                      <span>${order.shippingCost.toFixed(2)}</span>
+                      <span>L.E {order.shippingCost.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-lg font-bold border-t border-gray-100 pt-2 mt-2">
                     <span>{t("total", language)}</span>
-                    <span>${order.total.toFixed(2)}</span>
+                    <span>L.E {order.total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -476,7 +476,7 @@ export default function OrderDetailsPage() {
                   {completedOrdersValue > 0 && (
                     <div className="pt-4 border-t border-gray-100">
                       <p className="text-xs text-muted-foreground uppercase tracking-wider">{language === "ar" ? "قيمة الأوردرات المكتملة" : "Completed Orders Value"}</p>
-                      <p className="text-3xl font-bold text-emerald-600 mt-2" data-testid="text-completed-orders-value">${completedOrdersValue.toFixed(2)}</p>
+                      <p className="text-3xl font-bold text-emerald-600 mt-2" data-testid="text-completed-orders-value">L.E {completedOrdersValue.toFixed(2)}</p>
                     </div>
                   )}
                 </div>

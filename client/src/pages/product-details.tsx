@@ -184,14 +184,14 @@ export default function ProductDetailsPage() {
               <p className="text-sm text-gray-600 mb-1">{t("price", language)}</p>
               {activeDiscount ? (
                 <div className="flex items-baseline gap-3">
-                  <p className="text-3xl font-bold text-green-600" data-testid="text-price">${discountedPrice.toFixed(2)}</p>
-                  <p className="text-lg text-gray-400 line-through">${product.price.toFixed(2)}</p>
+                  <p className="text-3xl font-bold text-green-600" data-testid="text-price">L.E {discountedPrice.toFixed(2)}</p>
+                  <p className="text-lg text-gray-400 line-through">L.E {product.price.toFixed(2)}</p>
                   <p className="px-5 py-1 bg-red-100 text-red-700 rounded text-xs font-bold">
-                    {language === "ar" ? `وفر ${activeDiscount.discountPercentage}%` : `Save ${activeDiscount.discountPercentage}%`}
+                    {language === "ar" ? `وفر L.E {activeDiscount.discountPercentage}%` : `Save L.E {activeDiscount.discountPercentage}%`}
                   </p>
                 </div>
               ) : (
-                <p className="text-3xl font-bold" data-testid="text-price">${product.price.toFixed(2)}</p>
+                <p className="text-3xl font-bold" data-testid="text-price">L.E {product.price.toFixed(2)}</p>
               )}
             </div>
 
@@ -261,12 +261,12 @@ export default function ProductDetailsPage() {
                           <button
                             key={colorName}
                             onClick={() => setSelectedColor(color || '')}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all L.E {
                               selectedColor === color
                                 ? 'border-gray-800 bg-gray-50'
                                 : 'border-gray-200 bg-white hover:border-gray-300'
                             }`}
-                            data-testid={`button-color-${colorName}`}
+                            data-testid={`button-color-L.E {colorName}`}
                           >
                             <span 
                               style={{width: '20px', height: '20px', backgroundColor: colorHex, borderRadius: '4px', border: '1px solid rgba(0,0,0,0.1)'}}

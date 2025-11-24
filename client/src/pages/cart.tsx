@@ -58,7 +58,7 @@ export default function CartPage() {
           <p className="text-sm text-muted-foreground mb-6 text-center">Start shopping to add items</p>
           <button
             onClick={() => setLocation("/")}
-            className="px-5 py-2 bg-black text-white rounded-full text-sm font-semibold"
+            className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold"
             data-testid="button-continue-shopping"
           >
             {t("continueShoppingButton", language)}
@@ -123,11 +123,11 @@ export default function CartPage() {
                       <div className="mt-1">
                         {activeDiscount ? (
                           <div className="flex items-baseline gap-2">
-                            <p className="text-lg font-bold text-green-600">${discountedPrice.toFixed(2)}</p>
-                            <p className="text-xs text-gray-400 line-through">${item.price.toFixed(2)}</p>
+                            <p className="text-lg font-bold text-green-600">L.E {discountedPrice.toFixed(2)}</p>
+                            <p className="text-xs text-gray-400 line-through">L.E {item.price.toFixed(2)}</p>
                           </div>
                         ) : (
-                          <p className="text-lg font-bold">${item.price.toFixed(2)}</p>
+                          <p className="text-lg font-bold">L.E {item.price.toFixed(2)}</p>
                         )}
                       </div>
                     );
@@ -167,24 +167,24 @@ export default function CartPage() {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t("subtotal", language)}</span>
-              <span className="font-semibold">${total.toFixed(2)}</span>
+              <span className="font-semibold">L.E {total.toFixed(2)}</span>
             </div>
             {totalWithDiscounts < total && (
               <>
                 <div className="flex justify-between text-sm text-green-600">
                   <span>{t("discountSavings", language)}</span>
-                  <span className="font-semibold">-${(total - totalWithDiscounts).toFixed(2)}</span>
+                  <span className="font-semibold">-L.E {(total - totalWithDiscounts).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100 text-green-600">
                   <span>{t("total", language)}</span>
-                  <span>${totalWithDiscounts.toFixed(2)}</span>
+                  <span>L.E {totalWithDiscounts.toFixed(2)}</span>
                 </div>
               </>
             )}
             {totalWithDiscounts === total && (
               <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100">
                 <span>{t("total", language)}</span>
-                <span>${total.toFixed(2)}</span>
+                <span>L.E {total.toFixed(2)}</span>
               </div>
             )}
           </div>

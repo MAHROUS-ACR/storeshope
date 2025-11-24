@@ -172,11 +172,11 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
           <div className="flex flex-col gap-0">
             {activeDiscount ? (
               <>
-                <p className="font-bold text-sm text-green-600" data-testid={`text-price-${product.id}`}>${discountedPrice.toFixed(2)}</p>
-                <p className="text-xs text-gray-400 line-through">${product.price.toFixed(2)}</p>
+                <p className="font-bold text-sm text-green-600" data-testid={`text-price-${product.id}`}> L.E {discountedPrice.toFixed(2)}</p>
+                <p className="text-xs text-gray-400 line-through"> L.E {product.price.toFixed(2)}</p>
               </>
             ) : (
-              <p className="font-bold text-sm" data-testid={`text-price-${product.id}`}>${product.price.toFixed(2)}</p>
+              <p className="font-bold text-sm" data-testid={`text-price-${product.id}`}> L.E {product.price.toFixed(2)}</p>
             )}
           </div>
           <div className="flex items-center gap-2">

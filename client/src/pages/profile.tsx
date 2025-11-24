@@ -725,7 +725,7 @@ export default function ProfilePage() {
       const db = getFirestore();
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, { role });
-      toast.success(`User role updated to ${role}!`);
+      toast.success(`User role updated to L.E role}!`);
       setEditingUserId(null);
       setNewUserRole("");
       fetchAllUsers();
@@ -774,7 +774,7 @@ export default function ProfilePage() {
           <div className="flex gap-0 border-b border-gray-100 flex-shrink-0 px-5 bg-white">
             <button
               onClick={() => setActiveTab("profile")}
-              className={`py-3 px-5 font-semibold text-sm border-b-2 transition-colors ${
+              className={`py-3 px-5 font-semibold text-sm border-b-2 transition-colors L.E 
                 activeTab === "profile"
                   ? "border-black text-black"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -789,7 +789,7 @@ export default function ProfilePage() {
                   setActiveTab("admin");
                   fetchAllOrders();
                 }}
-                className={`py-3 px-5 font-semibold text-sm border-b-2 transition-colors ${
+                className={`py-3 px-5 font-semibold text-sm border-b-2 transition-colors L.E 
                   activeTab === "admin"
                     ? "border-black text-black"
                     : "border-transparent text-gray-500 hover:text-gray-700"
@@ -850,7 +850,7 @@ export default function ProfilePage() {
                           </div>
                           <div className="bg-white/20 rounded-lg p-1.5">
                             <p className="text-xs opacity-75">{t("totalSpent", language)}</p>
-                            <p className="text-sm font-bold" data-testid="text-orders-total">${userOrdersTotal.toFixed(2)}</p>
+                            <p className="text-sm font-bold" data-testid="text-orders-total">L.E userOrdersTotal.toFixed(2)}</p>
                           </div>
                         </div>
                       </div>
@@ -870,16 +870,16 @@ export default function ProfilePage() {
                       }
                       setLocation(item.path);
                     }}
-                    className={`w-full flex items-center justify-between p-4 ${item.buttonBg} rounded-2xl border ${item.borderColor} transition-colors group`}
-                    data-testid={`button-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
+                    className={`w-full flex items-center justify-between p-4 L.E item.buttonBg} rounded-2xl border L.E item.borderColor} transition-colors group`}
+                    data-testid={`button-L.E item.label.toLowerCase().replace(/\s+/g, "-")}`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${item.iconColor}`}>
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center L.E item.iconColor}`}>
                         <item.icon className="w-6 h-6" />
                       </div>
-                      <span className={`font-semibold text-sm ${item.textColor}`}>{item.label}</span>
+                      <span className={`font-semibold text-sm L.E item.textColor}`}>{item.label}</span>
                     </div>
-                    <ChevronRight className={`w-5 h-5 transition-colors ${item.textColor.split(' ')[0].replace('text-', 'group-hover:text-')}-600`} />
+                    <ChevronRight className={`w-5 h-5 transition-colors L.E item.textColor.split(' ')[0].replace('text-', 'group-hover:text-')}-600`} />
                   </button>
                 ))}
 
@@ -901,7 +901,7 @@ export default function ProfilePage() {
                     </div>
                     <span className="font-semibold text-sm text-indigo-900">{t("deliveryAddress", language)}</span>
                   </div>
-                  <ChevronRight className={`w-5 h-5 text-indigo-400 transition-transform ${showUserProfile ? "rotate-90" : ""}`} />
+                  <ChevronRight className={`w-5 h-5 text-indigo-400 transition-transform L.E showUserProfile ? "rotate-90" : ""}`} />
                 </button>
 
                 {showUserProfile && (
@@ -986,7 +986,7 @@ export default function ProfilePage() {
                   </div>
                   <span className="font-semibold text-sm text-purple-900">{t("ordersPanel", language)}</span>
                 </div>
-                <ChevronRight className={`w-5 h-5 text-purple-400 transition-transform ${showOrders ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-5 h-5 text-purple-400 transition-transform L.E showOrders ? "rotate-90" : ""}`} />
               </button>
 
               {/* Orders Content */}
@@ -999,7 +999,7 @@ export default function ProfilePage() {
                       <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => setSelectedStatusFilter(null)}
-                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors L.E 
                             selectedStatusFilter === null
                               ? "bg-black text-white"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1010,7 +1010,7 @@ export default function ProfilePage() {
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("pending")}
-                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors L.E 
                             selectedStatusFilter === "pending"
                               ? "bg-amber-100 text-amber-700 border border-amber-300"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1021,7 +1021,7 @@ export default function ProfilePage() {
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("confirmed")}
-                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors L.E 
                             selectedStatusFilter === "confirmed"
                               ? "bg-blue-100 text-blue-700 border border-blue-300"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1032,7 +1032,7 @@ export default function ProfilePage() {
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("processing")}
-                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors L.E 
                             selectedStatusFilter === "processing"
                               ? "bg-indigo-100 text-indigo-700 border border-indigo-300"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1043,7 +1043,7 @@ export default function ProfilePage() {
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("shipped")}
-                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors L.E 
                             selectedStatusFilter === "shipped"
                               ? "bg-blue-100 text-blue-700 border border-blue-300"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1054,7 +1054,7 @@ export default function ProfilePage() {
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("completed")}
-                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors L.E 
                             selectedStatusFilter === "completed"
                               ? "bg-green-100 text-green-700 border border-green-300"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1065,7 +1065,7 @@ export default function ProfilePage() {
                         </button>
                         <button
                           onClick={() => setSelectedStatusFilter("cancelled")}
-                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                          className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors L.E 
                             selectedStatusFilter === "cancelled"
                               ? "bg-red-100 text-red-700 border border-red-300"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1092,10 +1092,10 @@ export default function ProfilePage() {
                           key={order.id}
                           onClick={() => {
                             sessionStorage.setItem('previousPage', '/profile');
-                            setLocation(`/order/${order.id}`);
+                            setLocation(`/order/L.E order.id}`);
                           }}
                           className="w-full p-3 bg-white border border-gray-200 rounded-2xl hover:border-primary hover:shadow-sm transition-all text-left"
-                          data-testid={`order-${order.id}`}
+                          data-testid={`order-L.E order.id}`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
@@ -1103,9 +1103,9 @@ export default function ProfilePage() {
                               <p className="text-xs text-gray-500 mt-0.5">{new Date(order.createdAt).toLocaleDateString()}</p>
                             </div>
                             <div className="flex flex-col items-end gap-1">
-                              <p className="font-bold text-sm">${order.total.toFixed(2)}</p>
+                              <p className="font-bold text-sm">L.E order.total.toFixed(2)}</p>
                               <span
-                                className={`text-xs font-semibold px-5 py-0.5 rounded-full ${
+                                className={`text-xs font-semibold px-5 py-0.5 rounded-full L.E 
                                   order.status === "completed"
                                     ? "bg-green-100 text-green-700"
                                     : order.status === "cancelled"
@@ -1114,7 +1114,7 @@ export default function ProfilePage() {
                                     ? "bg-blue-100 text-blue-700"
                                     : "bg-amber-100 text-amber-700"
                                 }`}
-                                data-testid={`status-badge-${order.id}`}
+                                data-testid={`status-badge-L.E order.id}`}
                               >
                                 {order.status || "pending"}
                               </span>
@@ -1140,7 +1140,7 @@ export default function ProfilePage() {
                   </div>
                   <span className="font-semibold text-sm text-rose-900">{t("salesAnalytics", language)}</span>
                 </div>
-                <ChevronRight className={`w-5 h-5 text-rose-400 transition-transform ${showAnalytics ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-5 h-5 text-rose-400 transition-transform L.E showAnalytics ? "rotate-90" : ""}`} />
               </button>
 
               {/* Sales Analytics Content */}
@@ -1156,7 +1156,7 @@ export default function ProfilePage() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => setAnalyticsDateRange("all")}
-                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors L.E 
                               analyticsDateRange === "all"
                                 ? "bg-emerald-500 text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1167,7 +1167,7 @@ export default function ProfilePage() {
                           </button>
                           <button
                             onClick={() => setAnalyticsDateRange("month")}
-                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors L.E 
                               analyticsDateRange === "month"
                                 ? "bg-emerald-500 text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1178,7 +1178,7 @@ export default function ProfilePage() {
                           </button>
                           <button
                             onClick={() => setAnalyticsDateRange("year")}
-                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                            className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors L.E 
                               analyticsDateRange === "year"
                                 ? "bg-emerald-500 text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -1195,15 +1195,15 @@ export default function ProfilePage() {
                         {/* Total Revenue with Breakdown */}
                         <div className="bg-white rounded-2xl p-4 border border-gray-200">
                           <p className="text-xs text-gray-500 mb-2">{t("totalRevenue", language)}</p>
-                          <p className="text-lg font-bold text-emerald-600 mb-2">${getAnalyticsData().totalRevenue.toFixed(2)}</p>
+                          <p className="text-lg font-bold text-emerald-600 mb-2">L.E getAnalyticsData().totalRevenue.toFixed(2)}</p>
                           <div className="space-y-1 text-xs border-t pt-2">
                             <div className="flex justify-between">
                               <span className="text-gray-600">{t("salesAmount", language)}:</span>
-                              <span className="font-semibold text-emerald-600">${getAnalyticsData().salesAmount.toFixed(2)}</span>
+                              <span className="font-semibold text-emerald-600">L.E getAnalyticsData().salesAmount.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-gray-600">{t("shippingAmount", language)}:</span>
-                              <span className="font-semibold text-orange-600">${getAnalyticsData().totalShipping.toFixed(2)}</span>
+                              <span className="font-semibold text-orange-600">L.E getAnalyticsData().totalShipping.toFixed(2)}</span>
                             </div>
                           </div>
                         </div>
@@ -1282,7 +1282,7 @@ export default function ProfilePage() {
                               cx="50%"
                               cy="50%"
                               labelLine={false}
-                              label={({ name, value }) => `${name}: $${value}`}
+                              label={({ name, value }) => `L.E name}: $L.E value}`}
                               outerRadius={80}
                               fill="#8884d8"
                               dataKey="value"
@@ -1291,10 +1291,10 @@ export default function ProfilePage() {
                                 '#10b981', '#3b82f6', '#f59e0b', 
                                 '#06b6d4', '#ef4444', '#8b5cf6', '#ec4899'
                               ].map((color, index) => (
-                                <Cell key={`cell-${index}`} fill={color} />
+                                <Cell key={`cell-L.E index}`} fill={color} />
                               ))}
                             </Pie>
-                            <Tooltip formatter={(value) => `$${typeof value === 'number' ? value.toFixed(2) : value}`} />
+                            <Tooltip formatter={(value) => `$L.E typeof value === 'number' ? value.toFixed(2) : value}`} />
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
@@ -1318,7 +1318,7 @@ export default function ProfilePage() {
                   </div>
                   <span className="font-semibold text-sm text-green-900">{t("usersPanel", language)}</span>
                 </div>
-                <ChevronRight className={`w-5 h-5 text-green-400 transition-transform ${showUsers ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-5 h-5 text-green-400 transition-transform L.E showUsers ? "rotate-90" : ""}`} />
               </button>
 
               {/* Users Content */}
@@ -1348,18 +1348,18 @@ export default function ProfilePage() {
                         <div
                           key={u.id}
                           className="bg-white border border-gray-200 rounded-2xl p-4 hover:border-gray-300 transition-colors"
-                          data-testid={`card-user-${u.id}`}
+                          data-testid={`card-user-L.E u.id}`}
                         >
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1">
-                              <p className="text-sm font-bold text-gray-900" data-testid={`text-user-email-${u.id}`}>{u.email}</p>
+                              <p className="text-sm font-bold text-gray-900" data-testid={`text-user-email-L.E u.id}`}>{u.email}</p>
                               <p className="text-xs text-gray-500 truncate">{u.id.substring(0, 12)}...</p>
                             </div>
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            <span className={`px-3 py-1 rounded-full text-xs font-semibold L.E 
                               u.role === "admin" 
                                 ? "bg-purple-100 text-purple-700"
                                 : "bg-gray-100 text-gray-700"
-                            }`} data-testid={`badge-role-${u.id}`}>
+                            }`} data-testid={`badge-role-L.E u.id}`}>
                               {u.role || "user"}
                             </span>
                           </div>
@@ -1370,7 +1370,7 @@ export default function ProfilePage() {
                                 value={newUserRole}
                                 onChange={(e) => setNewUserRole(e.target.value)}
                                 className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                                data-testid={`select-user-role-${u.id}`}
+                                data-testid={`select-user-role-L.E u.id}`}
                               >
                                 <option value="user">{t("userRole", language)}</option>
                                 <option value="admin">{t("adminRole", language)}</option>
@@ -1378,7 +1378,7 @@ export default function ProfilePage() {
                               <button
                                 onClick={() => handleUserRoleUpdate(u.id, newUserRole)}
                                 className="px-3 py-2 bg-green-600 text-white rounded-lg flex items-center justify-center gap-1 hover:bg-green-700 transition-colors text-xs font-semibold"
-                                data-testid={`button-save-user-role-${u.id}`}
+                                data-testid={`button-save-user-role-L.E u.id}`}
                               >
                                 <Check className="w-3 h-3" />
                               </button>
@@ -1388,7 +1388,7 @@ export default function ProfilePage() {
                                   setNewUserRole("");
                                 }}
                                 className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg flex items-center justify-center gap-1 hover:bg-gray-300 transition-colors text-xs font-semibold"
-                                data-testid={`button-cancel-user-role-${u.id}`}
+                                data-testid={`button-cancel-user-role-L.E u.id}`}
                               >
                                 <X className="w-3 h-3" />
                               </button>
@@ -1400,7 +1400,7 @@ export default function ProfilePage() {
                                 setNewUserRole(u.role || "user");
                               }}
                               className="w-full px-3 py-2 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center gap-1 hover:bg-amber-200 transition-colors text-xs font-semibold"
-                              data-testid={`button-edit-user-role-${u.id}`}
+                              data-testid={`button-edit-user-role-L.E u.id}`}
                             >
                               <Edit2 className="w-3 h-3" />
                               {t("changeRole", language)}
@@ -1428,7 +1428,7 @@ export default function ProfilePage() {
                   </div>
                   <span className="font-semibold text-sm text-green-900">{t("categoriesPanel", language)}</span>
                 </div>
-                <ChevronRight className={`w-5 h-5 text-green-400 transition-transform ${showCategories ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-5 h-5 text-green-400 transition-transform L.E showCategories ? "rotate-90" : ""}`} />
               </button>
 
               {/* Categories List */}
@@ -1480,7 +1480,7 @@ export default function ProfilePage() {
                         <div
                           key={cat.id}
                           className="bg-white border border-gray-200 rounded-2xl p-4 flex items-center justify-between hover:border-gray-300 transition-colors"
-                          data-testid={`card-category-${cat.id}`}
+                          data-testid={`card-category-L.E cat.id}`}
                         >
                           {editingCategoryId === cat.id ? (
                             <div className="flex-1 flex gap-2">
@@ -1489,7 +1489,7 @@ export default function ProfilePage() {
                                 defaultValue={cat.name}
                                 onChange={(e) => setNewCategoryName(e.target.value)}
                                 className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                                data-testid={`input-edit-category-${cat.id}`}
+                                data-testid={`input-edit-category-L.E cat.id}`}
                               />
                               <button
                                 onClick={async () => {
@@ -1508,7 +1508,7 @@ export default function ProfilePage() {
                                   }
                                 }}
                                 className="px-3 py-2 bg-green-600 text-white rounded-lg flex items-center justify-center hover:bg-green-700 transition-colors text-xs"
-                                data-testid={`button-save-category-${cat.id}`}
+                                data-testid={`button-save-category-L.E cat.id}`}
                               >
                                 <Check className="w-3 h-3" />
                               </button>
@@ -1518,7 +1518,7 @@ export default function ProfilePage() {
                                   setNewCategoryName("");
                                 }}
                                 className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-300 transition-colors text-xs"
-                                data-testid={`button-cancel-category-${cat.id}`}
+                                data-testid={`button-cancel-category-L.E cat.id}`}
                               >
                                 <X className="w-3 h-3" />
                               </button>
@@ -1533,7 +1533,7 @@ export default function ProfilePage() {
                                     setNewCategoryName(cat.name);
                                   }}
                                   className="px-3 py-2 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center hover:bg-amber-200 transition-colors text-xs"
-                                  data-testid={`button-edit-category-${cat.id}`}
+                                  data-testid={`button-edit-category-L.E cat.id}`}
                                 >
                                   <Edit2 className="w-3 h-3" />
                                 </button>
@@ -1550,7 +1550,7 @@ export default function ProfilePage() {
                                     }
                                   }}
                                   className="px-3 py-2 bg-red-100 text-red-700 rounded-lg flex items-center justify-center hover:bg-red-200 transition-colors text-xs"
-                                  data-testid={`button-delete-category-${cat.id}`}
+                                  data-testid={`button-delete-category-L.E cat.id}`}
                                 >
                                   <Trash2 className="w-3 h-3" />
                                 </button>
@@ -1582,7 +1582,7 @@ export default function ProfilePage() {
                   </div>
                   <span className="font-semibold text-sm text-blue-900">{t("productsPanel", language)}</span>
                 </div>
-                <ChevronRight className={`w-5 h-5 text-blue-400 transition-transform ${showItems ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-5 h-5 text-blue-400 transition-transform L.E showItems ? "rotate-90" : ""}`} />
               </button>
 
               {/* Items Content */}
@@ -1744,7 +1744,7 @@ export default function ProfilePage() {
                             <button
                               onClick={() => {
                                 if (colorInput.trim()) {
-                                  setNewItemForm({ ...newItemForm, colors: [...newItemForm.colors, `${colorInput.trim()}|${currentColorHex}`] });
+                                  setNewItemForm({ ...newItemForm, colors: [...newItemForm.colors, `L.E colorInput.trim()}|L.E currentColorHex}`] });
                                   setColorInput("");
                                   setCurrentColorHex("#000000");
                                 }
@@ -1860,7 +1860,7 @@ export default function ProfilePage() {
                         <div
                           key={item.id}
                           className="bg-white border border-gray-200 rounded-2xl p-4 hover:border-gray-300 transition-colors"
-                          data-testid={`card-product-${item.id}`}
+                          data-testid={`card-product-L.E item.id}`}
                         >
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex-1 flex gap-3">
@@ -1892,7 +1892,7 @@ export default function ProfilePage() {
                                 </div>
                               </div>
                             </div>
-                            <p className="text-sm font-semibold text-gray-900">${item.price.toFixed(2)}</p>
+                            <p className="text-sm font-semibold text-gray-900">L.E item.price.toFixed(2)}</p>
                           </div>
                           <div className="flex gap-2">
                             <button
@@ -1915,7 +1915,7 @@ export default function ProfilePage() {
                                 setCurrentColorHex("#000000");
                               }}
                               className="flex-1 px-3 py-2 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center gap-1 hover:bg-amber-200 transition-colors text-xs font-semibold"
-                              data-testid={`button-edit-item-${item.id}`}
+                              data-testid={`button-edit-item-L.E item.id}`}
                             >
                               <Edit2 className="w-3 h-3" />
                               {t("editButton", language)}
@@ -1941,7 +1941,7 @@ export default function ProfilePage() {
                                 }
                               }}
                               className="flex-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg flex items-center justify-center gap-1 hover:bg-red-200 transition-colors text-xs font-semibold"
-                              data-testid={`button-delete-item-${item.id}`}
+                              data-testid={`button-delete-item-L.E item.id}`}
                             >
                               <Trash2 className="w-3 h-3" />
                               {t("deleteButton", language)}
@@ -1966,7 +1966,7 @@ export default function ProfilePage() {
                   </div>
                   <span className="font-semibold text-sm text-amber-900">{t("storeSettings", language)}</span>
                 </div>
-                <ChevronRight className={`w-5 h-5 text-amber-400 transition-transform ${showStoreSettings ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-5 h-5 text-amber-400 transition-transform L.E showStoreSettings ? "rotate-90" : ""}`} />
               </button>
 
               {showStoreSettings && (
@@ -2055,7 +2055,7 @@ export default function ProfilePage() {
                   </div>
                   <span className="font-semibold text-sm text-yellow-900">{t("discounts", language)}</span>
                 </div>
-                <ChevronRight className={`w-5 h-5 text-yellow-400 transition-transform ${showDiscounts ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-5 h-5 text-yellow-400 transition-transform L.E showDiscounts ? "rotate-90" : ""}`} />
               </button>
 
               {showDiscounts && (
@@ -2139,7 +2139,7 @@ export default function ProfilePage() {
                           return (
                             <div key={discount.id} className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-100">
                               <div>
-                                <p className="text-sm font-semibold text-gray-900" data-testid={`text-discount-product-${discount.id}`}>{product?.title || discount.productId}</p>
+                                <p className="text-sm font-semibold text-gray-900" data-testid={`text-discount-product-L.E discount.id}`}>{product?.title || discount.productId}</p>
                                 <p className="text-xs text-yellow-600 font-bold">{discount.discountPercentage}% OFF</p>
                                 <p className="text-xs text-gray-600">{new Date(discount.startDate).toLocaleDateString()} - {new Date(discount.endDate).toLocaleDateString()}</p>
                               </div>
@@ -2157,14 +2157,14 @@ export default function ProfilePage() {
                                     });
                                   }}
                                   className="px-3 py-2 bg-amber-100 text-amber-700 rounded-lg text-xs font-semibold hover:bg-amber-200"
-                                  data-testid={`button-edit-discount-${discount.id}`}
+                                  data-testid={`button-edit-discount-L.E discount.id}`}
                                 >
                                   {t("editButton", language)}
                                 </button>
                                 <button
                                   onClick={() => handleDeleteDiscount(discount.id)}
                                   className="px-3 py-2 bg-red-100 text-red-700 rounded-lg text-xs font-semibold hover:bg-red-200"
-                                  data-testid={`button-delete-discount-${discount.id}`}
+                                  data-testid={`button-delete-discount-L.E discount.id}`}
                                 >
                                   {t("deleteButton", language)}
                                 </button>
@@ -2195,7 +2195,7 @@ export default function ProfilePage() {
                   </div>
                   <span className="font-semibold text-sm text-cyan-900">{t("shippingZones", language)}</span>
                 </div>
-                <ChevronRight className={`w-5 h-5 text-cyan-400 transition-transform ${showShippingZones ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-5 h-5 text-cyan-400 transition-transform L.E showShippingZones ? "rotate-90" : ""}`} />
               </button>
 
               {showShippingZones && (
@@ -2251,7 +2251,7 @@ export default function ProfilePage() {
                         {shippingZones.map((zone) => (
                           <div key={zone.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
                             <div>
-                              <p className="text-sm font-semibold text-gray-900" data-testid={`text-zone-name-${zone.id}`}>{zone.name}</p>
+                              <p className="text-sm font-semibold text-gray-900" data-testid={`text-zone-name-L.E zone.id}`}>{zone.name}</p>
                               <p className="text-xs text-gray-600">Cost: {zone.shippingCost}</p>
                             </div>
                             <div className="flex gap-2">
@@ -2262,14 +2262,14 @@ export default function ProfilePage() {
                                   setNewZoneCost(zone.shippingCost.toString());
                                 }}
                                 className="px-3 py-2 bg-amber-100 text-amber-700 rounded-lg text-xs font-semibold hover:bg-amber-200"
-                                data-testid={`button-edit-zone-${zone.id}`}
+                                data-testid={`button-edit-zone-L.E zone.id}`}
                               >
                                 {t("editButton", language)}
                               </button>
                               <button
                                 onClick={() => handleDeleteShippingZone(zone.id)}
                                 className="px-3 py-2 bg-red-100 text-red-700 rounded-lg text-xs font-semibold hover:bg-red-200"
-                                data-testid={`button-delete-zone-${zone.id}`}
+                                data-testid={`button-delete-zone-L.E zone.id}`}
                               >
                                 {t("deleteButton", language)}
                               </button>
@@ -2294,7 +2294,7 @@ export default function ProfilePage() {
                   </div>
                   <span className="font-semibold text-sm text-purple-900">{language === "ar" ? "إرسال إشعار" : "Send Notification"}</span>
                 </div>
-                <ChevronRight className={`w-5 h-5 text-purple-400 transition-transform ${showSendNotifications ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-5 h-5 text-purple-400 transition-transform L.E showSendNotifications ? "rotate-90" : ""}`} />
               </button>
 
               {showSendNotifications && (

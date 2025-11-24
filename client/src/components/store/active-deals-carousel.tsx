@@ -109,7 +109,7 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
               {/* Right: Price */}
               <div className="text-white text-right drop-shadow-lg whitespace-nowrap">
                 <div className="text-sm line-through opacity-70">
-                  ${discountedProducts[carouselIndex].price.toFixed(2)}
+                   L.E {discountedProducts[carouselIndex].price.toFixed(2)}
                 </div>
                 <div className="text-lg font-bold text-yellow-300">
                   $
