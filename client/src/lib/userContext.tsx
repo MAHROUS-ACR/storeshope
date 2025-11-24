@@ -8,8 +8,27 @@ import {
   onAuthStateChanged, 
   type User as FirebaseUser 
 } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
-import { getFirebaseConfig } from "./firebaseConfig";
+import { getFirestore, doc, setDoc, onSnapshot } from "firebase/firestore";
+
+// Initialize Firebase with environment variables
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+// Initialize app once
+let firebaseApp: any = null;
+try {
+  firebaseApp = initializeApp(firebaseConfig);
+} catch (error: any) {
+  if (!error.message?.includes('duplicate-app')) {
+    console.error('Firebase initialization error:', error);
+  }
+}
 
 export interface User {
   id: string;
@@ -46,87 +65,81 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [firestore, setFirestore] = useState<any>(null);
 
   useEffect(() => {
-    // Initialize Firebase
-    const config = getFirebaseConfig();
-    if (config) {
-      try {
-        const app = initializeApp(config);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        setFirebaseAuth(auth);
-        setFirestore(db);
+    try {
+      // Get Firebase auth and firestore (initialized above)
+      const auth = firebaseApp ? getAuth(firebaseApp) : getAuth();
+      const db = firebaseApp ? getFirestore(firebaseApp) : getFirestore();
+      setFirebaseAuth(auth);
+      setFirestore(db);
 
-        // Listen to Firebase Auth state changes
-        let unsubscribeUser: (() => void) | null = null;
-        
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
-          // Clean up previous user listener
-          if (unsubscribeUser) {
-            unsubscribeUser();
-            unsubscribeUser = null;
-          }
+      // Listen to Firebase Auth state changes
+      let unsubscribeUser: (() => void) | null = null;
+      
+      const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+        // Clean up previous user listener
+        if (unsubscribeUser) {
+          unsubscribeUser();
+          unsubscribeUser = null;
+        }
 
-          if (firebaseUser) {
-            // User is signed in - set up real-time listener for user data from Firestore
-            const userRef = doc(db, "users", firebaseUser.uid);
-            unsubscribeUser = onSnapshot(userRef, (userSnap) => {
-              let role = "user"; // default role
-              let username = firebaseUser.email?.split("@")[0] || "user"; // default username
-              
-              if (userSnap.exists()) {
-                const firestoreData = userSnap.data();
-                role = firestoreData.role || "user";
-                username = firestoreData.username || username;
-                console.log("📍 User data from Firestore - username:", username, "role:", role);
-              }
-              
-              const userData: User = {
-                id: firebaseUser.uid,
-                email: firebaseUser.email || "",
-                username: username,
-                role: role,
-              };
-              console.log("📍 Updating user state with role:", userData.role);
-              setUser(userData);
-              localStorage.setItem("user", JSON.stringify(userData));
-              setIsLoading(false);
-            }, (error) => {
-              console.error("Failed to fetch user data from Firestore:", error);
-              // Fallback to stored user data
-              const storedUser = localStorage.getItem("user");
-              const storedData = storedUser ? JSON.parse(storedUser) : {};
-              const storedRole = storedData.role || "user";
-              const storedUsername = storedData.username || firebaseUser.email?.split("@")[0];
-              
-              const userData: User = {
-                id: firebaseUser.uid,
-                email: firebaseUser.email || "",
-                username: storedUsername,
-                role: storedRole,
-              };
-              setUser(userData);
-              localStorage.setItem("user", JSON.stringify(userData));
-              setIsLoading(false);
-            });
-          } else {
-            // User is signed out
-            setUser(null);
-            localStorage.removeItem("user");
+        if (firebaseUser) {
+          // User is signed in - set up real-time listener for user data from Firestore
+          const userRef = doc(db, "users", firebaseUser.uid);
+          unsubscribeUser = onSnapshot(userRef, (userSnap) => {
+            let role = "user"; // default role
+            let username = firebaseUser.email?.split("@")[0] || "user"; // default username
+            
+            if (userSnap.exists()) {
+              const firestoreData = userSnap.data();
+              role = firestoreData.role || "user";
+              username = firestoreData.username || username;
+              console.log("📍 User data from Firestore - username:", username, "role:", role);
+            }
+            
+            const userData: User = {
+              id: firebaseUser.uid,
+              email: firebaseUser.email || "",
+              username: username,
+              role: role,
+            };
+            console.log("📍 Updating user state with role:", userData.role);
+            setUser(userData);
+            localStorage.setItem("user", JSON.stringify(userData));
             setIsLoading(false);
-          }
-        });
+          }, (error) => {
+            console.error("Failed to fetch user data from Firestore:", error);
+            // Fallback to stored user data
+            const storedUser = localStorage.getItem("user");
+            const storedData = storedUser ? JSON.parse(storedUser) : {};
+            const storedRole = storedData.role || "user";
+            const storedUsername = storedData.username || firebaseUser.email?.split("@")[0];
+            
+            const userData: User = {
+              id: firebaseUser.uid,
+              email: firebaseUser.email || "",
+              username: storedUsername,
+              role: storedRole,
+            };
+            setUser(userData);
+            localStorage.setItem("user", JSON.stringify(userData));
+            setIsLoading(false);
+          });
+        } else {
+          // User is signed out
+          setUser(null);
+          localStorage.removeItem("user");
+          setIsLoading(false);
+        }
+      });
 
-        return () => {
-          unsubscribe();
-          if (unsubscribeUser) {
-            unsubscribeUser();
-          }
-        };
-      } catch (error) {
-        console.error("Failed to initialize Firebase:", error);
-        setIsLoading(false);
-      }
-    } else {
+      return () => {
+        unsubscribe();
+        if (unsubscribeUser) {
+          unsubscribeUser();
+        }
+      };
+    } catch (error) {
+      console.error("Failed to initialize Firebase auth:", error);
       setIsLoading(false);
     }
   }, []);
