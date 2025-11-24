@@ -112,8 +112,7 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
                    L.E {discountedProducts[carouselIndex].price.toFixed(2)}
                 </div>
                 <div className="text-lg font-bold text-yellow-300">
-                  $
-                  {calculateDiscountedPrice(
+                  L.E {calculateDiscountedPrice(
                     discountedProducts[carouselIndex].price,
                     getActiveDiscount(String(discountedProducts[carouselIndex].id), discounts)
                       ?.discountPercentage || 0

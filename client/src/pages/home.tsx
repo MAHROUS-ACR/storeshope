@@ -248,7 +248,7 @@ export default function Home() {
                     product={product} 
                     index={index}
                     discounts={discounts}
-                    onProductClick={(id) => setLocation(`/product/L.E id}`)}
+                    onProductClick={(id) => setLocation(`/product/${id}`)}
                   />
                 ))}
               </div>
