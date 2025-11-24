@@ -3,44 +3,41 @@ import App from "./App";
 import "./index.css";
 import { initializeNotifications, setupOnMessageListener } from "./lib/notificationUtils";
 
-// Initialize notifications on app startup
-async function setupNotifications() {
+// Firebase config from environment variables
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+};
+
+// Initialize Firebase and notifications
+async function setupApp() {
   try {
-    // Get Firebase config from server
-    const configResponse = await fetch("/api/firebase/config");
-    if (configResponse.ok) {
-      const config = await configResponse.json();
-      
-      // Initialize notifications with config
-      await initializeNotifications({
-        apiKey: config.firebaseApiKey,
-        authDomain: config.firebaseAuthDomain,
-        projectId: config.firebaseProjectId,
-        storageBucket: config.firebaseStorageBucket,
-        messagingSenderId: config.firebaseMessagingSenderId,
-        appId: config.firebaseAppId,
-        measurementId: config.firebaseMeasurementId,
-      });
+    // Initialize notifications with config
+    await initializeNotifications(firebaseConfig);
 
-      // Setup message listener
-      setupOnMessageListener((payload) => {
-        console.log("Notification received in foreground:", payload);
-      });
+    // Setup message listener
+    setupOnMessageListener((payload) => {
+      console.log("Notification received in foreground:", payload);
+    });
 
-      // Request permission after a short delay to not block app startup
-      setTimeout(() => {
-        import("./lib/notificationUtils").then(({ requestNotificationPermission }) => {
-          requestNotificationPermission().catch(err => {
-            console.log("Notification permission setup deferred");
-          });
+    // Request permission after a short delay to not block app startup
+    setTimeout(() => {
+      import("./lib/notificationUtils").then(({ requestNotificationPermission }) => {
+        requestNotificationPermission().catch(err => {
+          console.log("Notification permission setup deferred");
         });
-      }, 2000);
-    }
+      });
+    }, 2000);
   } catch (error) {
-    console.log("Notification setup skipped:", error);
+    console.log("Notification setup deferred:", error);
   }
 }
 
-setupNotifications();
+setupApp();
 
 createRoot(document.getElementById("root")!).render(<App />);

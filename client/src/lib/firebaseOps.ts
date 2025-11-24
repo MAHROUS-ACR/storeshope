@@ -3,6 +3,7 @@
  * Replaces all Express API endpoints
  */
 
+import { initializeApp } from "firebase/app";
 import {
   getFirestore,
   collection,
@@ -19,11 +20,36 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-const db = getFirestore();
+// Initialize Firebase with environment variables
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+let db: any = null;
+
+function initDb() {
+  if (!db) {
+    try {
+      initializeApp(firebaseConfig);
+    } catch (error: any) {
+      if (!error.message?.includes('duplicate-app')) {
+        console.error('Firebase initialization error:', error);
+      }
+    }
+    db = getFirestore();
+  }
+  return db;
+}
 
 // ============= PRODUCTS =============
 export async function getProducts() {
   try {
+    const db = initDb();
     const productsRef = collection(db, "products");
     const snapshot = await getDocs(productsRef);
     return snapshot.docs.map(doc => ({
@@ -38,6 +64,7 @@ export async function getProducts() {
 
 export async function getProductById(id: string) {
   try {
+    const db = initDb();
     const productRef = doc(db, "products", id);
     const snapshot = await getDoc(productRef);
     return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
@@ -49,6 +76,7 @@ export async function getProductById(id: string) {
 
 export async function saveProduct(product: any) {
   try {
+    const db = initDb();
     const productRef = doc(db, "products", product.id);
     await setDoc(productRef, product);
     return true;
@@ -60,6 +88,7 @@ export async function saveProduct(product: any) {
 
 export async function deleteProduct(id: string) {
   try {
+    const db = initDb();
     await deleteDoc(doc(db, "products", id));
     return true;
   } catch (error) {
@@ -71,6 +100,7 @@ export async function deleteProduct(id: string) {
 // ============= ORDERS =============
 export async function getOrders(userId?: string) {
   try {
+    const db = initDb();
     const ordersRef = collection(db, "orders");
     
     if (userId) {
@@ -95,6 +125,7 @@ export async function getOrders(userId?: string) {
 
 export async function getOrderById(id: string) {
   try {
+    const db = initDb();
     const orderRef = doc(db, "orders", id);
     const snapshot = await getDoc(orderRef);
     return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
@@ -106,6 +137,7 @@ export async function getOrderById(id: string) {
 
 export async function saveOrder(order: any) {
   try {
+    const db = initDb();
     const ordersRef = collection(db, "orders");
     const docRef = doc(ordersRef);
     await setDoc(docRef, {
@@ -121,6 +153,7 @@ export async function saveOrder(order: any) {
 
 export async function updateOrder(id: string, updates: any) {
   try {
+    const db = initDb();
     const orderRef = doc(db, "orders", id);
     await updateDoc(orderRef, updates);
     return true;
@@ -133,6 +166,7 @@ export async function updateOrder(id: string, updates: any) {
 // ============= STORE SETTINGS =============
 export async function getStoreSettings() {
   try {
+    const db = initDb();
     const storeRef = doc(db, "settings", "store");
     const snapshot = await getDoc(storeRef);
     return snapshot.exists() ? snapshot.data() : null;
@@ -144,6 +178,7 @@ export async function getStoreSettings() {
 
 export async function saveStoreSettings(settings: any) {
   try {
+    const db = initDb();
     const storeRef = doc(db, "settings", "store");
     await setDoc(storeRef, {
       ...settings,
@@ -159,6 +194,7 @@ export async function saveStoreSettings(settings: any) {
 // ============= SHIPPING ZONES =============
 export async function getShippingZones() {
   try {
+    const db = initDb();
     const zonesRef = collection(db, "shippingZones");
     const snapshot = await getDocs(zonesRef);
     return snapshot.docs.map(doc => ({
@@ -173,6 +209,7 @@ export async function getShippingZones() {
 
 export async function saveShippingZone(zone: any) {
   try {
+    const db = initDb();
     if (zone.id) {
       const zoneRef = doc(db, "shippingZones", zone.id);
       await setDoc(zoneRef, zone);
@@ -191,6 +228,7 @@ export async function saveShippingZone(zone: any) {
 
 export async function deleteShippingZone(id: string) {
   try {
+    const db = initDb();
     await deleteDoc(doc(db, "shippingZones", id));
     return true;
   } catch (error) {
@@ -202,6 +240,7 @@ export async function deleteShippingZone(id: string) {
 // ============= NOTIFICATIONS =============
 export async function getNotifications(userId: string, isAdmin: boolean) {
   try {
+    const db = initDb();
     const notificationsRef = collection(db, "notifications");
     const q = query(
       notificationsRef,
@@ -222,6 +261,7 @@ export async function getNotifications(userId: string, isAdmin: boolean) {
 
 export async function markNotificationAsRead(id: string) {
   try {
+    const db = initDb();
     const notifRef = doc(db, "notifications", id);
     await updateDoc(notifRef, { read: true });
     return true;
@@ -233,6 +273,7 @@ export async function markNotificationAsRead(id: string) {
 
 export async function deleteNotification(id: string) {
   try {
+    const db = initDb();
     await deleteDoc(doc(db, "notifications", id));
     return true;
   } catch (error) {
@@ -244,6 +285,7 @@ export async function deleteNotification(id: string) {
 // ============= DISCOUNTS =============
 export async function getDiscounts() {
   try {
+    const db = initDb();
     const discountsRef = collection(db, "discounts");
     const snapshot = await getDocs(discountsRef);
     return snapshot.docs.map(doc => ({
@@ -258,6 +300,7 @@ export async function getDiscounts() {
 
 export async function saveDiscount(discount: any) {
   try {
+    const db = initDb();
     if (discount.id) {
       const discountRef = doc(db, "discounts", discount.id);
       await setDoc(discountRef, discount);
@@ -279,6 +322,7 @@ export async function saveDiscount(discount: any) {
 
 export async function deleteDiscount(id: string) {
   try {
+    const db = initDb();
     await deleteDoc(doc(db, "discounts", id));
     return true;
   } catch (error) {
@@ -290,6 +334,7 @@ export async function deleteDiscount(id: string) {
 // ============= USERS =============
 export async function getUsers() {
   try {
+    const db = initDb();
     const usersRef = collection(db, "users");
     const snapshot = await getDocs(usersRef);
     return snapshot.docs.map(doc => ({
@@ -304,6 +349,7 @@ export async function getUsers() {
 
 export async function getUserById(id: string) {
   try {
+    const db = initDb();
     const userRef = doc(db, "users", id);
     const snapshot = await getDoc(userRef);
     return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
@@ -315,6 +361,7 @@ export async function getUserById(id: string) {
 
 export async function updateUser(id: string, updates: any) {
   try {
+    const db = initDb();
     const userRef = doc(db, "users", id);
     await updateDoc(userRef, updates);
     return true;
@@ -327,6 +374,7 @@ export async function updateUser(id: string, updates: any) {
 // ============= CATEGORIES =============
 export async function getCategories() {
   try {
+    const db = initDb();
     const categoriesRef = collection(db, "categories");
     const snapshot = await getDocs(categoriesRef);
     return snapshot.docs.map(doc => ({
@@ -341,6 +389,7 @@ export async function getCategories() {
 
 export async function saveCategory(category: any) {
   try {
+    const db = initDb();
     if (category.id) {
       const catRef = doc(db, "categories", category.id);
       await setDoc(catRef, category);
@@ -359,6 +408,7 @@ export async function saveCategory(category: any) {
 
 export async function deleteCategory(id: string) {
   try {
+    const db = initDb();
     await deleteDoc(doc(db, "categories", id));
     return true;
   } catch (error) {
@@ -370,6 +420,7 @@ export async function deleteCategory(id: string) {
 // ============= FCM TOKENS =============
 export async function saveFCMToken(userId: string, token: string) {
   try {
+    const db = initDb();
     const tokensRef = collection(db, "fcmTokens");
     const q = query(tokensRef, where("userId", "==", userId));
     const existing = await getDocs(q);
