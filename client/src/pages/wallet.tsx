@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 export default function WalletPage() {
   return (
     <MobileWrapper>
-      <div className="px-6 pb-6">
+      <div className="px-5 pb-6">
         <h1 className="text-2xl font-bold mb-6">My Cards</h1>
         
         <div className="space-y-4">

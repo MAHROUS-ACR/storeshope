@@ -308,11 +308,11 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <MobileWrapper>
-        <div className="flex-1 flex flex-col items-center justify-center px-6">
+        <div className="flex-1 flex flex-col items-center justify-center px-5">
           <h2 className="text-lg font-bold mb-2">{t("noItemsCheckout", language)}</h2>
           <button
             onClick={() => setLocation("/cart")}
-            className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold mt-4"
+            className="px-5 py-2 bg-black text-white rounded-full text-sm font-semibold mt-4"
           >
             {t("backToCart", language)}
           </button>
@@ -328,7 +328,7 @@ export default function CheckoutPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-5 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/cart")}
             className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center"
@@ -341,7 +341,7 @@ export default function CheckoutPage() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-6 py-4">
+          <div className="w-full px-5 py-4">
           {/* Order Summary */}
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6">
             <h3 className="font-semibold text-sm mb-3">{t("orderSummary", language)}</h3>
@@ -586,7 +586,7 @@ export default function CheckoutPage() {
                       placeholder="4532 1234 5678 9010"
                       value={formData.cardNumber}
                       onChange={(e) => handleCardNumberChange(e.target.value)}
-                      className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                       data-testid="input-card-number"
                     />
                   </div>
@@ -598,7 +598,7 @@ export default function CheckoutPage() {
                       placeholder="John Doe"
                       value={formData.cardHolder}
                       onChange={(e) => setFormData(prev => ({ ...prev, cardHolder: e.target.value }))}
-                      className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                       data-testid="input-cardholder"
                     />
                   </div>
@@ -611,7 +611,7 @@ export default function CheckoutPage() {
                         placeholder="MM/YY"
                         value={formData.expiryDate}
                         onChange={(e) => handleExpiryChange(e.target.value)}
-                        className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                         data-testid="input-expiry"
                       />
                     </div>
@@ -622,7 +622,7 @@ export default function CheckoutPage() {
                         placeholder="123"
                         value={formData.cvv}
                         onChange={(e) => handleCVVChange(e.target.value)}
-                        className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                         data-testid="input-cvv"
                       />
                     </div>

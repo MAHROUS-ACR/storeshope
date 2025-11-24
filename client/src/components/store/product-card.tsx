@@ -280,7 +280,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
             <div className="flex gap-2">
               <button
                 onClick={() => setShowVariantModal(false)}
-                className="flex-1 px-6 py-3 border border-gray-200 rounded-lg font-semibold text-sm"
+                className="flex-1 px-5 py-3 border border-gray-200 rounded-lg font-semibold text-sm"
                 data-testid={`button-cancel-variant-${product.id}`}
               >
                 {t("cancelButton", language)}
@@ -288,7 +288,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
               <button
                 onClick={addItemToCart}
                 disabled={isAdding}
-                className="flex-1 px-6 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50"
+                className="flex-1 px-5 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50"
                 data-testid={`button-add-variant-${product.id}`}
               >
                 {isAdding ? t("addingToCart", language) : t("addToCart", language)}

@@ -755,7 +755,7 @@ export default function ProfilePage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 pb-4 pt-2 flex items-center justify-between gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-5 pb-4 pt-2 flex items-center justify-between gap-4 border-b border-gray-100 flex-shrink-0">
           <h1 className="text-xl font-bold">{t("profile", language)}</h1>
           <NotificationCenter />
           <div className="flex items-center gap-2">
@@ -771,10 +771,10 @@ export default function ProfilePage() {
 
         {/* Tabs */}
         {user && (
-          <div className="flex gap-0 border-b border-gray-100 flex-shrink-0 px-6 bg-white">
+          <div className="flex gap-0 border-b border-gray-100 flex-shrink-0 px-5 bg-white">
             <button
               onClick={() => setActiveTab("profile")}
-              className={`py-3 px-6 font-semibold text-sm border-b-2 transition-colors ${
+              className={`py-3 px-5 font-semibold text-sm border-b-2 transition-colors ${
                 activeTab === "profile"
                   ? "border-black text-black"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -789,7 +789,7 @@ export default function ProfilePage() {
                   setActiveTab("admin");
                   fetchAllOrders();
                 }}
-                className={`py-3 px-6 font-semibold text-sm border-b-2 transition-colors ${
+                className={`py-3 px-5 font-semibold text-sm border-b-2 transition-colors ${
                   activeTab === "admin"
                     ? "border-black text-black"
                     : "border-transparent text-gray-500 hover:text-gray-700"
@@ -808,7 +808,7 @@ export default function ProfilePage() {
             // Profile Tab
             <>
               {user && (
-                <div className="px-6 py-4 space-y-3">
+                <div className="px-5 py-4 space-y-3">
                   <div className="bg-gradient-to-br from-primary to-purple-600 rounded-3xl p-4 text-white shadow-lg">
                     <div className="flex items-start gap-3">
                       {/* Profile Image with Edit */}
@@ -859,7 +859,7 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              <div className="w-full px-6 py-4 space-y-3">
+              <div className="w-full px-5 py-4 space-y-3">
                 {getMenuItems(language).map((item) => (
                   <button
                     key={item.label}
@@ -973,7 +973,7 @@ export default function ProfilePage() {
             </>
           ) : (
             // Admin Orders Tab
-            <div className="w-full px-6 py-4">
+            <div className="w-full px-5 py-4">
               {/* Orders Section */}
               <button
                 onClick={() => setShowOrders(!showOrders)}
@@ -1105,7 +1105,7 @@ export default function ProfilePage() {
                             <div className="flex flex-col items-end gap-1">
                               <p className="font-bold text-sm">${order.total.toFixed(2)}</p>
                               <span
-                                className={`text-xs font-semibold px-6 py-0.5 rounded-full ${
+                                className={`text-xs font-semibold px-5 py-0.5 rounded-full ${
                                   order.status === "completed"
                                     ? "bg-green-100 text-green-700"
                                     : order.status === "cancelled"
@@ -1463,7 +1463,7 @@ export default function ProfilePage() {
                             toast.error("Enter category name");
                           }
                         }}
-                        className="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold flex items-center justify-center gap-1 hover:bg-green-700 transition-colors text-sm"
+                        className="px-5 py-2 bg-green-600 text-white rounded-lg font-semibold flex items-center justify-center gap-1 hover:bg-green-700 transition-colors text-sm"
                         data-testid="button-add-category"
                       >
                         <Plus className="w-4 h-4" />
@@ -1675,7 +1675,7 @@ export default function ProfilePage() {
                         {newItemForm.units.length > 0 && (
                           <div className="flex flex-wrap gap-1">
                             {newItemForm.units.map((unit, i) => (
-                              <span key={i} className="inline-flex items-center gap-1 px-6 py-1 bg-blue-100 text-blue-700 rounded text-xs">
+                              <span key={i} className="inline-flex items-center gap-1 px-5 py-1 bg-blue-100 text-blue-700 rounded text-xs">
                                 {unit}
                                 <button onClick={() => setNewItemForm({ ...newItemForm, units: newItemForm.units.filter((_, idx) => idx !== i) })} className="text-blue-700 hover:text-gray-900">×</button>
                               </span>
@@ -1712,7 +1712,7 @@ export default function ProfilePage() {
                         {newItemForm.sizes.length > 0 && (
                           <div className="flex flex-wrap gap-1">
                             {newItemForm.sizes.map((size, i) => (
-                              <span key={i} className="inline-flex items-center gap-1 px-6 py-1 bg-green-100 text-green-700 rounded text-xs">
+                              <span key={i} className="inline-flex items-center gap-1 px-5 py-1 bg-green-100 text-green-700 rounded text-xs">
                                 {size}
                                 <button onClick={() => setNewItemForm({ ...newItemForm, sizes: newItemForm.sizes.filter((_, idx) => idx !== i) })} className="text-green-700 hover:text-green-900">×</button>
                               </span>
@@ -1762,7 +1762,7 @@ export default function ProfilePage() {
                               const colorName = typeof color === 'string' ? color.split('|')[0] : color;
                               const colorHex = typeof color === 'string' ? color.split('|')[1] || '#000000' : '#000000';
                               return (
-                                <span key={i} className="inline-flex items-center gap-1 px-6 py-1 bg-red-100 text-red-700 rounded text-xs border" style={{borderColor: colorHex}}>
+                                <span key={i} className="inline-flex items-center gap-1 px-5 py-1 bg-red-100 text-red-700 rounded text-xs border" style={{borderColor: colorHex}}>
                                   <span style={{width: '12px', height: '12px', backgroundColor: colorHex, borderRadius: '3px'}}></span>
                                   {colorName}
                                   <button onClick={() => setNewItemForm({ ...newItemForm, colors: newItemForm.colors.filter((_, idx) => idx !== i) })} className="text-red-700 hover:text-red-900">×</button>
@@ -1876,19 +1876,19 @@ export default function ProfilePage() {
                                 <p className="text-sm font-bold text-gray-900">{item.title}</p>
                                 <p className="text-xs text-gray-500">{item.category}</p>
                                 <div className="flex flex-wrap gap-1 mt-1">
-                                  {item.units && item.units.map((u: string) => <span key={u} className="inline-block px-6 py-1 bg-blue-100 text-blue-700 rounded text-xs">{u}</span>)}
-                                  {item.sizes && item.sizes.map((s: string) => <span key={s} className="inline-block px-6 py-1 bg-green-100 text-green-700 rounded text-xs">{s}</span>)}
+                                  {item.units && item.units.map((u: string) => <span key={u} className="inline-block px-5 py-1 bg-blue-100 text-blue-700 rounded text-xs">{u}</span>)}
+                                  {item.sizes && item.sizes.map((s: string) => <span key={s} className="inline-block px-5 py-1 bg-green-100 text-green-700 rounded text-xs">{s}</span>)}
                                   {item.colors && item.colors.map((c: string) => {
                                     const colorName = typeof c === 'string' ? c.split('|')[0] : c;
                                     const colorHex = typeof c === 'string' ? c.split('|')[1] || '#000000' : '#000000';
                                     return (
-                                      <span key={colorName} className="inline-block px-6 py-1 bg-red-100 text-red-700 rounded text-xs flex items-center gap-1 border" style={{borderColor: colorHex}}>
+                                      <span key={colorName} className="inline-block px-5 py-1 bg-red-100 text-red-700 rounded text-xs flex items-center gap-1 border" style={{borderColor: colorHex}}>
                                         <span style={{width: '8px', height: '8px', backgroundColor: colorHex, borderRadius: '2px'}}></span>
                                         {colorName}
                                       </span>
                                     );
                                   })}
-                                  {!item.available && <span className="inline-block px-6 py-1 bg-red-100 text-red-700 rounded text-xs">{t("notAvailable", language)}</span>}
+                                  {!item.available && <span className="inline-block px-5 py-1 bg-red-100 text-red-700 rounded text-xs">{t("notAvailable", language)}</span>}
                                 </div>
                               </div>
                             </div>

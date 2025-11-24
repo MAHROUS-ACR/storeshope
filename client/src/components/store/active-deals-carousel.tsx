@@ -77,7 +77,7 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
   };
 
   return (
-    <div className="mb-6 px-6">
+    <div className="mb-6 px-5">
       <div className="flex items-center gap-2 mb-4">
         <Zap className="w-5 h-5 text-yellow-500" />
         <h3 className="text-sm font-semibold text-gray-900">{t("activeDeals", language)}</h3>
@@ -135,7 +135,7 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
                     transition={{ duration: 2, repeat: Infinity }}
                     className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-red-600 to-orange-600 rounded-full blur-lg opacity-60"></div>
-                    <div className="relative bg-gradient-to-br from-red-500 via-red-600 to-red-700 text-white px-6 py-3 rounded-full text-2xl font-black shadow-2xl shadow-red-600/60 border-2 border-yellow-300 flex items-center gap-1">
+                    <div className="relative bg-gradient-to-br from-red-500 via-red-600 to-red-700 text-white px-5 py-3 rounded-full text-2xl font-black shadow-2xl shadow-red-600/60 border-2 border-yellow-300 flex items-center gap-1">
                       <span>-{activeDiscount.discountPercentage}%</span>
                     </div>
                   </motion.div>

@@ -118,7 +118,7 @@ export default function ProductDetailsPage() {
             <p className="text-lg font-bold mb-4">Product Not Found</p>
             <button
               onClick={() => setLocation("/")}
-              className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold"
+              className="px-5 py-2 bg-black text-white rounded-full text-sm font-semibold"
             >
               Back to Home
             </button>
@@ -141,7 +141,7 @@ export default function ProductDetailsPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-5 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/")}
             className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center"
@@ -154,7 +154,7 @@ export default function ProductDetailsPage() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-6 py-4">
+          <div className="w-full px-5 py-4">
             {/* Product Image */}
             <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-4">
               <img 
@@ -186,7 +186,7 @@ export default function ProductDetailsPage() {
                 <div className="flex items-baseline gap-3">
                   <p className="text-3xl font-bold text-green-600" data-testid="text-price">${discountedPrice.toFixed(2)}</p>
                   <p className="text-lg text-gray-400 line-through">${product.price.toFixed(2)}</p>
-                  <p className="px-6 py-1 bg-red-100 text-red-700 rounded text-xs font-bold">
+                  <p className="px-5 py-1 bg-red-100 text-red-700 rounded text-xs font-bold">
                     {language === "ar" ? `وفر ${activeDiscount.discountPercentage}%` : `Save ${activeDiscount.discountPercentage}%`}
                   </p>
                 </div>
@@ -313,10 +313,10 @@ export default function ProductDetailsPage() {
         </div>
 
         {/* Bottom Actions */}
-        <div className="absolute bottom-28 left-0 right-0 px-6 py-4 bg-white border-t border-gray-100 flex gap-3">
+        <div className="absolute bottom-28 left-0 right-0 px-5 py-4 bg-white border-t border-gray-100 flex gap-3">
           <button
             onClick={() => setLocation("/")}
-            className="flex-1 px-6 py-3 border border-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
+            className="flex-1 px-5 py-3 border border-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
             data-testid="button-continue-shopping"
           >
             {t("continueShoppingButton", language)}
@@ -324,7 +324,7 @@ export default function ProductDetailsPage() {
           <button
             onClick={handleAddToCart}
             disabled={isAdding || !product.available}
-            className="flex-1 px-6 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors"
+            className="flex-1 px-5 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors"
             data-testid="button-add-to-cart"
           >
             <ShoppingCart className="w-4 h-4" />

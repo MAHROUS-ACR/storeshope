@@ -52,13 +52,13 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <MobileWrapper>
-        <div className="flex-1 flex flex-col items-center justify-center px-6">
+        <div className="flex-1 flex flex-col items-center justify-center px-5">
           <span className="text-6xl mb-4">🛒</span>
           <h2 className="text-lg font-bold mb-2">{t("cartIsEmpty", language)}</h2>
           <p className="text-sm text-muted-foreground mb-6 text-center">Start shopping to add items</p>
           <button
             onClick={() => setLocation("/")}
-            className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold"
+            className="px-5 py-2 bg-black text-white rounded-full text-sm font-semibold"
             data-testid="button-continue-shopping"
           >
             {t("continueShoppingButton", language)}
@@ -75,7 +75,7 @@ export default function CartPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-5 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/")}
             className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center"
@@ -88,7 +88,7 @@ export default function CartPage() {
 
         {/* Items List - Scrollable */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-6 py-4 space-y-3">
+          <div className="w-full px-5 py-4 space-y-3">
             {items.map((item) => (
               <div
                 key={item.id}
@@ -163,7 +163,7 @@ export default function CartPage() {
         </div>
 
         {/* Order Summary & Checkout Button - Fixed at bottom */}
-        <div className="absolute bottom-32 left-0 right-0 px-6 py-4 border-t border-gray-100 bg-white space-y-3">
+        <div className="absolute bottom-32 left-0 right-0 px-5 py-4 border-t border-gray-100 bg-white space-y-3">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t("subtotal", language)}</span>

@@ -19,7 +19,7 @@ export function BottomNav() {
   ];
 
   return (
-    <div className="bg-background/80 backdrop-blur-xl border-t border-border/40 px-6 pb-8 pt-4">
+    <div className="bg-background/80 backdrop-blur-xl border-t border-border/40 px-5 pb-8 pt-4">
       <div className="flex items-center justify-between">
         {tabs.map((tab) => {
           const isActive = location === tab.id;

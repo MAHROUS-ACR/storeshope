@@ -51,7 +51,7 @@ export default function StorePage() {
   return (
     <MobileWrapper>
       {/* Header */}
-      <div className="px-6 pb-4 pt-2 flex items-center justify-between gap-4">
+      <div className="px-5 pb-4 pt-2 flex items-center justify-between gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input 
@@ -70,12 +70,12 @@ export default function StorePage() {
       <div className="flex-1 overflow-y-auto no-scrollbar pb-40">
         <PromoBanner />
         
-        <div className="mb-2 px-6">
+        <div className="mb-2 px-5">
           <h2 className="text-lg font-bold">Categories</h2>
         </div>
         <CategoryFilter active={activeCategory} onChange={setActiveCategory} />
 
-        <div className="px-6 grid grid-cols-2 gap-4">
+        <div className="px-5 grid grid-cols-2 gap-4">
           {filteredProducts.map((product, index) => (
             <ProductCard key={product.id} product={product} index={index} />
           ))}
