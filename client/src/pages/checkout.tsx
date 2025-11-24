@@ -10,6 +10,7 @@ import { t } from "@/lib/translations";
 import { toast } from "sonner";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { getAllDiscounts, getActiveDiscount, calculateDiscountedPrice, type Discount } from "@/lib/discountUtils";
+import { getShippingZones, saveOrder } from "@/lib/firebaseOps";
 
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
@@ -55,11 +56,8 @@ export default function CheckoutPage() {
         setDiscounts(discountData || []);
 
         // Load shipping zones
-        const zonesRes = await fetch("/api/shipping-zones");
-        if (zonesRes.ok) {
-          const zones = await zonesRes.json();
-          setShippingZones(zones || []);
-        }
+        const zones = await getShippingZones();
+        setShippingZones(zones || []);
       } catch (error) {
         console.error("Error loading data:", error);
       }

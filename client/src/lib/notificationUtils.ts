@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage, type Messaging } from "firebase/messaging";
+import { saveFCMToken } from "./firebaseOps";
 
 let messaging: Messaging | null = null;
 let appInitialized = false;
@@ -84,21 +85,6 @@ export async function getFCMToken(): Promise<string | null> {
 
     if (token) {
       console.log('✅ FCM Token received:', token.substring(0, 20) + '...');
-      
-      // Save token to backend (optional, for server-side sending)
-      if (Notification.permission === 'granted') {
-        try {
-          await fetch('/api/notifications/fcm-token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token })
-          });
-          console.log('✅ FCM token saved to backend');
-        } catch (error) {
-          console.log('⚠️ Could not save FCM token to backend:', error);
-        }
-      }
-      
       return token;
     }
 

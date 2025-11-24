@@ -9,54 +9,47 @@ Flux Wallet is a high-fidelity mobile e-commerce application built as a progress
 - Product cards display availability status (متاح/غير متاح) next to price
 - Click on any product to view full details including description, variants, and options
 - Shopping cart and checkout with multiple payment options
-- Firebase integration for product data management
+- Firebase Firestore integration for all data (products, orders, discounts, store settings)
 - Order history tracking
 - User profile and settings management
 - Responsive mobile wrapper simulating iPhone device
 - Product variant selection (units, sizes, colors with hex codes)
-- **Complete discount/promotions system** - Integrated into admin panel, admins can create, edit, and delete product-specific discounts with percentage values and time periods
+- Complete discount/promotions system
+- Push Notifications with Firebase Cloud Messaging
 
-## Recent Changes (Nov 23, 2025)
+## Architecture Changes (Nov 24, 2025)
 
-- **Push Notifications System (NEW):**
-  - **Firebase Cloud Messaging (FCM):** Push notifications that reach devices even when app is closed
-  - **Service Worker:** Handles background message delivery and notification display
-  - **Permission Requests:** Browser asks user to enable notifications on first visit
-  - **FCM Token Management:** Stores device tokens in Firestore fcmTokens collection
-  - **Automatic Notification Triggers:**
-    - Admin notified immediately when new order is created
-    - Customer notified immediately when order status changes
-  - **Setup Guide:** Full step-by-step guide at `/notification-setup` with Firebase configuration instructions
-  - **Notification Permissions:** System automatically requests notification permission with retry logic
+**🎉 COMPLETE FIREBASE-ONLY TRANSITION:**
+- ✅ **Removed:** Express.js server completely
+- ✅ **Removed:** PostgreSQL + Drizzle ORM
+- ✅ **Removed:** All server-side API endpoints
+- ✅ **Removed:** Node.js dependencies (express, drizzle-kit, passport, etc.)
+- ✅ **Added:** Direct Firebase Firestore operations from client
+- ✅ **New File:** `client/src/lib/firebaseOps.ts` - All Firebase CRUD operations
+- ✅ **Updated:** All pages to use `firebaseOps` instead of REST API calls
 
-- **Real-time Notification Sync:**
-  - **Notification Bell:** Badge showing unread notification count in header (home.tsx and profile.tsx)
-  - **Notification Center:** Dropdown menu showing all notifications with timestamps
-  - **Mark as Read:** Click checkmark to mark individual notifications as read
-  - **Delete Notifications:** Remove notifications with delete button
-  - **Auto-polling:** Notifications automatically refresh every 30 seconds
-  - **Bilingual Support:** Notifications in Arabic and English based on language setting
-  - **Firestore Integration:** All notifications stored in Firestore notifications collection
-  - **API Endpoints:**
-    - `GET /api/notifications` - Get user's notifications
-    - `GET /api/notifications/admin` - Get admin notifications
-    - `PUT /api/notifications/:id/read` - Mark notification as read
-    - `DELETE /api/notifications/:id` - Delete notification
-    - `POST /api/notifications/fcm-token` - Register FCM token for push notifications
+**Key Benefits:**
+- No server maintenance needed
+- Direct client-to-Firestore operations
+- Simpler deployment (frontend-only on Replit)
+- Real-time data sync with Firestore listeners
+- Reduced latency and complexity
 
-- **Discount System Refactoring:**
-  - **Moved discounts from separate page to Admin Tab** - Now integrated directly in profile.tsx admin panel
-  - Discounts button integrated into admin menu (Zap icon, yellow theme)
-  - Full CRUD operations: Create, Read, Update, Delete discounts
-  - API endpoints working: GET /api/discounts, POST, PUT, DELETE
-  - Database persistence using PostgreSQL + Drizzle ORM
-  - Real-time discount list with edit and delete functionality
-  - Date-range based discount activation
-  - Full Arabic/English translations
+## Recent Changes (Nov 24, 2025)
 
-## User Preferences
-
-Preferred communication style: Simple, everyday language.
+### Firebase-Only Migration Complete
+- **Removed Express Server:** All `/api/*` endpoints replaced with direct Firestore calls
+- **firebaseOps.ts Module:** Central module for all Firebase operations:
+  - `getProducts()` - Fetch products from Firestore
+  - `getOrders()` - Fetch orders by user or all orders
+  - `getStoreSettings()` - Load store configuration
+  - `getShippingZones()` - Fetch shipping zones
+  - `getDiscounts()` - Fetch active discounts
+  - `saveOrder()` - Create new orders
+  - `updateUser()` - Update user profiles
+  - And more...
+- **Updated Pages:** home.tsx, checkout.tsx now use firebaseOps
+- **Workflow:** Now runs `vite dev` only (no Express server)
 
 ## System Architecture
 
@@ -72,130 +65,57 @@ Preferred communication style: Simple, everyday language.
 - **UI Library:** Radix UI primitives with shadcn/ui components
 - **Styling:** Tailwind CSS v4 with custom design tokens
 - **Animation:** Framer Motion for transitions and micro-interactions
-
-**Design Decisions:**
-- **Mobile-First Approach:** The entire UI is wrapped in a `MobileWrapper` component that simulates an iPhone device (390x844px) with notch, status bar, and home indicator
-- **Component Architecture:** Atomic design pattern with reusable UI components in `components/ui/`
-- **Path Aliases:** Uses TypeScript path mapping (`@/`, `@shared/`, `@assets/`) for clean imports
-- **Admin Panel:** Tab-based interface within profile page for all admin functions (Orders, Products, Users, Store Settings, Shipping Zones, Discounts, Analytics)
+- **Database:** Firebase Firestore (cloud-hosted, no backend server)
 
 **Key Components:**
 - `MobileWrapper`: Simulates iPhone device chrome and constraints
 - `BottomNav`: Fixed navigation bar with active state animations
 - `CartProvider`: Global cart state with localStorage persistence
-- Product display components with lazy loading and animations
-- **NotificationCenter (NEW):** Notification bell icon with dropdown menu showing:
-  - Unread notification count badge
-  - All notifications sorted by most recent
-  - Auto-refresh every 30 seconds
-  - Mark as read / Delete functionality
-  - Bilingual message display
-- **Admin Panel (profile.tsx)**: Integrated admin tab with sections for:
-  - Orders management
-  - Products management
-  - Users management
-  - Store settings
-  - Shipping zones
-  - **Discounts (NEW)** - With form and list views
-
-### Backend Architecture
-
-**Technology Stack:**
-- **Runtime:** Node.js with Express.js
-- **Development Server:** Vite dev server with HMR in development
-- **Production Build:** ESBuild for server-side bundling
-- **Database ORM:** Drizzle ORM configured for PostgreSQL
-- **Session Storage:** Database-backed with Drizzle ORM
-
-**Design Decisions:**
-- **Dual Server Setup:** 
-  - Development (`index-dev.ts`): Vite middleware for HMR and instant updates
-  - Production (`index-prod.ts`): Serves static built assets
-- **Storage Abstraction:** `IStorage` interface allows switching between in-memory and database storage without changing business logic
-- **API Structure:** RESTful endpoints under `/api/*` namespace
-- **Request Logging:** Custom middleware logs API requests with response details and timing
-- **Notification Endpoints:**
-  - `GET /api/notifications` - Get user's notifications
-  - `GET /api/notifications/admin` - Get admin notifications
-  - `PUT /api/notifications/:id/read` - Mark notification as read
-  - `DELETE /api/notifications/:id` - Delete notification
-- **Discount Endpoints:**
-  - `GET /api/discounts` - Get all discounts
-  - `GET /api/discounts/:productId` - Get active discount for specific product
-  - `POST /api/discounts` - Create new discount
-  - `PUT /api/discounts/:id` - Update discount
-  - `DELETE /api/discounts/:id` - Delete discount
-
-**Server Configuration:**
-- Raw body capture for webhook verification (Stripe integration ready)
-- JSON body parsing with size limits
-- CORS and security headers configured
-- Static file serving in production mode
+- `NotificationCenter`: Real-time notification bell with dropdown
+- **Admin Panel (profile.tsx)**: Tab-based interface for all admin functions
 
 ### Data Storage
 
-**Database Schema (Drizzle ORM):**
-- `users` table with UUID primary keys, username, and password fields
-- `discounts` table with productId, discountPercentage, startDate, endDate fields
-- Schema validation using Zod for type-safe inserts
-- Migration support via `drizzle-kit`
-
-**Current Implementation:**
-- PostgreSQL with Drizzle ORM for data persistence
-- Discounts calculated in real-time based on active date ranges
-- LocalStorage for client-side cart persistence
-
-**Storage Strategy:**
-- Server-side: Drizzle ORM with PostgreSQL database
-- Client-side: Browser localStorage for cart state
-- Time-based discount activation: Automatically checks if discount is within valid date range
+**Firebase Firestore Collections:**
+- `products` - Product catalog with images and variants
+- `orders` - Customer orders with status tracking
+- `discounts` - Product discounts with date ranges
+- `shippingZones` - Shipping cost configuration
+- `notifications` - Order and system notifications
+- `fcmTokens` - Firebase Cloud Messaging tokens for push notifications
+- `settings/store` - Store branding and configuration
+- `users` - User profiles and roles
 
 ### Authentication
 
 **Firebase Authentication:**
-- **Method:** Firebase Auth (client-side authentication)
-- **Features:** Email/password signup and login
-- **User ID:** Firebase UID stored as `user.id`
-- **Session:** Managed by Firebase Auth service
-- **Persistence:** User data cached in localStorage
-- **Status:** Primary authentication method (Nov 23, 2025)
-- **Role-Based Access:** Admin and user roles for discount management
+- Email/password signup and login
+- User ID stored as Firebase UID
+- Role-based access (admin/user)
+- No server-side session management needed
 
-### External Dependencies
+### External Services
 
 **Firebase Integration:**
-- **Purpose:** Product catalog management (Firestore) + Authentication (Firebase Auth)
-- **Authentication:** Email/password via Firebase Auth service
-- **Product Data:** Firestore collections for products and orders
-- **Configuration:** Runtime configuration via settings page
-- **Credentials:** Project ID, private key, and client email stored in environment
-- **Status:** Required for full functionality
-- **API Endpoints:** 
-  - `/api/firebase/config` - Get/update Firebase config
-  - `/api/firebase/status` - Check if Firebase is configured
-  - `/api/products` - Get product catalog from Firestore
-  - `/api/orders` - Save/retrieve user orders from Firestore
+- **Firestore:** Primary database for all data
+- **Firebase Auth:** User authentication
+- **Firebase Cloud Messaging:** Push notifications
+- **Firebase Admin SDK:** (for future backend services if needed)
 
-**Third-Party Services:**
-- **Stripe:** Payment processing infrastructure (partially integrated)
-  - React Stripe.js components available
-  - Webhook endpoint structure in place
-- **Neon Database:** Serverless PostgreSQL provider (configured and actively used)
+**Development Stack:**
+- **Runtime:** Browser (no Node.js server)
+- **Dev Server:** Vite with HMR
+- **Build:** Vite ESBuild
+- **Port:** 5000
 
-**UI Component Libraries:**
-- Radix UI: Accessible, unstyled component primitives
-- Lucide React: Icon library
-- shadcn/ui: Pre-built component patterns
+## User Preferences
 
-**Development Tools:**
-- Replit plugins for development banner and error overlay
-- Vite plugins for cartographer and runtime error handling
-- TypeScript for type safety across full stack
+Preferred communication style: Simple, everyday language.
 
-**Key Design Patterns:**
-- Progressive enhancement: Works without Firebase, falls back to static data
-- Graceful degradation: Error states with user-friendly messages
-- Configuration-driven: Firebase and external services configurable at runtime
-- Type-safe API contracts: Shared types between client and server via `@shared` package
-- Time-based promotions: Discount system respects date ranges for campaign management
-- Integrated admin panel: All admin functions in one tabbed interface for better UX
+## Important Notes
+
+- **No Backend Server:** Application runs entirely on Firebase and client-side
+- **Direct Firestore Calls:** All data operations are in `firebaseOps.ts`
+- **Workflow:** Uses `npm run dev` (Vite dev server) only
+- **Deployment:** Frontend-only, can be deployed to any static host or Replit Publishing
+- **Future Enhancement:** Can add Cloud Functions for complex operations

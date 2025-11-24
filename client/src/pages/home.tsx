@@ -12,6 +12,7 @@ import { useCart } from "@/lib/cartContext";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
 import { getAllDiscounts, type Discount } from "@/lib/discountUtils";
+import { getProducts, getStoreSettings } from "@/lib/firebaseOps";
 import imgHeadphones from "@assets/generated_images/wireless_headphones_product_shot.png";
 import imgWatch from "@assets/generated_images/smart_watch_product_shot.png";
 import imgShoes from "@assets/generated_images/designer_running_shoes_product_shot.png";
@@ -65,9 +66,8 @@ export default function Home() {
 
   const fetchStoreSettings = async (): Promise<void> => {
     try {
-      const response = await fetch("/api/store-settings");
-      if (response.ok) {
-        const data = await response.json();
+      const data = await getStoreSettings();
+      if (data) {
         setStoreName(data.name || "Flux Wallet");
         setStoreLogo(data.logo || "");
       } else {
@@ -81,38 +81,19 @@ export default function Home() {
 
   const fetchProductsData = async (): Promise<void> => {
     setIsLoading(true);
-    setProducts([]); // Clear products immediately while loading
+    setProducts([]);
     try {
-      // Check Firebase status
-      const statusResponse = await fetch("/api/firebase/status");
-      const status = await statusResponse.json();
-      setFirebaseConfigured(status.configured);
-
-      if (status.configured) {
-        // Fetch products from Firebase
-        try {
-          const productsResponse = await fetch("/api/products");
-          if (productsResponse.ok) {
-            const firebaseProducts = await productsResponse.json();
-            // Use Firebase products regardless of count (empty array means empty page)
-            setProducts(firebaseProducts);
-            setError("");
-          } else {
-            setError("Failed to load products from Firebase");
-            setProducts([]);
-          }
-        } catch (err) {
-          console.error("Error fetching from Firebase:", err);
-          setError("Failed to load products from Firebase");
-          setProducts([]);
-        }
+      setFirebaseConfigured(true);
+      const firebaseProducts = await getProducts();
+      if (firebaseProducts && firebaseProducts.length > 0) {
+        setProducts(firebaseProducts);
+        setError("");
       } else {
-        // Firebase not configured - use fallback data
         setProducts(fallbackProducts);
         setError("");
       }
     } catch (err) {
-      console.error("Error checking Firebase:", err);
+      console.error("Error fetching from Firebase:", err);
       setProducts(fallbackProducts);
       setError("");
     } finally {
