@@ -20,7 +20,7 @@ import LoginPage from "@/pages/login";
 import DiscountsPage from "@/pages/discounts";
 import NotificationSetupPage from "@/pages/notification-setup";
 import SetupPage from "@/pages/setup";
-import { hasBootstrapConfig, hasFirebaseConfigInFirestore } from "@/lib/firebaseConfigStorage";
+import { isConfigured } from "@/lib/firebaseConfigStorage";
 
 function Router() {
   const [location] = useLocation();
@@ -29,18 +29,8 @@ function Router() {
 
   useEffect(() => {
     const checkConfig = async () => {
-      // 1. Check if bootstrap config exists (env vars)
-      const hasBootstrap = hasBootstrapConfig();
-      
-      if (hasBootstrap) {
-        // 2. If bootstrap exists, check if config exists in Firestore
-        const hasFirestoreConfig = await hasFirebaseConfigInFirestore();
-        setNeedsSetup(!hasFirestoreConfig);
-      } else {
-        // 3. No bootstrap config, so show setup
-        setNeedsSetup(true);
-      }
-
+      const configured = await isConfigured();
+      setNeedsSetup(!configured);
       setIsChecking(false);
     };
 

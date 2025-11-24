@@ -1,0 +1,10 @@
+{
+  "configured": false,
+  "firebaseApiKey": "",
+  "firebaseProjectId": "",
+  "firebaseAppId": "",
+  "firebaseAuthDomain": "",
+  "firebaseStorageBucket": "",
+  "firebaseMessagingSenderId": "",
+  "firebaseMeasurementId": ""
+}
