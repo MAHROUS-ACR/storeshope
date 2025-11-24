@@ -186,14 +186,14 @@ export default function Home() {
           </div>
 
           {/* Search */}
-          <div className="relative">
+          <div className="relative mt-8 mb-10">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input 
               type="text" 
               placeholder={t("searchPlaceholder", language)}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-black/10"
+              className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-black/10"
               data-testid="input-search"
             />
           </div>
@@ -214,14 +214,17 @@ export default function Home() {
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-6 py-6">
+          <div className="w-full px-6 py-10">
             {/* Active Deals Carousel */}
-            <ActiveDealsCarousel products={products} discounts={discounts} />
+            <div className="mb-12">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">{t("activeDeals", language) || "Active Deals"}</h3>
+              <ActiveDealsCarousel products={products} discounts={discounts} />
+            </div>
             
             {/* Categories */}
             {categories.length > 0 && (
-              <div className="mt-8 mb-8">
-                <h3 className="text-base font-bold text-gray-900 mb-4">{t("categories", language)}</h3>
+              <div className="mt-12 mb-12">
+                <h3 className="text-lg font-bold text-gray-900 mb-6">{t("categories", language)}</h3>
                 <CategoryFilter active={activeCategory} onChange={setActiveCategory} categories={categories} />
               </div>
             )}
