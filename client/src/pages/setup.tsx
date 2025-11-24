@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { initializeApp, getApps } from "firebase/app";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { useLanguage } from "@/lib/languageContext";
 
@@ -28,7 +29,23 @@ export default function SetupPage() {
 
     setIsLoading(true);
     try {
-      // Save to Firestore (cloud-based, so all users see it)
+      // Step 1: Initialize Firebase with the provided credentials
+      const firebaseConfig = {
+        apiKey: firebaseApiKey,
+        authDomain: firebaseAuthDomain,
+        projectId: firebaseProjectId,
+        storageBucket: firebaseStorageBucket || "",
+        messagingSenderId: firebaseMessagingSenderId || "",
+        appId: firebaseAppId,
+        measurementId: firebaseMeasurementId || "",
+      };
+
+      // Initialize Firebase app for this setup
+      if (getApps().length === 0) {
+        initializeApp(firebaseConfig);
+      }
+
+      // Step 2: Save config to Firestore
       const db = getFirestore();
       const configRef = doc(db, "settings", "firebase");
       
@@ -43,7 +60,7 @@ export default function SetupPage() {
         updatedAt: new Date(),
       });
 
-      toast.success(language === "ar" ? "تم حفظ الإعدادات بنجاح!" : "Settings saved successfully!");
+      toast.success(language === "ar" ? "✅ تم حفظ الإعدادات بنجاح!" : "✅ Settings saved successfully!");
       
       // Reload to apply new Firebase config
       setTimeout(() => window.location.reload(), 1500);
@@ -76,12 +93,12 @@ export default function SetupPage() {
             <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-semibold text-blue-900 mb-1">
-                {language === "ar" ? "كيفية الحصول على البيانات" : "How to get credentials"}
+                {language === "ar" ? "📍 حيث تُحفظ البيانات" : "📍 Where data is saved"}
               </p>
               <p className="text-xs text-blue-800">
                 {language === "ar"
-                  ? "اذهب إلى Firebase Console → Project Settings → Copy the data below"
-                  : "Go to Firebase Console → Project Settings → Copy the data below"}
+                  ? "ستُحفظ البيانات في Firestore في المستند: settings/firebase وسيشاهدها كل المستخدمين"
+                  : "Data will be saved to Firestore in document: settings/firebase and all users will see it"}
               </p>
             </div>
           </div>
