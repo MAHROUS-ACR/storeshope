@@ -19,7 +19,7 @@ export function BottomNav() {
   ];
 
   return (
-    <div className="bg-background/80 backdrop-blur-xl border-t border-border/40 px-6 pb-8 pt-4">
+    <div className="bg-background/80 backdrop-blur-xl border-t border-border/40 px-6 pb-10 pt-6">
       <div className="flex items-center justify-between">
         {tabs.map((tab) => {
           const isActive = location === tab.id;
@@ -27,7 +27,7 @@ export function BottomNav() {
             <button
               key={tab.id}
               onClick={() => setLocation(tab.id)}
-              className="relative flex flex-col items-center gap-1 p-2 group w-16"
+              className="relative flex flex-col items-center gap-2 p-3 group w-20"
               data-testid={`nav-${tab.id}`}
             >
               {isActive && (
@@ -40,19 +40,19 @@ export function BottomNav() {
               <div className="relative">
                 <tab.icon
                   className={cn(
-                    "w-6 h-6 transition-colors duration-300",
+                    "w-7 h-7 transition-colors duration-300",
                     isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                   )}
                 />
                 {tab.id === "/cart" && items.length > 0 && (
-                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full text-white flex items-center justify-center text-[10px] font-bold border border-white">
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white flex items-center justify-center text-[11px] font-bold border border-white">
                     {items.length}
                   </div>
                 )}
               </div>
               <span
                 className={cn(
-                  "text-[10px] font-medium transition-colors duration-300",
+                  "text-[11px] font-semibold transition-colors duration-300",
                   isActive ? "text-primary" : "text-muted-foreground"
                 )}
               >

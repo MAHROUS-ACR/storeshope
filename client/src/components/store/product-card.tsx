@@ -99,14 +99,14 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
     >
       <div className="flex flex-col h-full">
         {/* Top: Category and Title */}
-        <div className="px-3 pt-3 pb-2">
-          <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-0.5" data-testid={`text-category-${product.id}`}>{productCategory}</p>
-          <h3 className="font-semibold text-xs leading-tight line-clamp-2" data-testid={`text-title-${product.id}`}>{productTitle}</h3>
+        <div className="px-4 pt-4 pb-3">
+          <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5" data-testid={`text-category-${product.id}`}>{productCategory}</p>
+          <h3 className="font-semibold text-sm leading-snug line-clamp-2" data-testid={`text-title-${product.id}`}>{productTitle}</h3>
         </div>
 
         {/* Middle: Full-width Image */}
-        <div className="relative flex-1 px-3 py-2 min-h-0">
-          <div className="relative w-full h-full rounded-xl overflow-hidden bg-gray-50">
+        <div className="relative flex-1 px-4 py-3 min-h-0">
+          <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gray-50">
             <img 
               src={productImage} 
               alt={productTitle}
@@ -127,10 +127,10 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
 
         {/* Variants: Below Image in Horizontal Scroll */}
         {hasVariants && (
-          <div className="px-3 py-2 flex gap-3 overflow-x-auto no-scrollbar flex-shrink-0">
+          <div className="px-4 py-3 flex gap-4 overflow-x-auto no-scrollbar flex-shrink-0">
             {product.units && product.units.length > 0 && (
-              <div className="flex flex-col gap-0.5 flex-shrink-0">
-                <p className="text-[7px] font-semibold text-gray-500 uppercase">Units</p>
+              <div className="flex flex-col gap-1 flex-shrink-0">
+                <p className="text-[8px] font-semibold text-gray-500 uppercase">Units</p>
                 <div className="flex gap-0.5">
                   {product.units.map((u) => <span key={u} className="px-1 py-0.5 bg-blue-100 text-blue-700 rounded text-[7px] font-medium whitespace-nowrap">{u}</span>)}
                 </div>
@@ -168,18 +168,18 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
         )}
 
         {/* Bottom: Price, Availability and Add Button */}
-        <div className="px-3 py-3 border-t border-gray-100 flex items-center justify-between gap-2">
-          <div className="flex flex-col gap-0">
+        <div className="px-4 py-4 border-t border-gray-100 flex items-center justify-between gap-3">
+          <div className="flex flex-col gap-1">
             {activeDiscount ? (
               <>
-                <p className="font-bold text-sm text-green-600" data-testid={`text-price-${product.id}`}>${discountedPrice.toFixed(2)}</p>
-                <p className="text-xs text-gray-400 line-through">${product.price.toFixed(2)}</p>
+                <p className="font-bold text-base text-green-600" data-testid={`text-price-${product.id}`}>${discountedPrice.toFixed(2)}</p>
+                <p className="text-sm text-gray-400 line-through">${product.price.toFixed(2)}</p>
               </>
             ) : (
-              <p className="font-bold text-sm" data-testid={`text-price-${product.id}`}>${product.price.toFixed(2)}</p>
+              <p className="font-bold text-base" data-testid={`text-price-${product.id}`}>${product.price.toFixed(2)}</p>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {!isAvailable && (
               <p className="text-[10px] font-semibold text-red-600 bg-red-50 px-1.5 py-0.5 rounded whitespace-nowrap" data-testid={`text-unavailable-${product.id}`}>{t("unavailable", language)}</p>
             )}
@@ -189,7 +189,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
             <button
               onClick={handleAddToCart}
               disabled={isAdding}
-              className="w-8 h-8 bg-black text-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-900 transition-colors disabled:opacity-50 flex-shrink-0"
+              className="w-10 h-10 bg-black text-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-900 transition-colors disabled:opacity-50 flex-shrink-0"
               data-testid={`button-add-to-cart-${product.id}`}
             >
               {isAdding ? (

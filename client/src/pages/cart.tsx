@@ -74,15 +74,15 @@ export default function CartPage() {
     <div className="w-full h-full relative flex flex-col overflow-hidden bg-white">
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-6 pt-4 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/")}
-            className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center"
+            className="w-11 h-11 rounded-full bg-white border border-gray-100 flex items-center justify-center"
             data-testid="button-back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-lg font-bold">{language === "ar" ? "السلة" : "Cart"} ({items.length})</h1>
+          <h1 className="text-xl font-bold">{language === "ar" ? "السلة" : "Cart"} ({items.length})</h1>
         </div>
 
         {/* Items List - Scrollable */}
