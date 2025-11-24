@@ -774,7 +774,7 @@ export default function ProfilePage() {
           <div className="flex gap-0 border-b border-gray-100 flex-shrink-0 px-5 bg-white">
             <button
               onClick={() => setActiveTab("profile")}
-              className={`py-3 px-5 font-semibold text-sm border-b-2 transition-colors L.E 
+              className={`py-3 px-5 font-semibold text-sm border-b-2 transition-colors ${
                 activeTab === "profile"
                   ? "border-black text-black"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -789,7 +789,7 @@ export default function ProfilePage() {
                   setActiveTab("admin");
                   fetchAllOrders();
                 }}
-                className={`py-3 px-5 font-semibold text-sm border-b-2 transition-colors L.E 
+                className={`py-3 px-5 font-semibold text-sm border-b-2 transition-colors ${
                   activeTab === "admin"
                     ? "border-black text-black"
                     : "border-transparent text-gray-500 hover:text-gray-700"
