@@ -177,78 +177,79 @@
           <input type="text" id="measurementId" placeholder="G-XXXXXXX" />
         </div>
         
-        <button class="btn" onclick="saveConfig()">Connect Firebase</button>
+        <button class="btn" id="save-btn" onclick="window.setupConfig?.saveConfig()">Connect Firebase</button>
         <div id="status"></div>
       </div>
     </div>
     
-    <script>
-      // Check if Firebase config exists in Firestore (via environment variables first)
-      const envApiKey = import.meta.env.VITE_FIREBASE_API_KEY;
-      const envProjectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
-      const envAppId = import.meta.env.VITE_FIREBASE_APP_ID;
+    <script type="module">
+      // Only show setup modal if NO environment variables are set
+      const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+      const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+      const appId = import.meta.env.VITE_FIREBASE_APP_ID;
       
-      // If environment variables exist, app will read from Firestore in firebaseOps.ts
-      // Show setup modal only if NO environment variables are set
-      if (!envApiKey || !envProjectId || !envAppId) {
-        // No default Firebase config, show setup modal
+      // If all required env vars are set, don't show setup modal
+      if (!apiKey || !projectId || !appId) {
         document.getElementById('setup-overlay').classList.add('show');
       }
       
-      window.saveConfig = async function() {
-        const apiKey = document.getElementById('apiKey').value.trim();
-        const projectId = document.getElementById('projectId').value.trim();
-        const appId = document.getElementById('appId').value.trim();
-        const authDomain = document.getElementById('authDomain').value.trim();
-        const storageBucket = document.getElementById('storageBucket').value.trim();
-        const messagingSenderId = document.getElementById('messagingSenderId').value.trim();
-        const measurementId = document.getElementById('measurementId').value.trim();
-        
-        if (!apiKey || !projectId || !appId) {
-          document.getElementById('status').innerHTML = '<div class="error">❌ API Key, Project ID, and App ID are required</div>';
-          return;
-        }
-        
-        const config = {
-          firebaseApiKey: apiKey,
-          firebaseProjectId: projectId,
-          firebaseAppId: appId,
-          firebaseAuthDomain: authDomain,
-          firebaseStorageBucket: storageBucket,
-          firebaseMessagingSenderId: messagingSenderId,
-          firebaseMeasurementId: measurementId,
-        };
-        
-        try {
-          // Initialize Firebase with the config entered
-          const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js');
-          const { getFirestore, doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+      // Export saveConfig for HTML onclick
+      window.setupConfig = {
+        saveConfig: async function() {
+          const apiKeyInput = document.getElementById('apiKey').value.trim();
+          const projectIdInput = document.getElementById('projectId').value.trim();
+          const appIdInput = document.getElementById('appId').value.trim();
+          const authDomainInput = document.getElementById('authDomain').value.trim();
+          const storageBucketInput = document.getElementById('storageBucket').value.trim();
+          const messagingSenderIdInput = document.getElementById('messagingSenderId').value.trim();
+          const measurementIdInput = document.getElementById('measurementId').value.trim();
           
-          const tempConfig = {
-            apiKey: apiKey,
-            projectId: projectId,
-            appId: appId,
-            authDomain: authDomain,
-            storageBucket: storageBucket,
-            messagingSenderId: messagingSenderId,
+          if (!apiKeyInput || !projectIdInput || !appIdInput) {
+            document.getElementById('status').innerHTML = '<div class="error">❌ API Key, Project ID, and App ID are required</div>';
+            return;
+          }
+          
+          const config = {
+            firebaseApiKey: apiKeyInput,
+            firebaseProjectId: projectIdInput,
+            firebaseAppId: appIdInput,
+            firebaseAuthDomain: authDomainInput,
+            firebaseStorageBucket: storageBucketInput,
+            firebaseMessagingSenderId: messagingSenderIdInput,
+            firebaseMeasurementId: measurementIdInput,
           };
           
           try {
-            initializeApp(tempConfig);
-          } catch (e) {
-            // App already initialized, that's fine
+            // Import Firebase modules
+            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js');
+            const { getFirestore, doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+            
+            const tempConfig = {
+              apiKey: apiKeyInput,
+              projectId: projectIdInput,
+              appId: appIdInput,
+              authDomain: authDomainInput,
+              storageBucket: storageBucketInput,
+              messagingSenderId: messagingSenderIdInput,
+            };
+            
+            try {
+              initializeApp(tempConfig);
+            } catch (e) {
+              // App already initialized
+            }
+            
+            const db = getFirestore();
+            
+            // Save to Firestore
+            await setDoc(doc(db, 'settings', 'firebase'), config);
+            
+            document.getElementById('status').innerHTML = '<div class="success">✅ Config saved! Reloading...</div>';
+            setTimeout(() => location.reload(), 1500);
+          } catch (error) {
+            console.error('Error saving config:', error);
+            document.getElementById('status').innerHTML = '<div class="error">❌ Error: ' + (error.message || 'Unknown error') + '</div>';
           }
-          
-          const db = getFirestore();
-          
-          // Save to Firestore at settings/firebase
-          await setDoc(doc(db, 'settings', 'firebase'), config);
-          
-          document.getElementById('status').innerHTML = '<div class="success">✅ Config saved! Reloading...</div>';
-          setTimeout(() => location.reload(), 1500);
-        } catch (error) {
-          console.error('Error saving config:', error);
-          document.getElementById('status').innerHTML = '<div class="error">❌ Error saving config: ' + (error.message || 'Unknown error') + '</div>';
         }
       };
       
@@ -260,7 +261,7 @@
                         target.id === 'authDomain' || target.id === 'storageBucket' || 
                         target.id === 'messagingSenderId' || target.id === 'measurementId')) {
             event.preventDefault();
-            window.saveConfig();
+            window.setupConfig.saveConfig();
           }
         }
       });
