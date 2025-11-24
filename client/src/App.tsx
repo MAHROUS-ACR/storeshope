@@ -1,4 +1,4 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route, useLocation, Redirect } from "wouter";
 import { useState, useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -24,8 +24,7 @@ import { isFirebaseConfigured, initializeFirebase } from "@/lib/firebaseConfigSt
 
 function Router() {
   const [location] = useLocation();
-  const [needsSetup, setNeedsSetup] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
+  const [needsSetup, setNeedsSetup] = useState<boolean | null>(null);
 
   useEffect(() => {
     // Check if configured and initialize
@@ -35,19 +34,20 @@ function Router() {
     } else {
       setNeedsSetup(true);
     }
-    setIsChecking(false);
   }, []);
 
-  if (isChecking) {
+  // Still checking config
+  if (needsSetup === null) {
     return (
-      <div className="w-full h-full flex items-center justify-center">
+      <div className="w-full h-full flex items-center justify-center bg-white">
         <div className="w-5 h-5 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
       </div>
     );
   }
 
+  // Needs setup but not on setup page - redirect
   if (needsSetup && location !== "/setup") {
-    return <Route component={SetupPage} />;
+    return <Redirect to="/setup" />;
   }
 
   return (
