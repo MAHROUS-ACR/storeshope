@@ -142,10 +142,9 @@ export default function Home() {
   });
 
   return (
-    <MobileWrapper>
-      <div className="w-full flex-1 flex flex-col overflow-hidden bg-white">
-        {/* Header */}
-        <div className="px-5 pt-3 pb-4 flex-shrink-0 border-b border-gray-100">
+    <div className="w-full h-full relative flex flex-col overflow-hidden bg-white">
+      {/* Header */}
+      <div className="px-5 pt-3 pb-4 flex-shrink-0 border-b border-gray-100">
           <div className="flex items-center justify-between gap-3 mb-4">
             {storeName ? (
               <div className="flex items-center gap-2">
@@ -259,12 +258,11 @@ export default function Home() {
                 <p className="text-xs text-gray-500">Try a different search</p>
               </div>
             )}
-          </div>
         </div>
       </div>
       <div className="absolute bottom-0 left-0 right-0">
         <BottomNav />
       </div>
-    </MobileWrapper>
+    </div>
   );
 }
