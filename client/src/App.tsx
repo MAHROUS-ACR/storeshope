@@ -1,4 +1,5 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
+import { useState, useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -18,10 +19,41 @@ import ProductDetailsPage from "@/pages/product-details";
 import LoginPage from "@/pages/login";
 import DiscountsPage from "@/pages/discounts";
 import NotificationSetupPage from "@/pages/notification-setup";
+import SetupPage from "@/pages/setup";
 
 function Router() {
+  const [location] = useLocation();
+  const [needsSetup, setNeedsSetup] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    // Check if Firebase is configured
+    const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+    const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+    const appId = import.meta.env.VITE_FIREBASE_APP_ID;
+    const authDomain = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN;
+
+    const hasFirebaseConfig = !!(apiKey && projectId && appId && authDomain);
+    setNeedsSetup(!hasFirebaseConfig);
+    setIsChecking(false);
+  }, []);
+
+  // Show setup page if Firebase is not configured
+  if (isChecking) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="w-5 h-5 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (needsSetup && location !== "/setup") {
+    return <Route component={SetupPage} />;
+  }
+
   return (
     <Switch>
+      <Route path="/setup" component={SetupPage} />
       <Route path="/" component={Home} />
       <Route path="/login" component={LoginPage} />
       <Route path="/profile" component={ProfilePage} />
