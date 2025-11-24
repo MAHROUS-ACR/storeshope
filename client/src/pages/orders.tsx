@@ -7,6 +7,7 @@ import { useUser } from "@/lib/userContext";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
 import { toast } from "sonner";
+import { getOrders } from "@/lib/firebaseOps";
 
 interface CartItem {
   id: string;
@@ -55,37 +56,17 @@ export default function OrdersPage() {
     async function fetchOrders() {
       setIsLoading(true);
       try {
-        // Check Firebase status
-        const statusResponse = await fetch("/api/firebase/status");
-        const status = await statusResponse.json();
-        setFirebaseConfigured(status.configured);
-
-        // If Firebase is configured and user exists, fetch from server
-        if (status.configured && user?.id) {
-          // Fetch orders from Firebase via server
-          const response = await fetch("/api/orders", {
-            headers: {
-              "x-user-id": user.id,
-            },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setOrders(data || []);
-            // Update localStorage with server data
-            if (data && data.length > 0) {
-              localStorage.setItem("orders", JSON.stringify(data));
-            }
-          } else {
-            // Fallback to localStorage on error
-            const savedOrders = localStorage.getItem("orders");
-            if (savedOrders) {
-              setOrders(JSON.parse(savedOrders));
-            } else {
-              setOrders([]);
-            }
-          }
+        setFirebaseConfigured(true);
+        
+        // Fetch orders from Firebase (filtered by user ID if available)
+        const firebaseOrders = await getOrders(user?.id);
+        
+        if (firebaseOrders && firebaseOrders.length > 0) {
+          setOrders(firebaseOrders as Order[]);
+          // Update localStorage with Firebase data
+          localStorage.setItem("orders", JSON.stringify(firebaseOrders));
         } else {
-          // Firebase not configured - use localStorage
+          // Fallback to localStorage if no Firebase orders
           const savedOrders = localStorage.getItem("orders");
           if (savedOrders) {
             setOrders(JSON.parse(savedOrders));
@@ -121,7 +102,7 @@ export default function OrdersPage() {
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [location, user]);
+  }, [location, user?.id]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

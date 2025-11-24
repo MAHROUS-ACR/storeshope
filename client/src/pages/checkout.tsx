@@ -175,29 +175,8 @@ export default function CheckoutPage() {
       const totalWithDiscounts = calculateTotalWithDiscounts();
       const finalTotal = totalWithDiscounts + shippingCost;
 
-      const paymentResponse = await fetch("/api/payment/create-intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          method: "card",
-          amount: Math.round(finalTotal * 100),
-          currency: "usd",
-          cardNumber: formData.cardNumber.replace(/\s/g, ""),
-          expiryDate: formData.expiryDate,
-          cvv: formData.cvv,
-          cardHolder: formData.cardHolder,
-          email: formData.email,
-        }),
-      });
-
-      if (!paymentResponse.ok) {
-        const error = await paymentResponse.json();
-        toast.error(error.message || "Payment failed");
-        setIsProcessing(false);
-        return;
-      }
-
-      const paymentData = await paymentResponse.json();
+      // Simulate payment success - in production, use Stripe
+      const paymentId = `card_${Date.now()}`;
       
       let shippingAddress = formData.address;
       let shippingPhone = formData.zipCode;
@@ -220,39 +199,33 @@ export default function CheckoutPage() {
         total: finalTotal,
         status: "confirmed",
         paymentMethod: "card",
-        paymentId: paymentData.id,
+        paymentId: paymentId,
         shippingType,
         shippingAddress,
         shippingPhone,
         shippingZone: selectedZone,
         createdAt: new Date().toISOString(),
+        userId: user?.id,
       };
 
-      const orderWithUser = { 
-        ...orderData, 
-        userId: user?.id
-      };
-
+      // Save to localStorage
       try {
         const existingOrders = localStorage.getItem("orders");
         const savedOrders = existingOrders ? JSON.parse(existingOrders) : [];
-        savedOrders.unshift(orderWithUser);
+        savedOrders.unshift(orderData);
         localStorage.setItem("orders", JSON.stringify(savedOrders));
       } catch (e) {
         console.warn("Failed to save to localStorage:", e);
       }
 
+      // Save to Firebase
       try {
-        await fetch("/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(orderWithUser),
-        });
+        await saveOrder(orderData);
       } catch (error) {
-        console.warn("Failed to save to server:", error);
+        console.warn("Failed to save to Firebase:", error);
       }
 
-      toast.success("✅ Order saved to Firestore! Redirecting...");
+      toast.success("✅ Order placed! Redirecting...");
       clearCart();
       setTimeout(() => setLocation("/orders"), 1500);
     } catch (error) {
@@ -282,13 +255,13 @@ export default function CheckoutPage() {
         shippingPhone = newPhone;
       }
 
-      const existingOrders2 = localStorage.getItem("orders");
-      const savedOrders2 = existingOrders2 ? JSON.parse(existingOrders2) : [];
-      const nextOrderNumber2 = Math.max(0, ...savedOrders2.map((o: any) => o.orderNumber || 0)) + 1;
+      const existingOrders = localStorage.getItem("orders");
+      const savedOrders = existingOrders ? JSON.parse(existingOrders) : [];
+      const nextOrderNumber = Math.max(0, ...savedOrders.map((o: any) => o.orderNumber || 0)) + 1;
 
       const orderData = {
         id: `order-${Date.now()}`,
-        orderNumber: nextOrderNumber2,
+        orderNumber: nextOrderNumber,
         items,
         subtotal: total,
         discountedTotal: totalWithDiscounts,
@@ -301,33 +274,27 @@ export default function CheckoutPage() {
         shippingPhone,
         shippingZone: selectedZone,
         createdAt: new Date().toISOString(),
+        userId: user?.id,
       };
 
-      const orderWithUser = { 
-        ...orderData, 
-        userId: user?.id
-      };
-
+      // Save to localStorage
       try {
         const allOrders = localStorage.getItem("orders");
         const allSavedOrders = allOrders ? JSON.parse(allOrders) : [];
-        allSavedOrders.unshift(orderWithUser);
+        allSavedOrders.unshift(orderData);
         localStorage.setItem("orders", JSON.stringify(allSavedOrders));
       } catch (e) {
         console.warn("Failed to save to localStorage:", e);
       }
 
+      // Save to Firebase
       try {
-        await fetch("/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(orderWithUser),
-        });
+        await saveOrder(orderData);
       } catch (error) {
-        console.warn("Failed to save to server:", error);
+        console.warn("Failed to save to Firebase:", error);
       }
 
-      toast.success("✅ Order saved to Firestore! Redirecting...");
+      toast.success("✅ Order placed! Redirecting...");
       clearCart();
       setTimeout(() => setLocation("/orders"), 1500);
     } catch (error) {

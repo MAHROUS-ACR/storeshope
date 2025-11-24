@@ -212,6 +212,7 @@ export const translations = {
     discount: "Discount",
     discountSavings: "Discount Savings",
     afterDiscount: "After Discount",
+    shipping: "Shipping",
     newAddress: "New Address",
     streetAddress: "Street address",
     selectZone: "Select Zone",
