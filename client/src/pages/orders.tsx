@@ -123,7 +123,7 @@ export default function OrdersPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-6 pt-4 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => {
               // Check if there's a previousPage stored in sessionStorage
@@ -132,12 +132,12 @@ export default function OrdersPage() {
               sessionStorage.removeItem('previousPage'); // Clear after use
               setLocation(backPath);
             }}
-            className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center"
+            className="w-11 h-11 rounded-full bg-white border border-gray-100 flex items-center justify-center"
             data-testid="button-back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-xl font-bold">{t("myOrders", language)}</h1>
+          <h1 className="text-2xl font-bold">{t("myOrders", language)}</h1>
         </div>
 
         {/* Content */}
@@ -164,7 +164,7 @@ export default function OrdersPage() {
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-            <div className="w-full px-6 py-4 space-y-3">
+            <div className="w-full px-6 py-6 space-y-4">
               {orders.filter(order => !user || !(order as any).userId || (order as any).userId === user.id)
                 .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                 .map((order) => (
@@ -198,7 +198,7 @@ export default function OrdersPage() {
                   </button>
 
                   {selectedOrder?.id === order.id && (
-                    <div className="mt-3 bg-white rounded-2xl border border-gray-100 p-4">
+                    <div className="mt-4 bg-white rounded-2xl border border-gray-100 p-6">
                       <div className="flex items-start justify-between mb-3 pb-3 border-b border-gray-100">
                         <div>
                           <p className="text-xs font-semibold text-gray-500">{t("orderDetailsLabel", language)}</p>

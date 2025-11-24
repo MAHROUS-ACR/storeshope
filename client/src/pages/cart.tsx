@@ -87,7 +87,7 @@ export default function CartPage() {
 
         {/* Items List - Scrollable */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-6 py-4 space-y-3">
+          <div className="w-full px-6 py-6 space-y-4">
             {items.map((item) => (
               <div
                 key={item.id}
@@ -162,26 +162,26 @@ export default function CartPage() {
         </div>
 
         {/* Order Summary & Checkout Button - Fixed at bottom */}
-        <div className="absolute bottom-32 left-0 right-0 px-6 py-4 border-t border-gray-100 bg-white space-y-3">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
+        <div className="absolute bottom-32 left-0 right-0 px-6 py-6 border-t border-gray-100 bg-white space-y-4">
+          <div className="space-y-3">
+            <div className="flex justify-between text-base">
               <span className="text-muted-foreground">{t("subtotal", language)}</span>
               <span className="font-semibold">${total.toFixed(2)}</span>
             </div>
             {totalWithDiscounts < total && (
               <>
-                <div className="flex justify-between text-sm text-green-600">
+                <div className="flex justify-between text-base text-green-600">
                   <span>{t("discountSavings", language)}</span>
                   <span className="font-semibold">-${(total - totalWithDiscounts).toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100 text-green-600">
+                <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-100 text-green-600">
                   <span>{t("total", language)}</span>
                   <span>${totalWithDiscounts.toFixed(2)}</span>
                 </div>
               </>
             )}
             {totalWithDiscounts === total && (
-              <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100">
+              <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-100">
                 <span>{t("total", language)}</span>
                 <span>${total.toFixed(2)}</span>
               </div>

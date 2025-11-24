@@ -67,17 +67,17 @@ export default function LoginPage() {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center px-6 pb-20">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Flux Wallet</h1>
-          <p className="text-muted-foreground">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-3">Flux Wallet</h1>
+          <p className="text-muted-foreground text-base">
             {isSignup ? "Create an account" : "Welcome back"}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="w-full space-y-4">
+        <form onSubmit={handleSubmit} className="w-full space-y-6">
           {isSignup && (
             <div>
-              <label className="block text-sm font-semibold mb-2" htmlFor="username">
+              <label className="block text-base font-semibold mb-3" htmlFor="username">
                 Username
               </label>
               <input
@@ -86,14 +86,14 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your name"
-                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 data-testid="input-username"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-semibold mb-2" htmlFor="email">
+            <label className="block text-base font-semibold mb-3" htmlFor="email">
               Email
             </label>
             <input
@@ -102,13 +102,13 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               data-testid="input-email"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold mb-2" htmlFor="password">
+            <label className="block text-base font-semibold mb-3" htmlFor="password">
               Password
             </label>
             <input
@@ -117,7 +117,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="w-full px-5 py-4 bg-white border border-gray-200 rounded-2xl text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               data-testid="input-password"
             />
           </div>
