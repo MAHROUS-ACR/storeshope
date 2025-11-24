@@ -32,27 +32,41 @@ export default function SettingsPage() {
   
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load Firebase config and Store settings from Firestore on mount
+  // Load Firebase config and Store settings from environment variables and Firestore on mount
   useEffect(() => {
     const loadConfig = async () => {
       try {
+        // First, load from environment variables
+        setFirebaseApiKey(import.meta.env.VITE_FIREBASE_API_KEY || "");
+        setFirebaseProjectId(import.meta.env.VITE_FIREBASE_PROJECT_ID || "");
+        setFirebaseAppId(import.meta.env.VITE_FIREBASE_APP_ID || "");
+        setFirebaseAuthDomain(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "");
+        setFirebaseStorageBucket(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "");
+        setFirebaseMessagingSenderId(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "");
+        setFirebaseMeasurementId(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "");
+        
+        // Also load admin SDK config if available
+        setProjectId(import.meta.env.VITE_FIREBASE_PROJECT_ID || "");
+        setClientEmail(import.meta.env.FIREBASE_CLIENT_EMAIL || "");
+        setPrivateKey(import.meta.env.FIREBASE_PRIVATE_KEY || "");
+
         const db = getFirestore();
         
-        // Fetch Firebase config from Firestore
+        // Try to override with Firestore settings if they exist
         const firebaseConfigRef = doc(db, "settings", "firebase");
         const firebaseConfigSnap = await getDoc(firebaseConfigRef);
         if (firebaseConfigSnap.exists()) {
           const serverConfig = firebaseConfigSnap.data();
-          setProjectId(serverConfig.projectId || "");
-          setPrivateKey(serverConfig.privateKey || "");
-          setClientEmail(serverConfig.clientEmail || "");
-          setFirebaseApiKey(serverConfig.firebaseApiKey || "");
-          setFirebaseProjectId(serverConfig.firebaseProjectId || "");
-          setFirebaseAppId(serverConfig.firebaseAppId || "");
-          setFirebaseAuthDomain(serverConfig.firebaseAuthDomain || "");
-          setFirebaseStorageBucket(serverConfig.firebaseStorageBucket || "");
-          setFirebaseMessagingSenderId((serverConfig.firebaseMessagingSenderId || "").trim());
-          setFirebaseMeasurementId(serverConfig.firebaseMeasurementId || "");
+          if (serverConfig.projectId) setProjectId(serverConfig.projectId);
+          if (serverConfig.privateKey) setPrivateKey(serverConfig.privateKey);
+          if (serverConfig.clientEmail) setClientEmail(serverConfig.clientEmail);
+          if (serverConfig.firebaseApiKey) setFirebaseApiKey(serverConfig.firebaseApiKey);
+          if (serverConfig.firebaseProjectId) setFirebaseProjectId(serverConfig.firebaseProjectId);
+          if (serverConfig.firebaseAppId) setFirebaseAppId(serverConfig.firebaseAppId);
+          if (serverConfig.firebaseAuthDomain) setFirebaseAuthDomain(serverConfig.firebaseAuthDomain);
+          if (serverConfig.firebaseStorageBucket) setFirebaseStorageBucket(serverConfig.firebaseStorageBucket);
+          if (serverConfig.firebaseMessagingSenderId) setFirebaseMessagingSenderId(serverConfig.firebaseMessagingSenderId.trim());
+          if (serverConfig.firebaseMeasurementId) setFirebaseMeasurementId(serverConfig.firebaseMeasurementId);
         }
 
         // Fetch Store settings from Firestore
@@ -66,19 +80,7 @@ export default function SettingsPage() {
           setStoreEmail(storeData.email || "");
         }
       } catch (error) {
-        console.error("Failed to load config from Firestore:", error);
-      }
-
-      // Also check localStorage for any locally saved config - only if Firestore values are empty
-      const localConfig = getFirebaseConfig();
-      if (localConfig) {
-        setFirebaseApiKey(prev => prev || localConfig.apiKey || "");
-        setFirebaseProjectId(prev => prev || localConfig.projectId || "");
-        setFirebaseAppId(prev => prev || localConfig.appId || "");
-        setFirebaseAuthDomain(prev => prev || localConfig.authDomain || "");
-        setFirebaseStorageBucket(prev => prev || localConfig.storageBucket || "");
-        setFirebaseMessagingSenderId(prev => prev || localConfig.messagingSenderId || "");
-        setFirebaseMeasurementId(prev => prev || localConfig.measurementId || "");
+        console.error("Failed to load config:", error);
       }
     };
 
