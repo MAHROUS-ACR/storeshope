@@ -18,9 +18,210 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Outfit', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      
+      #setup-modal {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+      
+      #setup-modal h1 {
+        font-size: 28px;
+        margin-bottom: 8px;
+        color: #1a1a1a;
+      }
+      
+      #setup-modal p {
+        color: #666;
+        margin-bottom: 24px;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      
+      .form-group {
+        margin-bottom: 16px;
+      }
+      
+      .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 6px;
+      }
+      
+      .form-group input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: 'Outfit', monospace;
+        font-size: 13px;
+      }
+      
+      .form-group input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+      
+      .btn {
+        width: 100%;
+        padding: 12px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 24px;
+        transition: background 0.3s;
+      }
+      
+      .btn:hover {
+        background: #5568d3;
+      }
+      
+      .btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+      
+      .error {
+        color: #dc2626;
+        font-size: 13px;
+        margin-top: 8px;
+      }
+      
+      .success {
+        color: #16a34a;
+        font-size: 13px;
+        margin-top: 8px;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    
+    <script>
+      // Check if Firebase config exists in localStorage
+      const savedConfig = localStorage.getItem('firebase_client_config');
+      
+      if (!savedConfig) {
+        // Show Firebase setup modal
+        document.body.innerHTML = `
+          <div id="setup-modal">
+            <h1>⚙️ Firebase Setup</h1>
+            <p>Enter your Firebase project credentials to get started.</p>
+            
+            <div class="form-group">
+              <label>Firebase API Key *</label>
+              <input type="password" id="apiKey" placeholder="AIza..." />
+            </div>
+            
+            <div class="form-group">
+              <label>Firebase Project ID *</label>
+              <input type="text" id="projectId" placeholder="my-project" />
+            </div>
+            
+            <div class="form-group">
+              <label>Firebase App ID *</label>
+              <input type="text" id="appId" placeholder="1:123456789:web:abc..." />
+            </div>
+            
+            <div class="form-group">
+              <label>Auth Domain</label>
+              <input type="text" id="authDomain" placeholder="my-project.firebaseapp.com" />
+            </div>
+            
+            <div class="form-group">
+              <label>Storage Bucket</label>
+              <input type="text" id="storageBucket" placeholder="my-project.appspot.com" />
+            </div>
+            
+            <div class="form-group">
+              <label>Messaging Sender ID</label>
+              <input type="text" id="messagingSenderId" placeholder="123456789" />
+            </div>
+            
+            <div class="form-group">
+              <label>Measurement ID</label>
+              <input type="text" id="measurementId" placeholder="G-XXXXXXX" />
+            </div>
+            
+            <button class="btn" onclick="saveConfig()">Connect Firebase</button>
+            <div id="status"></div>
+          </div>
+        `;
+        
+        window.saveConfig = function() {
+          const apiKey = document.getElementById('apiKey').value.trim();
+          const projectId = document.getElementById('projectId').value.trim();
+          const appId = document.getElementById('appId').value.trim();
+          const authDomain = document.getElementById('authDomain').value.trim();
+          const storageBucket = document.getElementById('storageBucket').value.trim();
+          const messagingSenderId = document.getElementById('messagingSenderId').value.trim();
+          const measurementId = document.getElementById('measurementId').value.trim();
+          
+          if (!apiKey || !projectId || !appId) {
+            document.getElementById('status').innerHTML = '<div class="error">❌ API Key, Project ID, and App ID are required</div>';
+            return;
+          }
+          
+          const config = {
+            apiKey,
+            projectId,
+            appId,
+            authDomain,
+            storageBucket,
+            messagingSenderId,
+            measurementId
+          };
+          
+          try {
+            localStorage.setItem('firebase_client_config', JSON.stringify(config));
+            document.getElementById('status').innerHTML = '<div class="success">✅ Config saved! Reloading...</div>';
+            setTimeout(() => location.reload(), 1000);
+          } catch (error) {
+            document.getElementById('status').innerHTML = '<div class="error">❌ Error saving config</div>';
+          }
+        };
+        
+        // Allow Enter key to submit
+        document.addEventListener('keypress', function(event) {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            window.saveConfig();
+          }
+        });
+      } else {
+        // Firebase config exists, load the app
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = '/src/main.tsx';
+        document.body.appendChild(script);
+      }
+    </script>
   </body>
 </html>
