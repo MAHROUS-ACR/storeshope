@@ -850,7 +850,7 @@ export default function ProfilePage() {
                           </div>
                           <div className="bg-white/20 rounded-lg p-1.5">
                             <p className="text-xs opacity-75">{t("totalSpent", language)}</p>
-                            <p className="text-sm font-bold" data-testid="text-orders-total">L.E userOrdersTotal.toFixed(2)}</p>
+                            <p className="text-sm font-bold" data-testid="text-orders-total">L.E {userOrdersTotal.toFixed(2)}</p>
                           </div>
                         </div>
                       </div>
@@ -870,16 +870,16 @@ export default function ProfilePage() {
                       }
                       setLocation(item.path);
                     }}
-                    className={`w-full flex items-center justify-between p-4 L.E item.buttonBg} rounded-2xl border L.E item.borderColor} transition-colors group`}
-                    data-testid={`button-L.E item.label.toLowerCase().replace(/\s+/g, "-")}`}
+                    className={`w-full flex items-center justify-between p-4 ${item.buttonBg} rounded-2xl border ${item.borderColor} transition-colors group`}
+                    data-testid={`button-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center L.E item.iconColor}`}>
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${item.iconColor}`}>
                         <item.icon className="w-6 h-6" />
                       </div>
-                      <span className={`font-semibold text-sm L.E item.textColor}`}>{item.label}</span>
+                      <span className={`font-semibold text-sm ${item.textColor}`}>{item.label}</span>
                     </div>
-                    <ChevronRight className={`w-5 h-5 transition-colors L.E item.textColor.split(' ')[0].replace('text-', 'group-hover:text-')}-600`} />
+                    <ChevronRight className={`w-5 h-5 transition-colors ${item.textColor.split(' ')[0].replace('text-', 'group-hover:text-')}-600`} />
                   </button>
                 ))}
 
@@ -1092,10 +1092,10 @@ export default function ProfilePage() {
                           key={order.id}
                           onClick={() => {
                             sessionStorage.setItem('previousPage', '/profile');
-                            setLocation(`/order/L.E order.id}`);
+                            setLocation(`/order/${order.id}`);
                           }}
                           className="w-full p-3 bg-white border border-gray-200 rounded-2xl hover:border-primary hover:shadow-sm transition-all text-left"
-                          data-testid={`order-L.E order.id}`}
+                          data-testid={`order-${order.id}`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
@@ -1103,9 +1103,9 @@ export default function ProfilePage() {
                               <p className="text-xs text-gray-500 mt-0.5">{new Date(order.createdAt).toLocaleDateString()}</p>
                             </div>
                             <div className="flex flex-col items-end gap-1">
-                              <p className="font-bold text-sm">L.E order.total.toFixed(2)}</p>
+                              <p className="font-bold text-sm">L.E {order.total.toFixed(2)}</p>
                               <span
-                                className={`text-xs font-semibold px-5 py-0.5 rounded-full L.E 
+                                className={`text-xs font-semibold px-5 py-0.5 rounded-full ${
                                   order.status === "completed"
                                     ? "bg-green-100 text-green-700"
                                     : order.status === "cancelled"
@@ -1114,7 +1114,7 @@ export default function ProfilePage() {
                                     ? "bg-blue-100 text-blue-700"
                                     : "bg-amber-100 text-amber-700"
                                 }`}
-                                data-testid={`status-badge-L.E order.id}`}
+                                data-testid={`status-badge-${order.id}`}
                               >
                                 {order.status || "pending"}
                               </span>
@@ -1195,15 +1195,15 @@ export default function ProfilePage() {
                         {/* Total Revenue with Breakdown */}
                         <div className="bg-white rounded-2xl p-4 border border-gray-200">
                           <p className="text-xs text-gray-500 mb-2">{t("totalRevenue", language)}</p>
-                          <p className="text-lg font-bold text-emerald-600 mb-2">L.E getAnalyticsData().totalRevenue.toFixed(2)}</p>
+                          <p className="text-lg font-bold text-emerald-600 mb-2">L.E {getAnalyticsData().totalRevenue.toFixed(2)}</p>
                           <div className="space-y-1 text-xs border-t pt-2">
                             <div className="flex justify-between">
                               <span className="text-gray-600">{t("salesAmount", language)}:</span>
-                              <span className="font-semibold text-emerald-600">L.E getAnalyticsData().salesAmount.toFixed(2)}</span>
+                              <span className="font-semibold text-emerald-600">L.E {getAnalyticsData().salesAmount.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-gray-600">{t("shippingAmount", language)}:</span>
-                              <span className="font-semibold text-orange-600">L.E getAnalyticsData().totalShipping.toFixed(2)}</span>
+                              <span className="font-semibold text-orange-600">L.E {getAnalyticsData().totalShipping.toFixed(2)}</span>
                             </div>
                           </div>
                         </div>
@@ -1892,7 +1892,7 @@ export default function ProfilePage() {
                                 </div>
                               </div>
                             </div>
-                            <p className="text-sm font-semibold text-gray-900">L.E item.price.toFixed(2)}</p>
+                            <p className="text-sm font-semibold text-gray-900">L.E {item.price.toFixed(2)}</p>
                           </div>
                           <div className="flex gap-2">
                             <button
