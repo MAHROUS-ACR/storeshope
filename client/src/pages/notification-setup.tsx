@@ -85,7 +85,7 @@ service cloud.firestore {
       action: (
         <button
           onClick={() => copyToClipboard(securityRules, 4)}
-          className="mt-3 w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          className="mt-3 w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
         >
           {copiedStep === 4 ? (
             <>
@@ -134,7 +134,7 @@ service cloud.firestore {
       action: (
         <button
           onClick={() => setLocation("/")}
-          className="mt-3 w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          className="mt-3 w-full bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
         >
           {language === "ar" ? "العودة للتطبيق" : "Back to App"}
         </button>
@@ -146,7 +146,7 @@ service cloud.firestore {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden bg-white">
         {/* Header */}
-        <div className="px-4 pt-3 pb-4 flex items-center gap-3 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pt-3 pb-4 flex items-center gap-3 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/")}
             className="p-2 hover:bg-gray-100 rounded-lg"
@@ -161,7 +161,7 @@ service cloud.firestore {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto pb-20">
-          <div className="px-4 py-6">
+          <div className="px-6 py-6">
             {/* Info Box */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <p className="text-sm text-blue-900">

@@ -173,7 +173,7 @@ function FieldSeparator({
       <Separator className="absolute inset-0 top-1/2" />
       {children && (
         <span
-          className="bg-background text-muted-foreground relative mx-auto block w-fit px-4"
+          className="bg-background text-muted-foreground relative mx-auto block w-fit px-6"
           data-slot="field-separator-content"
         >
           {children}

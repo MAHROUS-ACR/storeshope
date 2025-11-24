@@ -13,12 +13,12 @@ export function CategoryFilter({ active, onChange, categories = ["All"] }: { act
   };
 
   return (
-    <div className="flex overflow-x-auto no-scrollbar gap-2 px-4 pb-4">
+    <div className="flex overflow-x-auto no-scrollbar gap-2 px-6 pb-4">
       {categories.map((category) => (
         <button
           key={category}
           onClick={() => onChange(category)}
-          className={`relative px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
+          className={`relative px-6 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
             active === category 
               ? "bg-black text-white" 
               : "text-muted-foreground hover:text-foreground bg-white border border-gray-100"

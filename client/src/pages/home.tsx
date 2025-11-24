@@ -145,7 +145,7 @@ export default function Home() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden bg-white">
         {/* Header */}
-        <div className="px-4 pt-3 pb-4 flex-shrink-0 border-b border-gray-100">
+        <div className="px-6 pt-3 pb-4 flex-shrink-0 border-b border-gray-100">
           <div className="flex items-center justify-between gap-3 mb-4">
             {storeName ? (
               <div className="flex items-center gap-2">
@@ -202,7 +202,7 @@ export default function Home() {
 
         {/* Firebase Status Banner */}
         {!firebaseConfigured && isInitialized && (
-          <div className="px-4 py-3 flex-shrink-0 bg-yellow-50 border-b border-yellow-100">
+          <div className="px-6 py-3 flex-shrink-0 bg-yellow-50 border-b border-yellow-100">
             <div className="flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">

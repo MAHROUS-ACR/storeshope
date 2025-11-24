@@ -52,7 +52,7 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <MobileWrapper>
-        <div className="flex-1 flex flex-col items-center justify-center px-4">
+        <div className="flex-1 flex flex-col items-center justify-center px-6">
           <span className="text-6xl mb-4">🛒</span>
           <h2 className="text-lg font-bold mb-2">{t("cartIsEmpty", language)}</h2>
           <p className="text-sm text-muted-foreground mb-6 text-center">Start shopping to add items</p>
@@ -75,7 +75,7 @@ export default function CartPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-4 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/")}
             className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center"
@@ -88,7 +88,7 @@ export default function CartPage() {
 
         {/* Items List - Scrollable */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-4 py-4 space-y-3">
+          <div className="w-full px-6 py-4 space-y-3">
             {items.map((item) => (
               <div
                 key={item.id}

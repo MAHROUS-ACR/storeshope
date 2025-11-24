@@ -153,7 +153,7 @@ export default function SettingsPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-4 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/")}
             className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50"
@@ -169,7 +169,7 @@ export default function SettingsPage() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-4 py-6">
+          <div className="w-full px-6 py-6">
 
             {/* Firebase Configuration Section */}
             <div className="mb-8">
@@ -189,7 +189,7 @@ export default function SettingsPage() {
                     value={firebaseApiKey}
                     onChange={(e) => setFirebaseApiKey(e.target.value)}
                     placeholder="AIza..."
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-api-key"
                   />
                 </div>
@@ -204,7 +204,7 @@ export default function SettingsPage() {
                     value={firebaseProjectId}
                     onChange={(e) => setFirebaseProjectId(e.target.value)}
                     placeholder="your-project-id"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-project-id"
                   />
                 </div>
@@ -219,7 +219,7 @@ export default function SettingsPage() {
                     value={firebaseAppId}
                     onChange={(e) => setFirebaseAppId(e.target.value)}
                     placeholder="1:123456789:web:abcd1234efgh5678ijkl"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-app-id"
                   />
                 </div>
@@ -234,7 +234,7 @@ export default function SettingsPage() {
                     value={firebaseAuthDomain}
                     onChange={(e) => setFirebaseAuthDomain(e.target.value)}
                     placeholder="your-project.firebaseapp.com"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-auth-domain"
                   />
                 </div>
@@ -249,7 +249,7 @@ export default function SettingsPage() {
                     value={firebaseStorageBucket}
                     onChange={(e) => setFirebaseStorageBucket(e.target.value)}
                     placeholder="your-project.appspot.com"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-storage-bucket"
                   />
                 </div>
@@ -264,7 +264,7 @@ export default function SettingsPage() {
                     value={firebaseMessagingSenderId}
                     onChange={(e) => setFirebaseMessagingSenderId(e.target.value)}
                     placeholder="123456789012"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-messaging-sender-id"
                   />
                 </div>
@@ -279,7 +279,7 @@ export default function SettingsPage() {
                     value={firebaseMeasurementId}
                     onChange={(e) => setFirebaseMeasurementId(e.target.value)}
                     placeholder="G-XXXXXXXXXX"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-firebase-measurement-id"
                   />
                 </div>
@@ -304,7 +304,7 @@ export default function SettingsPage() {
                     value={storeName}
                     onChange={(e) => setStoreName(e.target.value)}
                     placeholder="Your Store Name"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-store-name"
                   />
                 </div>
@@ -319,7 +319,7 @@ export default function SettingsPage() {
                     value={storeAddress}
                     onChange={(e) => setStoreAddress(e.target.value)}
                     placeholder="Store Address"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-store-address"
                   />
                 </div>
@@ -334,7 +334,7 @@ export default function SettingsPage() {
                     value={storePhone}
                     onChange={(e) => setStorePhone(e.target.value)}
                     placeholder="+1 234 567 8900"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-store-phone"
                   />
                 </div>
@@ -349,7 +349,7 @@ export default function SettingsPage() {
                     value={storeEmail}
                     onChange={(e) => setStoreEmail(e.target.value)}
                     placeholder="info@store.com"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-6 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-store-email"
                   />
                 </div>

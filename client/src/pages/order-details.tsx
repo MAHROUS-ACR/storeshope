@@ -209,7 +209,7 @@ export default function OrderDetailsPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-4 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={handleBack}
             className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center"
@@ -226,21 +226,21 @@ export default function OrderDetailsPage() {
             <div className="w-8 h-8 border-4 border-gray-200 border-t-primary rounded-full animate-spin" />
           </div>
         ) : !order ? (
-          <div className="flex-1 flex flex-col items-center justify-center px-4">
+          <div className="flex-1 flex flex-col items-center justify-center px-6">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <span className="text-2xl">❌</span>
             </div>
             <h2 className="text-lg font-bold mb-2">{t("orderNotFound", language)}</h2>
             <button
               onClick={handleBack}
-              className="px-4 py-2 bg-black text-white rounded-full text-sm font-semibold mt-4"
+              className="px-6 py-2 bg-black text-white rounded-full text-sm font-semibold mt-4"
             >
               {user?.role === 'admin' ? t("backToAdmin", language) : t("backToAccount", language)}
             </button>
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-            <div className="w-full px-4 py-4 space-y-4">
+            <div className="w-full px-6 py-4 space-y-4">
               {/* Order Header */}
               <div className="bg-white rounded-2xl border border-gray-100 p-4">
                 <div className="flex items-start justify-between mb-4">
@@ -253,7 +253,7 @@ export default function OrderDetailsPage() {
                       <select
                         value={newStatus}
                         onChange={(e) => setNewStatus(e.target.value)}
-                        className="px-4 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className="px-6 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-primary/20"
                       >
                         <option value="">{t("selectStatus", language)}</option>
                         <option value="pending">{t("pending", language)}</option>
@@ -322,12 +322,12 @@ export default function OrderDetailsPage() {
                         {(item.selectedColor || item.selectedSize || item.selectedUnit) && (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {item.selectedUnit && (
-                              <span className="inline-block px-4 py-1 bg-blue-100 text-blue-700 rounded text-[10px] font-medium">
+                              <span className="inline-block px-6 py-1 bg-blue-100 text-blue-700 rounded text-[10px] font-medium">
                                 {item.selectedUnit}
                               </span>
                             )}
                             {item.selectedSize && (
-                              <span className="inline-block px-4 py-1 bg-green-100 text-green-700 rounded text-[10px] font-medium">
+                              <span className="inline-block px-6 py-1 bg-green-100 text-green-700 rounded text-[10px] font-medium">
                                 {item.selectedSize}
                               </span>
                             )}
@@ -337,7 +337,7 @@ export default function OrderDetailsPage() {
                                 : [item.selectedColor, '#000000'];
                               return (
                                 <span 
-                                  className="inline-block px-4 py-1 rounded text-[10px] font-medium text-white"
+                                  className="inline-block px-6 py-1 rounded text-[10px] font-medium text-white"
                                   style={{backgroundColor: colorHex || '#000000'}}
                                   title={colorName}
                                 >

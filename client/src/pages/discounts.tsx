@@ -149,7 +149,7 @@ export default function DiscountsPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-4 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-6 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/profile")}
             className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center"
@@ -166,7 +166,7 @@ export default function DiscountsPage() {
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-            <div className="w-full px-4 py-4">
+            <div className="w-full px-6 py-4">
               {/* Form */}
               <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 p-4 mb-6 space-y-4">
                 <h2 className="font-semibold text-lg">{editingId ? "Edit Discount" : "Add New Discount"}</h2>
