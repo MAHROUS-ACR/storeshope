@@ -91,9 +91,9 @@ export default function CartPage() {
           <div className="w-full px-5 py-4 space-y-3">
             {items.map((item) => (
               <div
-                key={item.id}
+                key={item._uniqueId}
                 className="flex gap-3 p-4 bg-white rounded-2xl border border-gray-100"
-                data-testid={`cart-item-${item.id}`}
+                data-testid={`cart-item-${item._uniqueId}`}
               >
                 <img
                   src={item.image}
@@ -134,24 +134,24 @@ export default function CartPage() {
                   })()}
                   <div className="flex items-center gap-2 mt-2">
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() => updateQuantity(item._uniqueId, item.quantity - 1)}
                       className="p-1 rounded-lg bg-gray-100 hover:bg-gray-200"
-                      data-testid={`button-decrease-${item.id}`}
+                      data-testid={`button-decrease-${item._uniqueId}`}
                     >
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="w-6 text-center text-sm font-semibold">{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => updateQuantity(item._uniqueId, item.quantity + 1)}
                       className="p-1 rounded-lg bg-gray-100 hover:bg-gray-200"
-                      data-testid={`button-increase-${item.id}`}
+                      data-testid={`button-increase-${item._uniqueId}`}
                     >
                       <Plus className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item._uniqueId)}
                       className="p-1 text-red-500 hover:bg-red-50 rounded-lg ml-auto"
-                      data-testid={`button-remove-${item.id}`}
+                      data-testid={`button-remove-${item._uniqueId}`}
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>

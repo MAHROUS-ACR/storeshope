@@ -2,6 +2,7 @@ import { createContext, useContext, useState, ReactNode, useEffect } from "react
 
 export interface CartItem {
   id: string;
+  _uniqueId: string; // Unique identifier combining id + variants
   title: string;
   price: number;
   quantity: number;
@@ -14,8 +15,8 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[];
   addItem: (item: CartItem) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  removeItem: (uniqueId: string) => void;
+  updateQuantity: (uniqueId: string, quantity: number) => void;
   clearCart: () => void;
   total: number;
 }
@@ -57,20 +58,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     console.log("CartContext addItem called with:", newItem);
     setItems(prev => {
       console.log("Current items before adding:", prev);
-      // Check if item with same id AND same variants already exists
-      const existing = prev.find(item => 
-        item.id === newItem.id &&
-        item.selectedColor === newItem.selectedColor &&
-        item.selectedSize === newItem.selectedSize &&
-        item.selectedUnit === newItem.selectedUnit
-      );
+      // Check if item with same uniqueId already exists
+      const existing = prev.find(item => item._uniqueId === newItem._uniqueId);
       if (existing) {
         console.log("Item exists, updating quantity");
         return prev.map(item =>
-          item.id === newItem.id &&
-          item.selectedColor === newItem.selectedColor &&
-          item.selectedSize === newItem.selectedSize &&
-          item.selectedUnit === newItem.selectedUnit
+          item._uniqueId === newItem._uniqueId
             ? { ...item, quantity: item.quantity + newItem.quantity }
             : item
         );
@@ -82,17 +75,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeItem = (id: string) => {
-    setItems(prev => prev.filter(item => item.id !== id));
+  const removeItem = (uniqueId: string) => {
+    setItems(prev => prev.filter(item => item._uniqueId !== uniqueId));
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = (uniqueId: string, quantity: number) => {
     if (quantity <= 0) {
-      removeItem(id);
+      removeItem(uniqueId);
     } else {
       setItems(prev =>
         prev.map(item =>
-          item.id === id ? { ...item, quantity } : item
+          item._uniqueId === uniqueId ? { ...item, quantity } : item
         )
       );
     }

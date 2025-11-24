@@ -75,6 +75,7 @@ export default function ProductDetailsPage() {
       for (let i = 0; i < quantity; i++) {
         const itemData = {
           id: String(product.id),
+          _uniqueId: `${product.id}-${selectedColor || ''}-${selectedSize || ''}-${selectedUnit || ''}`,
           title: product.title || product.name || "Product",
           price: product.price,
           quantity: 1,

@@ -65,6 +65,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
     try {
       const itemData = {
         id: String(product.id),
+        _uniqueId: `${product.id}-${selectedColor || ''}-${selectedSize || ''}-${selectedUnit || ''}`,
         title: productTitle,
         price: product.price,
         quantity: 1,
