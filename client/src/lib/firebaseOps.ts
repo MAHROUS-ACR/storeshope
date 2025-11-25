@@ -191,8 +191,15 @@ export async function getOrderById(id: string) {
 export async function saveOrder(order: any) {
   try {
     console.log("📝 saveOrder called with order:", order);
+    
+    // Ensure database is initialized
     const db = initDb();
-    console.log("✅ Database initialized");
+    console.log("✅ Database initialized - db object:", !!db);
+    
+    if (!db) {
+      console.error("❌ Database initialization failed - db is null");
+      throw new Error("Database not initialized");
+    }
     
     const ordersRef = collection(db, "orders");
     console.log("✅ Orders collection reference created");
@@ -204,16 +211,29 @@ export async function saveOrder(order: any) {
       ...order,
       createdAt: Timestamp.now(),
     };
-    console.log("📋 Order data prepared:", orderData);
+    console.log("📋 Order data prepared - fields:", Object.keys(orderData));
+    console.log("📋 Full order data:", orderData);
     
-    await setDoc(docRef, orderData);
+    console.log("📤 Calling setDoc...");
+    const result = await setDoc(docRef, orderData);
+    console.log("✅ setDoc returned:", result);
+    
     console.log("✅ Order saved successfully with ID:", docRef.id);
+    console.log("🎉 SUCCESS - Order ID:", docRef.id);
     return docRef.id;
   } catch (error: any) {
-    console.error("❌ Error saving order:", error);
-    console.error("Error code:", error.code);
-    console.error("Error message:", error.message);
-    console.error("Full error:", JSON.stringify(error, null, 2));
+    console.error("❌ CRITICAL ERROR saving order:");
+    console.error("Error code:", error?.code);
+    console.error("Error message:", error?.message);
+    console.error("Error name:", error?.name);
+    console.error("Full error:", error);
+    console.error("Error stack:", error?.stack);
+    
+    // Additional debugging
+    if (error?.code === "permission-denied") {
+      console.error("🔒 Firestore security rule blocked the write operation");
+    }
+    
     return null;
   }
 }
