@@ -1,0 +1,58 @@
+index-DF77lBZF.js:3999 ⚠️ Could not initialize messaging: FirebaseError: Installations: Missing App configuration value: "projectId" (installations/missing-app-config-values).
+    at dS (index-DF77lBZF.js:3656:309)
+    at jpe (index-DF77lBZF.js:3656:179)
+    at Fa.Mpe [as instanceFactory] (index-DF77lBZF.js:3671:112)
+    at Sne.getOrInitializeService (index-DF77lBZF.js:426:2725)
+    at Sne.getImmediate (index-DF77lBZF.js:426:674)
+    at Fa.kpe [as instanceFactory] (index-DF77lBZF.js:3671:286)
+    at Sne.getOrInitializeService (index-DF77lBZF.js:426:2725)
+    at Sne.getImmediate (index-DF77lBZF.js:426:674)
+    at Fa.bme [as instanceFactory] (index-DF77lBZF.js:3954:110)
+    at Sne.getOrInitializeService (index-DF77lBZF.js:426:2725)
+W7 @ index-DF77lBZF.js:3999
+L2e @ index-DF77lBZF.js:4131
+(anonymous) @ index-DF77lBZF.js:4131
+index-DF77lBZF.js:3416 Failed to initialize Firebase auth: FirebaseError: Firebase: Error (auth/invalid-api-key).
+    at OP (index-DF77lBZF.js:651:506)
+    at Ge (index-DF77lBZF.js:651:555)
+    at Fa.instanceFactory (index-DF77lBZF.js:1731:397)
+    at Sne.getOrInitializeService (index-DF77lBZF.js:426:2725)
+    at Sne.initialize (index-DF77lBZF.js:426:2112)
+    at hie (index-DF77lBZF.js:1056:168)
+    at tk (index-DF77lBZF.js:1746:414)
+    at index-DF77lBZF.js:3416:3518
+    at Oh (index-DF77lBZF.js:48:93614)
+    at pj (index-DF77lBZF.js:48:108918)
+(anonymous) @ index-DF77lBZF.js:3416
+Oh @ index-DF77lBZF.js:48
+pj @ index-DF77lBZF.js:48
+Pa @ index-DF77lBZF.js:48
+pj @ index-DF77lBZF.js:48
+Pa @ index-DF77lBZF.js:48
+pj @ index-DF77lBZF.js:48
+Pa @ index-DF77lBZF.js:48
+pj @ index-DF77lBZF.js:48
+Pa @ index-DF77lBZF.js:48
+pj @ index-DF77lBZF.js:48
+Pa @ index-DF77lBZF.js:48
+pj @ index-DF77lBZF.js:48
+Pa @ index-DF77lBZF.js:48
+pj @ index-DF77lBZF.js:48
+kj @ index-DF77lBZF.js:48
+ly @ index-DF77lBZF.js:48
+Fj @ index-DF77lBZF.js:48
+Dh @ index-DF77lBZF.js:48
+Dj @ index-DF77lBZF.js:48
+Ij @ index-DF77lBZF.js:48
+Sj @ index-DF77lBZF.js:48
+_j @ index-DF77lBZF.js:48
+Bj @ index-DF77lBZF.js:48
+L @ index-DF77lBZF.js:17
+A bad HTTP response code (404) was received when fetching the script.
+index-DF77lBZF.js:3999 ⚠️ Service Worker registration skipped: TypeError: Failed to register a ServiceWorker for scope ('https://mahrous-acr.github.io/') with script ('https://mahrous-acr.github.io/firebase-messaging-sw.js'): A bad HTTP response code (404) was received when fetching the script.
+index-DF77lBZF.js:3999 ⚠️ Messaging not initialized
+Y7 @ index-DF77lBZF.js:3999
+L2e @ index-DF77lBZF.js:4131
+await in L2e
+(anonymous) @ index-DF77lBZF.js:4131
+index-DF77lBZF.js:3999 ⚠️ Notification permission denied

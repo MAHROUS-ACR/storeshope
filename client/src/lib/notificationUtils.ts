@@ -34,10 +34,13 @@ export async function initializeNotifications(firebaseConfig: any) {
     // Register Service Worker
     if ('serviceWorker' in navigator) {
       try {
-        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
-          scope: '/'
+        const basePath = import.meta.env.BASE_URL || '/';
+        const swPath = `${basePath}firebase-messaging-sw.js`;
+        const scope = basePath;
+        const registration = await navigator.serviceWorker.register(swPath, {
+          scope: scope
         });
-        console.log('✅ Service Worker registered');
+        console.log('✅ Service Worker registered at:', swPath);
 
         // Send Firebase config to Service Worker
         if (registration.active) {
