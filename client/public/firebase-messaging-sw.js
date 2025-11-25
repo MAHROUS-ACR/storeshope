@@ -51,11 +51,11 @@ function setupBackgroundMessages() {
       const notificationTitle = payload.notification?.title || 'Flux Wallet';
       const notificationOptions = {
         body: payload.notification?.body,
-        icon: payload.notification?.icon || '/stores/favicon.png',
-        badge: '/stores/favicon.png',
+        icon: payload.notification?.icon || '/storeshope/favicon.png',
+        badge: '/storeshope/favicon.png',
         tag: payload.data?.orderId || 'notification',
         data: payload.data,
-        click_action: payload.data?.click_action || '/stores/',
+        click_action: payload.data?.click_action || '/storeshope/',
         requireInteraction: true,
       };
 
@@ -73,7 +73,7 @@ self.addEventListener('notificationclick', (event) => {
   console.log('Notification clicked:', event);
   event.notification.close();
   
-  const urlToOpen = event.notification.data?.click_action || '/stores/';
+  const urlToOpen = event.notification.data?.click_action || '/storeshope/';
   
   event.waitUntil(
     clients.matchAll({
