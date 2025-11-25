@@ -301,15 +301,17 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        console.log("📌 Saved address selected");
+                        console.log("📌 Saved address selected, zones:", shippingZones);
                         setShippingType("saved");
-                        const matchingZone = shippingZones.find(z => z.name === userProfile.zone);
-                        const zoneToUse = matchingZone?.name || (shippingZones[0]?.name || "");
-                        setSelectedZone(zoneToUse);
-                        if (matchingZone) {
-                          setShippingCost(matchingZone.shippingCost);
-                        } else if (shippingZones[0]) {
+                        // Always use first zone as default if available
+                        if (shippingZones.length > 0) {
+                          const zoneName = shippingZones[0].name;
+                          console.log("✅ Setting zone to:", zoneName);
+                          setSelectedZone(zoneName);
                           setShippingCost(shippingZones[0].shippingCost);
+                        } else {
+                          console.warn("⚠️ No shipping zones available");
+                          toast.error("No shipping zones available");
                         }
                       }}
                       className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100 mb-2"
@@ -371,7 +373,10 @@ export default function CheckoutPage() {
                     type="text"
                     placeholder={t("streetAddress", language)}
                     value={newAddress}
-                    onChange={(e) => setNewAddress(e.target.value)}
+                    onChange={(e) => {
+                      setNewAddress(e.target.value);
+                      console.log("📍 New address:", e.target.value);
+                    }}
                     className="w-full p-2 border border-gray-200 rounded-lg text-sm"
                     data-testid="input-new-address"
                   />
@@ -379,16 +384,23 @@ export default function CheckoutPage() {
                     type="tel"
                     placeholder={t("phoneNumber", language)}
                     value={newPhone}
-                    onChange={(e) => setNewPhone(e.target.value)}
+                    onChange={(e) => {
+                      setNewPhone(e.target.value);
+                      console.log("📱 New phone:", e.target.value);
+                    }}
                     className="w-full p-2 border border-gray-200 rounded-lg text-sm"
                     data-testid="input-new-phone"
                   />
                   <select
                     value={selectedZone}
                     onChange={(e) => {
+                      console.log("🎯 Zone selected:", e.target.value);
                       setSelectedZone(e.target.value);
                       const zone = shippingZones.find(z => z.name === e.target.value);
-                      if (zone) setShippingCost(zone.shippingCost);
+                      if (zone) {
+                        console.log("💰 Shipping cost:", zone.shippingCost);
+                        setShippingCost(zone.shippingCost);
+                      }
                     }}
                     className="w-full p-2 border border-gray-200 rounded-lg text-sm"
                     data-testid="select-new-zone"
