@@ -58,36 +58,17 @@ export default function OrdersPage() {
       try {
         setFirebaseConfigured(true);
         
-        // Fetch orders from Firebase (filtered by user ID if available)
+        // Fetch orders from Firebase only (filtered by user ID if available)
         const firebaseOrders = await getOrders(user?.id);
         
         if (firebaseOrders && firebaseOrders.length > 0) {
           setOrders(firebaseOrders as Order[]);
-          // Update localStorage with Firebase data
-          localStorage.setItem("orders", JSON.stringify(firebaseOrders));
         } else {
-          // Fallback to localStorage if no Firebase orders
-          const savedOrders = localStorage.getItem("orders");
-          if (savedOrders) {
-            setOrders(JSON.parse(savedOrders));
-          } else {
-            setOrders([]);
-          }
+          setOrders([]);
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
-        // Fallback to localStorage
-        try {
-          const savedOrders = localStorage.getItem("orders");
-          if (savedOrders) {
-            setOrders(JSON.parse(savedOrders));
-          } else {
-            setOrders([]);
-          }
-        } catch (e) {
-          console.error("Failed to load from localStorage:", e);
-          setOrders([]);
-        }
+        setOrders([]);
       } finally {
         setIsLoading(false);
       }

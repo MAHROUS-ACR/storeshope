@@ -9,7 +9,7 @@ import { t } from "@/lib/translations";
 import { toast } from "sonner";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { getAllDiscounts, getActiveDiscount, calculateDiscountedPrice, type Discount } from "@/lib/discountUtils";
-import { getShippingZones, saveOrder } from "@/lib/firebaseOps";
+import { getShippingZones, saveOrder, getOrders } from "@/lib/firebaseOps";
 import { sendNotificationToAdmins } from "@/lib/notificationAPI";
 
 export default function CheckoutPage() {
@@ -139,8 +139,8 @@ export default function CheckoutPage() {
         shippingPhone = newPhone;
       }
 
-      // Get sequential order number from localStorage
-      const existingOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+      // Get sequential order number from Firebase
+      const existingOrders = await getOrders();
       const maxOrderNum = Math.max(...existingOrders.map((o: any) => o.orderNumber || 0), 0);
       const orderNumber = maxOrderNum + 1;
 
