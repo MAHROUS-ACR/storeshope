@@ -761,9 +761,6 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0">
-        <BottomNav />
-      </div>
     </MobileWrapper>
   );
 }
