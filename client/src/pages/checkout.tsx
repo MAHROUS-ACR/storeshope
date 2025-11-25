@@ -499,15 +499,7 @@ export default function CheckoutPage() {
               </button>
             </div>
           ) : (
-            <form 
-              onSubmit={(e) => {
-                console.log("🔷🔷🔷 FORM SUBMIT EVENT TRIGGERED 🔷🔷🔷");
-                console.log("📋 Event:", e);
-                console.log("📋 paymentMethod:", paymentMethod);
-                handlePaymentSubmit(e);
-              }} 
-              className="space-y-4"
-            >
+            <div className="space-y-4">
               <div className="flex items-center gap-2 mb-6">
                 <button
                   type="button"
@@ -737,12 +729,13 @@ export default function CheckoutPage() {
               )}
 
               <button
-                type="submit"
-                disabled={isProcessing}
-                onClick={(e) => {
-                  console.log("🔵 BUTTON CLICK - type:", e.type, "disabled:", isProcessing, "shippingType:", shippingType, "selectedZone:", selectedZone);
-                  console.log("🔵 Button element:", e.currentTarget);
+                type="button"
+                onClick={async (e) => {
+                  console.log("🟢🟢🟢 BUTTON CLICKED DIRECTLY 🟢🟢🟢");
+                  console.log("paymentMethod:", paymentMethod);
+                  await handlePaymentSubmit(e as any);
                 }}
+                disabled={isProcessing}
                 className="w-full bg-black text-white py-4 rounded-2xl font-semibold hover:bg-neutral-800 disabled:opacity-50 flex items-center justify-center gap-2"
                 data-testid="button-pay"
               >
@@ -755,7 +748,7 @@ export default function CheckoutPage() {
                   `${paymentMethod === "card" ? t("pay", language) : t("placeOrder", language)} L.E ${(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}`
                 )}
               </button>
-            </form>
+            </div>
           )}
           </div>
         </div>
