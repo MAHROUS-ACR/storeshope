@@ -181,7 +181,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     if (!firebaseAuth) throw new Error("Firebase not configured");
     await signOut(firebaseAuth);
-    localStorage.removeItem("orders");
   };
 
 

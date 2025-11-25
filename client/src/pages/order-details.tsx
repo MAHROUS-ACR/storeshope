@@ -84,19 +84,7 @@ export default function OrderDetailsPage() {
     setIsLoading(true);
     const fetchOrder = async () => {
       try {
-        // First try localStorage (fastest)
-        const savedOrders = localStorage.getItem("orders");
-        if (savedOrders) {
-          const allOrders = JSON.parse(savedOrders);
-          const foundOrder = allOrders.find((o: Order) => o.id === orderId);
-          if (foundOrder && ((user && user.role === 'admin') || foundOrder.userId === user?.id || !foundOrder.userId)) {
-            setOrder(foundOrder);
-            setIsLoading(false);
-            return;
-          }
-        }
-
-        // Fallback to Firebase
+        // Fetch from Firebase only
         const orders = await getOrders(user?.role === 'admin' ? undefined : user?.id);
         const foundOrder = orders?.find((o: any) => o.id === orderId);
         if (foundOrder) {
@@ -145,20 +133,20 @@ export default function OrderDetailsPage() {
 
     // Calculate user order statistics for admin
     if (user?.role === 'admin') {
-      try {
-        const savedOrders = localStorage.getItem("orders");
-        if (savedOrders) {
-          const allOrders = JSON.parse(savedOrders);
-          const userOrders = allOrders.filter((o: Order) => o.userId === order.userId);
-          const completedOrdersList = userOrders.filter((o: Order) => o.status === 'completed');
+      const calculateStats = async () => {
+        try {
+          const allOrders = await getOrders();
+          const userOrders = allOrders.filter((o: any) => o.userId === order.userId);
+          const completedOrdersList = userOrders.filter((o: any) => o.status === 'completed');
           setTotalOrders(userOrders.length);
           setCompletedOrders(completedOrdersList.length);
-          const totalValue = completedOrdersList.reduce((sum: number, o: Order) => sum + (o.total || 0), 0);
+          const totalValue = completedOrdersList.reduce((sum: number, o: any) => sum + (o.total || 0), 0);
           setCompletedOrdersValue(totalValue);
+        } catch (e) {
+          console.error("Error calculating statistics:", e);
         }
-      } catch (e) {
-        console.error("Error calculating statistics:", e);
-      }
+      };
+      calculateStats();
     }
   }, [order, user?.role]);
 
@@ -181,20 +169,10 @@ export default function OrderDetailsPage() {
     if (!newSts || !order) return;
     
     try {
-      // Update Firebase
+      // Update Firebase only
       const db = getFirestore();
       const orderRef = doc(db, "orders", order.id);
       await updateDoc(orderRef, { status: newSts });
-
-      // Update localStorage
-      const savedOrders = localStorage.getItem("orders");
-      if (savedOrders) {
-        const allOrders = JSON.parse(savedOrders);
-        const updatedOrders = allOrders.map((o: Order) => 
-          o.id === order.id ? { ...o, status: newSts } : o
-        );
-        localStorage.setItem("orders", JSON.stringify(updatedOrders));
-      }
 
       // Send notification to customer about status change
       if (order.userId) {
