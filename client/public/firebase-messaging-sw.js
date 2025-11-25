@@ -20,7 +20,6 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'INIT_FIREBASE') {
     const config = event.data.config;
-    console.log('Initializing Firebase in Service Worker with config:', config);
     
     try {
       firebaseApp = firebase.initializeApp(config);

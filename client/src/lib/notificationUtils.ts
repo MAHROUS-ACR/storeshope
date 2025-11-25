@@ -49,7 +49,6 @@ export async function initializeNotifications(firebaseConfig: any) {
               type: 'INIT_FIREBASE',
               config: firebaseConfig
             });
-            console.log('✅ Firebase config sent to Service Worker');
           } else if (registration.installing) {
             console.log('⚠️ Service Worker still installing, waiting...');
             registration.installing.addEventListener('statechange', function() {
@@ -58,7 +57,6 @@ export async function initializeNotifications(firebaseConfig: any) {
                   type: 'INIT_FIREBASE',
                   config: firebaseConfig
                 });
-                console.log('✅ Firebase config sent to Service Worker (after activation)');
               }
             });
           }
