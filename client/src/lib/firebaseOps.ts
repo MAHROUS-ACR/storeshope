@@ -207,9 +207,9 @@ export async function saveOrder(order: any) {
     const docRef = doc(ordersRef);
     console.log("✅ New document reference created:", docRef.id);
     
+    // Keep createdAt as ISO string - don't convert to Timestamp
     const orderData = {
       ...order,
-      createdAt: Timestamp.now(),
     };
     console.log("📋 Order data prepared - fields:", Object.keys(orderData));
     console.log("📋 Full order data:", orderData);

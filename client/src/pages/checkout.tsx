@@ -139,8 +139,12 @@ export default function CheckoutPage() {
         shippingPhone = newPhone;
       }
 
-      const orderNumber = Math.floor(Math.random() * 100000) + 1;
+      // Get sequential order number from localStorage
+      const existingOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+      const maxOrderNum = Math.max(...existingOrders.map((o: any) => o.orderNumber || 0), 0);
+      const orderNumber = maxOrderNum + 1;
 
+      const now = new Date();
       const orderData = {
         id: `order-${Date.now()}`,
         orderNumber,
@@ -155,7 +159,11 @@ export default function CheckoutPage() {
         shippingAddress,
         shippingPhone,
         shippingZone: selectedZone,
-        createdAt: new Date().toISOString(),
+        customerName: formData.cardHolder || userProfile?.name || "Customer",
+        customerEmail: formData.email || userProfile?.email || user?.email,
+        customerPhone: shippingPhone || userProfile?.phone || "",
+        createdAt: now.toISOString(),
+        createdAtTimestamp: now.getTime(),
         userId: user?.id,
       };
 
