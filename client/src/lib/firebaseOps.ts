@@ -17,6 +17,7 @@ import {
   where,
   orderBy,
   Timestamp,
+  addDoc,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
@@ -217,6 +218,28 @@ export async function saveOrder(order: any) {
     console.log("📤 Calling setDoc...");
     const result = await setDoc(docRef, orderData);
     console.log("✅ setDoc returned:", result);
+    
+    // Save notification for admins
+    try {
+      console.log("🔔 Creating admin notification for new order...");
+      const notificationsRef = collection(db, "notifications");
+      const notificationData = {
+        type: "new_order",
+        message: `New Order #${orderData.orderNumber} from ${orderData.userEmail || "Customer"} - L.E ${orderData.total}`,
+        messageEn: `New Order #${orderData.orderNumber} - ${orderData.total} EGP`,
+        orderId: docRef.id,
+        orderNumber: orderData.orderNumber,
+        userId: orderData.userId,
+        read: false,
+        createdAt: Timestamp.now(),
+      };
+      
+      const notifDocRef = await addDoc(notificationsRef, notificationData);
+      console.log("✅ Notification saved with ID:", notifDocRef.id);
+    } catch (notifError) {
+      console.warn("⚠️ Failed to save notification:", notifError);
+      // Don't fail the order if notification fails
+    }
     
     console.log("✅ Order saved successfully with ID:", docRef.id);
     console.log("🎉 SUCCESS - Order ID:", docRef.id);
