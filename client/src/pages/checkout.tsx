@@ -20,10 +20,11 @@ export default function CheckoutPage() {
   const { language } = useLanguage();
 
   useEffect(() => {
+    console.log("🛒 Checkout page - Current cart items:", items, "Total:", total);
     if (!authLoading && !isLoggedIn) {
       setLocation("/login");
     }
-  }, [isLoggedIn, authLoading, setLocation]);
+  }, [isLoggedIn, authLoading, setLocation, items, total]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"card" | "delivery" | null>(null);
 
@@ -165,6 +166,7 @@ export default function CheckoutPage() {
   };
 
   const handleCardPayment = async () => {
+    console.log("💳 Card payment starting - Items:", items, "Cart total:", total);
     if (!shippingType || !selectedZone) {
       toast.error(t("selectShippingAddressAndZone", language));
       setIsProcessing(false);
@@ -175,6 +177,7 @@ export default function CheckoutPage() {
     try {
       const totalWithDiscounts = calculateTotalWithDiscounts();
       const finalTotal = totalWithDiscounts + shippingCost;
+      console.log("💰 Payment calculated - Total with discounts:", totalWithDiscounts, "Shipping:", shippingCost, "Final:", finalTotal);
 
       // Simulate payment success - in production, use Stripe
       const paymentId = `card_${Date.now()}`;
@@ -221,13 +224,23 @@ export default function CheckoutPage() {
 
       // Save to Firebase and send notification
       try {
-        await saveOrder(orderData);
-        await sendNotificationToAdmins(
-          "New Order",
-          `Order #${orderData.orderNumber} placed for ${orderData.total.toFixed(2)}`
-        );
+        console.log("📤 Saving order to Firebase:", orderData);
+        const savedOrderId = await saveOrder(orderData);
+        console.log("✅ Order saved with ID:", savedOrderId);
+        
+        try {
+          console.log("🔔 Sending notification to admins");
+          await sendNotificationToAdmins(
+            "New Order",
+            `Order #${orderData.orderNumber} placed for ${orderData.total.toFixed(2)}`
+          );
+          console.log("✅ Notification sent");
+        } catch (notifError) {
+          console.warn("⚠️ Notification failed but order was saved:", notifError);
+        }
       } catch (error) {
-        console.warn("Failed to save to Firebase:", error);
+        console.error("❌ Failed to save to Firebase:", error);
+        toast.error("Failed to save order to database");
       }
 
       toast.success("✅ Order placed! Redirecting...");
@@ -242,6 +255,7 @@ export default function CheckoutPage() {
   };
 
   const handleDeliveryPayment = async () => {
+    console.log("🚚 Delivery payment starting - Items:", items, "Cart total:", total);
     if (!shippingType || !selectedZone) {
       toast.error(t("selectShippingAddressAndZone", language));
       setIsProcessing(false);
@@ -252,6 +266,7 @@ export default function CheckoutPage() {
     try {
       const totalWithDiscounts = calculateTotalWithDiscounts();
       const finalTotal = totalWithDiscounts + shippingCost;
+      console.log("💰 Delivery payment calculated - Total with discounts:", totalWithDiscounts, "Shipping:", shippingCost, "Final:", finalTotal);
 
       let shippingAddress = formData.address;
       let shippingPhone = formData.zipCode;
@@ -294,13 +309,23 @@ export default function CheckoutPage() {
 
       // Save to Firebase and send notification
       try {
-        await saveOrder(orderData);
-        await sendNotificationToAdmins(
-          "New Order",
-          `Order #${orderData.orderNumber} placed for ${orderData.total.toFixed(2)}`
-        );
+        console.log("📤 Saving delivery order to Firebase:", orderData);
+        const savedOrderId = await saveOrder(orderData);
+        console.log("✅ Delivery order saved with ID:", savedOrderId);
+        
+        try {
+          console.log("🔔 Sending delivery notification to admins");
+          await sendNotificationToAdmins(
+            "New Order",
+            `Order #${orderData.orderNumber} placed for ${orderData.total.toFixed(2)}`
+          );
+          console.log("✅ Delivery notification sent");
+        } catch (notifError) {
+          console.warn("⚠️ Delivery notification failed but order was saved:", notifError);
+        }
       } catch (error) {
-        console.warn("Failed to save to Firebase:", error);
+        console.error("❌ Failed to save delivery order to Firebase:", error);
+        toast.error("Failed to save order to database");
       }
 
       toast.success("✅ Order placed! Redirecting...");
