@@ -118,41 +118,62 @@ export default function CheckoutPage() {
   };
 
   const validateDeliveryForm = () => {
+    console.log("🔍 Validating delivery form - shippingType:", shippingType, "selectedZone:", selectedZone);
     if (!shippingType || !selectedZone) {
+      console.log("❌ Missing shippingType or selectedZone");
       toast.error(t("selectShippingAddressAndZone", language));
       return false;
     }
+    console.log("✅ Delivery form valid");
     return true;
   };
 
   const validateCardForm = () => {
+    console.log("🔍 Validating card form - cardNumber:", formData.cardNumber?.length, "expiry:", formData.expiryDate, "cvv:", formData.cvv?.length, "holder:", formData.cardHolder);
+    
     if (!formData.cardNumber || formData.cardNumber.replace(/\s/g, "").length !== 16) {
+      console.log("❌ Invalid card number");
       toast.error(t("invalidCardNumber", language));
       return false;
     }
     if (!formData.expiryDate || formData.expiryDate.length !== 5) {
+      console.log("❌ Invalid expiry date");
       toast.error(t("invalidExpiryDate", language));
       return false;
     }
     if (!formData.cvv || formData.cvv.length !== 3) {
+      console.log("❌ Invalid CVV");
       toast.error(t("invalidCVV", language));
       return false;
     }
     if (!formData.cardHolder.trim()) {
+      console.log("❌ Empty cardholder name");
       toast.error(t("enterCardholderName", language));
       return false;
     }
+    console.log("✅ Card form valid");
     return true;
   };
 
   const handlePaymentSubmit = async (e: React.FormEvent) => {
+    console.log("🔷 Payment submit handler called");
     e.preventDefault();
     
     if (paymentMethod === "card") {
-      if (!validateCardForm()) return;
+      console.log("💳 Validating card form");
+      if (!validateCardForm()) {
+        console.log("❌ Card form validation failed");
+        return;
+      }
+      console.log("✅ Card form validation passed");
       await handleCardPayment();
     } else if (paymentMethod === "delivery") {
-      if (!validateDeliveryForm()) return;
+      console.log("🚚 Validating delivery form");
+      if (!validateDeliveryForm()) {
+        console.log("❌ Delivery form validation failed");
+        return;
+      }
+      console.log("✅ Delivery form validation passed");
       await handleDeliveryPayment();
     }
   };
