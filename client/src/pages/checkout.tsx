@@ -513,11 +513,22 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() => {
+                          console.log("📌 Saved address selected - userProfile:", userProfile);
                           setShippingType("saved");
                           setFormData(prev => ({ ...prev, address: userProfile.address, city: userProfile.zone, zipCode: userProfile.phone }));
-                          setSelectedZone(userProfile.zone);
-                          const zone = shippingZones.find(z => z.name === userProfile.zone);
-                          if (zone) setShippingCost(zone.shippingCost);
+                          
+                          // Try to find matching zone, or use first available zone as fallback
+                          const matchingZone = shippingZones.find(z => z.name === userProfile.zone);
+                          const zoneToUse = matchingZone?.name || (shippingZones.length > 0 ? shippingZones[0].name : userProfile.zone);
+                          console.log("📍 Zone selected:", zoneToUse, "from zones:", shippingZones);
+                          
+                          setSelectedZone(zoneToUse);
+                          
+                          if (matchingZone) {
+                            setShippingCost(matchingZone.shippingCost);
+                          } else if (shippingZones.length > 0) {
+                            setShippingCost(shippingZones[0].shippingCost);
+                          }
                         }}
                         className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100 transition-colors"
                         data-testid="button-saved-address"
@@ -616,9 +627,28 @@ export default function CheckoutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-gray-500">{t("zone", language)}</p>
-                      <p className="font-medium">{selectedZone}</p>
+                      <p className="font-medium">{selectedZone || "Not selected"}</p>
                     </div>
                   </div>
+
+                  {/* Zone selector for saved address - if no zone selected */}
+                  {!selectedZone && shippingZones.length > 0 && (
+                    <select
+                      value={selectedZone}
+                      onChange={(e) => {
+                        setSelectedZone(e.target.value);
+                        const zone = shippingZones.find(z => z.name === e.target.value);
+                        if (zone) setShippingCost(zone.shippingCost);
+                      }}
+                      className="w-full px-3 py-2 bg-white border border-green-300 rounded-lg text-sm"
+                      data-testid="select-saved-zone"
+                    >
+                      <option value="">{t("selectZone", language)}</option>
+                      {shippingZones.map((zone) => (
+                        <option key={zone.id} value={zone.name}>{zone.name} ({zone.shippingCost})</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
               )}
 
