@@ -110,19 +110,32 @@ export async function getFCMToken(): Promise<string | null> {
       return null;
     }
 
-    const token = await getToken(messaging, {
-      vapidKey: 'BE7rM5Nq_L8c9QX3Y6K2P1M4W8S3A9J6V5Z0C4D7E2F8L3N1R6T9U2X5Y0B3'
-    });
+    // Try with VAPID key from environment or try without it
+    const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY;
+    
+    const options: any = {};
+    if (vapidKey) {
+      options.vapidKey = vapidKey;
+      console.log('📍 Using VAPID key from environment');
+    } else {
+      console.log('📍 Attempting to get token without explicit VAPID key');
+    }
+
+    const token = await getToken(messaging, options);
 
     if (token) {
       console.log('✅ FCM Token received:', token.substring(0, 20) + '...');
       return token;
     }
 
-    console.log('⚠️ Unable to get FCM token');
+    console.log('⚠️ Unable to get FCM token - no token returned');
     return null;
-  } catch (error) {
-    console.error('❌ Error getting FCM token:', error);
+  } catch (error: any) {
+    console.error('❌ Error getting FCM token:', {
+      message: error?.message,
+      code: error?.code,
+      details: String(error)
+    });
     return null;
   }
 }
