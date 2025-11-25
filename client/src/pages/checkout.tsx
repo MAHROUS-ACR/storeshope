@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
-import { BottomNav } from "@/components/bottom-nav";
 import { ArrowLeft, Lock, CreditCard, Truck } from "lucide-react";
 import { useLocation } from "wouter";
 import { useCart } from "@/lib/cartContext";
@@ -19,31 +18,16 @@ export default function CheckoutPage() {
   const { user, isLoggedIn, isLoading: authLoading } = useUser();
   const { language } = useLanguage();
 
-  useEffect(() => {
-    console.log("🛒 Checkout page - Current cart items:", items, "Total:", total);
-    console.log("🛒 Auth state - isLoggedIn:", isLoggedIn, "authLoading:", authLoading);
-    if (!authLoading && !isLoggedIn) {
-      setLocation("/login");
-    }
-  }, [isLoggedIn, authLoading, setLocation, items, total]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"card" | "delivery" | null>(null);
-  
-  // Log payment method changes
-  useEffect(() => {
-    console.log("💳 Payment method changed to:", paymentMethod);
-  }, [paymentMethod]);
-
-  // Shipping data
-  const [shippingZones, setShippingZones] = useState<any[]>([]);
-  const [userProfile, setUserProfile] = useState<any>(null);
   const [shippingType, setShippingType] = useState<"saved" | "new" | null>(null);
+  const [selectedZone, setSelectedZone] = useState("");
   const [shippingCost, setShippingCost] = useState(0);
   const [newAddress, setNewAddress] = useState("");
   const [newPhone, setNewPhone] = useState("");
+  const [shippingZones, setShippingZones] = useState<any[]>([]);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [discounts, setDiscounts] = useState<Discount[]>([]);
-  const [selectedZone, setSelectedZone] = useState("");
-
   const [formData, setFormData] = useState({
     cardNumber: "",
     cardHolder: "",
@@ -55,41 +39,42 @@ export default function CheckoutPage() {
     zipCode: "",
   });
 
-  // Load discounts and shipping zones on component mount
   useEffect(() => {
-    const loadDiscountsAndZones = async () => {
+    console.log("🛒 Checkout - Auth state:", { isLoggedIn, authLoading });
+    if (!authLoading && !isLoggedIn) {
+      setLocation("/login");
+    }
+  }, [isLoggedIn, authLoading, setLocation]);
+
+  useEffect(() => {
+    const loadData = async () => {
       try {
-        // Load discounts
         const discountData = await getAllDiscounts();
         setDiscounts(discountData || []);
-
-        // Load shipping zones
         const zones = await getShippingZones();
         setShippingZones(zones || []);
       } catch (error) {
         console.error("Error loading data:", error);
       }
     };
-
-    loadDiscountsAndZones();
+    loadData();
   }, []);
 
-  // Load user profile when payment method is selected
   useEffect(() => {
     const loadUserProfile = async () => {
-      if (user?.id) {
+      if (user?.id && paymentMethod) {
         try {
           const db = getFirestore();
           const userRef = doc(db, "users", user.id);
           const userSnap = await getDoc(userRef);
           if (userSnap.exists()) {
-            setUserProfile(userSnap.data());
+            const data = userSnap.data();
+            setUserProfile(data);
             setFormData(prev => ({
               ...prev,
-              email: userSnap.data().email || "",
-              address: userSnap.data().address || "",
-              city: userSnap.data().zone || "",
-              zipCode: userSnap.data().phone || "",
+              email: data.email || "",
+              address: data.address || "",
+              zipCode: data.phone || "",
             }));
           }
         } catch (error) {
@@ -97,92 +82,8 @@ export default function CheckoutPage() {
         }
       }
     };
-
-    if (paymentMethod) {
-      loadUserProfile();
-    }
+    loadUserProfile();
   }, [paymentMethod, user?.id]);
-
-  const handleCardNumberChange = (e: string) => {
-    const value = e.replace(/\s/g, "").slice(0, 16);
-    const formatted = value.replace(/(\d{4})/g, "$1 ").trim();
-    setFormData(prev => ({ ...prev, cardNumber: formatted }));
-  };
-
-  const handleExpiryChange = (e: string) => {
-    const value = e.replace(/\D/g, "").slice(0, 4);
-    if (value.length >= 2) {
-      setFormData(prev => ({ ...prev, expiryDate: `${value.slice(0, 2)}/${value.slice(2)}` }));
-    } else {
-      setFormData(prev => ({ ...prev, expiryDate: value }));
-    }
-  };
-
-  const handleCVVChange = (e: string) => {
-    const value = e.replace(/\D/g, "").slice(0, 3);
-    setFormData(prev => ({ ...prev, cvv: value }));
-  };
-
-  const validateDeliveryForm = () => {
-    console.log("🔍 Validating delivery form - shippingType:", shippingType, "selectedZone:", selectedZone);
-    if (!shippingType || !selectedZone) {
-      console.log("❌ Missing shippingType or selectedZone");
-      toast.error(t("selectShippingAddressAndZone", language));
-      return false;
-    }
-    console.log("✅ Delivery form valid");
-    return true;
-  };
-
-  const validateCardForm = () => {
-    console.log("🔍 Validating card form - cardNumber:", formData.cardNumber?.length, "expiry:", formData.expiryDate, "cvv:", formData.cvv?.length, "holder:", formData.cardHolder);
-    
-    if (!formData.cardNumber || formData.cardNumber.replace(/\s/g, "").length !== 16) {
-      console.log("❌ Invalid card number");
-      toast.error(t("invalidCardNumber", language));
-      return false;
-    }
-    if (!formData.expiryDate || formData.expiryDate.length !== 5) {
-      console.log("❌ Invalid expiry date");
-      toast.error(t("invalidExpiryDate", language));
-      return false;
-    }
-    if (!formData.cvv || formData.cvv.length !== 3) {
-      console.log("❌ Invalid CVV");
-      toast.error(t("invalidCVV", language));
-      return false;
-    }
-    if (!formData.cardHolder.trim()) {
-      console.log("❌ Empty cardholder name");
-      toast.error(t("enterCardholderName", language));
-      return false;
-    }
-    console.log("✅ Card form valid");
-    return true;
-  };
-
-  const handlePaymentSubmit = async (e: React.FormEvent) => {
-    console.log("🔷 Payment submit handler called");
-    e.preventDefault();
-    
-    if (paymentMethod === "card") {
-      console.log("💳 Validating card form");
-      if (!validateCardForm()) {
-        console.log("❌ Card form validation failed");
-        return;
-      }
-      console.log("✅ Card form validation passed");
-      await handleCardPayment();
-    } else if (paymentMethod === "delivery") {
-      console.log("🚚 Validating delivery form");
-      if (!validateDeliveryForm()) {
-        console.log("❌ Delivery form validation failed");
-        return;
-      }
-      console.log("✅ Delivery form validation passed");
-      await handleDeliveryPayment();
-    }
-  };
 
   const calculateTotalWithDiscounts = () => {
     return items.reduce((sum, item) => {
@@ -192,11 +93,17 @@ export default function CheckoutPage() {
     }, 0);
   };
 
-  const handleCardPayment = async () => {
-    console.log("💳 Card payment starting - Items:", items, "Cart total:", total);
+  const handlePlaceOrder = async () => {
+    console.log("🟢🟢🟢 PLACE ORDER CLICKED 🟢🟢🟢");
+    console.log("State:", { paymentMethod, shippingType, selectedZone });
+    
+    if (!paymentMethod) {
+      toast.error("Please select payment method");
+      return;
+    }
+
     if (!shippingType || !selectedZone) {
       toast.error(t("selectShippingAddressAndZone", language));
-      setIsProcessing(false);
       return;
     }
 
@@ -204,96 +111,6 @@ export default function CheckoutPage() {
     try {
       const totalWithDiscounts = calculateTotalWithDiscounts();
       const finalTotal = totalWithDiscounts + shippingCost;
-      console.log("💰 Payment calculated - Total with discounts:", totalWithDiscounts, "Shipping:", shippingCost, "Final:", finalTotal);
-
-      // Simulate payment success - in production, use Stripe
-      const paymentId = `card_${Date.now()}`;
-      
-      let shippingAddress = formData.address;
-      let shippingPhone = formData.zipCode;
-      if (shippingType === "new") {
-        shippingAddress = newAddress;
-        shippingPhone = newPhone;
-      }
-
-      const existingOrders = localStorage.getItem("orders");
-      const savedOrders = existingOrders ? JSON.parse(existingOrders) : [];
-      const nextOrderNumber = Math.max(0, ...savedOrders.map((o: any) => o.orderNumber || 0)) + 1;
-
-      const orderData = {
-        id: `order-${Date.now()}`,
-        orderNumber: nextOrderNumber,
-        items,
-        subtotal: total,
-        discountedTotal: totalWithDiscounts,
-        shippingCost,
-        total: finalTotal,
-        status: "confirmed",
-        paymentMethod: "card",
-        paymentId: paymentId,
-        shippingType,
-        shippingAddress,
-        shippingPhone,
-        shippingZone: selectedZone,
-        createdAt: new Date().toISOString(),
-        userId: user?.id,
-      };
-
-      // Save to localStorage
-      try {
-        const existingOrders = localStorage.getItem("orders");
-        const savedOrders = existingOrders ? JSON.parse(existingOrders) : [];
-        savedOrders.unshift(orderData);
-        localStorage.setItem("orders", JSON.stringify(savedOrders));
-      } catch (e) {
-        console.warn("Failed to save to localStorage:", e);
-      }
-
-      // Save to Firebase and send notification
-      try {
-        console.log("📤 Saving order to Firebase:", orderData);
-        const savedOrderId = await saveOrder(orderData);
-        console.log("✅ Order saved with ID:", savedOrderId);
-        
-        try {
-          console.log("🔔 Sending notification to admins");
-          await sendNotificationToAdmins(
-            "New Order",
-            `Order #${orderData.orderNumber} placed for ${orderData.total.toFixed(2)}`
-          );
-          console.log("✅ Notification sent");
-        } catch (notifError) {
-          console.warn("⚠️ Notification failed but order was saved:", notifError);
-        }
-      } catch (error) {
-        console.error("❌ Failed to save to Firebase:", error);
-        toast.error("Failed to save order to database");
-      }
-
-      toast.success("✅ Order placed! Redirecting...");
-      clearCart();
-      setTimeout(() => setLocation("/orders"), 1500);
-    } catch (error) {
-      console.error("Payment error:", error);
-      toast.error(t("failedToCheckout", language));
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleDeliveryPayment = async () => {
-    console.log("🚚 Delivery payment starting - Items:", items, "Cart total:", total);
-    if (!shippingType || !selectedZone) {
-      toast.error(t("selectShippingAddressAndZone", language));
-      setIsProcessing(false);
-      return;
-    }
-
-    setIsProcessing(true);
-    try {
-      const totalWithDiscounts = calculateTotalWithDiscounts();
-      const finalTotal = totalWithDiscounts + shippingCost;
-      console.log("💰 Delivery payment calculated - Total with discounts:", totalWithDiscounts, "Shipping:", shippingCost, "Final:", finalTotal);
 
       let shippingAddress = formData.address;
       let shippingPhone = formData.zipCode;
@@ -302,20 +119,18 @@ export default function CheckoutPage() {
         shippingPhone = newPhone;
       }
 
-      const existingOrders = localStorage.getItem("orders");
-      const savedOrders = existingOrders ? JSON.parse(existingOrders) : [];
-      const nextOrderNumber = Math.max(0, ...savedOrders.map((o: any) => o.orderNumber || 0)) + 1;
+      const orderNumber = Math.floor(Math.random() * 100000) + 1;
 
       const orderData = {
         id: `order-${Date.now()}`,
-        orderNumber: nextOrderNumber,
+        orderNumber,
         items,
         subtotal: total,
         discountedTotal: totalWithDiscounts,
         shippingCost,
         total: finalTotal,
         status: "pending",
-        paymentMethod: "delivery",
+        paymentMethod,
         shippingType,
         shippingAddress,
         shippingPhone,
@@ -324,42 +139,31 @@ export default function CheckoutPage() {
         userId: user?.id,
       };
 
-      // Save to localStorage
-      try {
-        const allOrders = localStorage.getItem("orders");
-        const allSavedOrders = allOrders ? JSON.parse(allOrders) : [];
-        allSavedOrders.unshift(orderData);
-        localStorage.setItem("orders", JSON.stringify(allSavedOrders));
-      } catch (e) {
-        console.warn("Failed to save to localStorage:", e);
-      }
+      console.log("📤 SAVING ORDER:", orderData);
+      const savedOrderId = await saveOrder(orderData);
+      console.log("✅ ORDER SAVED WITH ID:", savedOrderId);
 
-      // Save to Firebase and send notification
-      try {
-        console.log("📤 Saving delivery order to Firebase:", orderData);
-        const savedOrderId = await saveOrder(orderData);
-        console.log("✅ Delivery order saved with ID:", savedOrderId);
-        
+      if (savedOrderId) {
         try {
-          console.log("🔔 Sending delivery notification to admins");
+          console.log("🔔 SENDING NOTIFICATION");
           await sendNotificationToAdmins(
             "New Order",
-            `Order #${orderData.orderNumber} placed for ${orderData.total.toFixed(2)}`
+            `Order #${orderNumber} placed for L.E ${finalTotal.toFixed(2)}`
           );
-          console.log("✅ Delivery notification sent");
-        } catch (notifError) {
-          console.warn("⚠️ Delivery notification failed but order was saved:", notifError);
+          console.log("✅ Notification sent");
+        } catch (e) {
+          console.warn("Notification failed:", e);
         }
-      } catch (error) {
-        console.error("❌ Failed to save delivery order to Firebase:", error);
-        toast.error("Failed to save order to database");
-      }
 
-      toast.success("✅ Order placed! Redirecting...");
-      clearCart();
-      setTimeout(() => setLocation("/orders"), 1500);
+        toast.success("Order placed successfully!");
+        clearCart();
+        setTimeout(() => setLocation("/orders"), 1000);
+      } else {
+        console.error("❌ saveOrder returned null");
+        toast.error("Failed to save order");
+      }
     } catch (error) {
-      console.error("Order error:", error);
+      console.error("❌ ERROR IN PLACE ORDER:", error);
       toast.error("Failed to place order");
     } finally {
       setIsProcessing(false);
@@ -378,9 +182,6 @@ export default function CheckoutPage() {
             {t("backToCart", language)}
           </button>
         </div>
-        <div className="absolute bottom-0 left-0 right-0">
-          <BottomNav />
-        </div>
       </MobileWrapper>
     );
   }
@@ -388,7 +189,6 @@ export default function CheckoutPage() {
   return (
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
         <div className="px-5 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
           <button
             onClick={() => setLocation("/cart")}
@@ -400,67 +200,20 @@ export default function CheckoutPage() {
           <h1 className="text-xl font-bold">{t("payment", language)}</h1>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
-          <div className="w-full px-5 py-4">
+        <div className="flex-1 overflow-y-auto no-scrollbar pb-40 px-5 py-4">
           {/* Order Summary */}
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6">
-            <h3 className="font-semibold text-sm mb-3">{t("orderSummary", language)} (L.E)</h3>
+            <h3 className="font-semibold text-sm mb-3">{t("orderSummary", language)}</h3>
             <div className="space-y-2 text-sm">
               {items.map((item, idx) => (
-                <div key={`${item.id}-${idx}`} className="flex flex-col gap-1">
-                  <div className="flex justify-between">
-                    <span>{item.quantity}x {item.title}</span>
-                    <span>{(item.price * item.quantity).toFixed(2)}</span>
-                  </div>
-                  {(item.selectedColor || item.selectedSize || item.selectedUnit) && (
-                    <div className="flex flex-wrap gap-1 ml-2">
-                      {item.selectedUnit && <span className="inline-block px-1.5 py-0.5 bg-blue-200 text-blue-800 rounded text-[9px]">{item.selectedUnit}</span>}
-                      {item.selectedSize && <span className="inline-block px-1.5 py-0.5 bg-green-200 text-green-800 rounded text-[9px]">{item.selectedSize}</span>}
-                      {item.selectedColor && (
-                        <span 
-                          className="inline-block px-1.5 py-0.5 rounded text-[9px] text-white"
-                          style={{
-                            backgroundColor: item.selectedColor.includes('|') 
-                              ? item.selectedColor.split('|')[1] 
-                              : '#999'
-                          }}
-                          title={item.selectedColor.includes('|') ? item.selectedColor.split('|')[0] : item.selectedColor}
-                        >
-                          {item.selectedColor.includes('|') ? item.selectedColor.split('|')[0] : item.selectedColor}
-                        </span>
-                      )}
-                    </div>
-                  )}
+                <div key={`${item.id}-${idx}`} className="flex justify-between">
+                  <span>{item.quantity}x {item.title}</span>
+                  <span>L.E {(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
-              <div className="border-t border-blue-200 pt-2 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>{t("subtotal", language)}</span>
-                  <span>{total.toFixed(2)}</span>
-                </div>
-                {calculateTotalWithDiscounts() < total && (
-                  <div className="flex justify-between text-sm text-green-600 font-semibold">
-                    <span>{t("discount", language)}</span>
-                    <span>-{(total - calculateTotalWithDiscounts()).toFixed(2)}</span>
-                  </div>
-                )}
-                {calculateTotalWithDiscounts() < total && (
-                  <div className="flex justify-between text-sm font-semibold">
-                    <span>{t("afterDiscount", language)}</span>
-                    <span className="text-green-600">{calculateTotalWithDiscounts().toFixed(2)}</span>
-                  </div>
-                )}
-                {shippingCost > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span>{t("shipping", language)}</span>
-                    <span>{shippingCost.toFixed(2)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between font-bold text-base border-t border-blue-200 pt-2">
-                  <span>{t("total", language)}</span>
-                  <span>L.E {(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}</span>
-                </div>
+              <div className="border-t pt-2 flex justify-between font-bold">
+                <span>{t("total", language)}</span>
+                <span>L.E {(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -469,175 +222,100 @@ export default function CheckoutPage() {
           {!paymentMethod ? (
             <div className="space-y-3">
               <h3 className="font-semibold text-sm mb-4">{t("selectPaymentMethod", language)}</h3>
-              
               <button
                 onClick={() => setPaymentMethod("card")}
-                className="w-full p-4 border-2 border-gray-200 rounded-2xl hover:border-primary hover:bg-primary/5 transition-colors text-left"
+                className="w-full p-4 border-2 border-gray-200 rounded-2xl hover:border-primary hover:bg-primary/5 text-left"
                 data-testid="button-payment-card"
               >
                 <div className="flex items-center gap-3">
-                  <CreditCard className="w-6 h-6 text-primary" />
+                  <CreditCard className="w-6 h-6" />
                   <div>
                     <p className="font-semibold">{t("payWithCard", language)}</p>
-                    <p className="text-xs text-muted-foreground">{t("instantPayment", language)}</p>
+                    <p className="text-xs text-gray-600">{t("instantPayment", language)}</p>
                   </div>
                 </div>
               </button>
 
               <button
                 onClick={() => setPaymentMethod("delivery")}
-                className="w-full p-4 border-2 border-gray-200 rounded-2xl hover:border-primary hover:bg-primary/5 transition-colors text-left"
+                className="w-full p-4 border-2 border-gray-200 rounded-2xl hover:border-primary hover:bg-primary/5 text-left"
                 data-testid="button-payment-delivery"
               >
                 <div className="flex items-center gap-3">
-                  <Truck className="w-6 h-6 text-primary" />
+                  <Truck className="w-6 h-6" />
                   <div>
                     <p className="font-semibold">{t("payOnDelivery", language)}</p>
-                    <p className="text-xs text-muted-foreground">{t("payWhenArrives", language)}</p>
+                    <p className="text-xs text-gray-600">{t("payWhenArrives", language)}</p>
                   </div>
                 </div>
               </button>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-6">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod(null)}
-                  className="text-primary text-sm font-semibold"
-                >
-                  {t("changeMethod", language)}
-                </button>
-              </div>
+              <button
+                onClick={() => {
+                  setPaymentMethod(null);
+                  setShippingType(null);
+                  setSelectedZone("");
+                  setShippingCost(0);
+                }}
+                className="text-primary text-sm font-semibold"
+                data-testid="button-change-method"
+              >
+                {t("changeMethod", language)}
+              </button>
 
-              {/* Shipping Options */}
+              {/* Shipping Section */}
               {!shippingType && (
-                <div className="bg-cyan-50 border border-cyan-200 rounded-2xl p-4 mb-4">
+                <div className="bg-cyan-50 border border-cyan-200 rounded-2xl p-4">
                   <h3 className="font-semibold text-sm mb-3">{t("shippingAddress", language)}</h3>
-                  <div className="space-y-2">
-                    {userProfile?.address && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          console.log("📌 Saved address selected - userProfile:", userProfile);
-                          setShippingType("saved");
-                          setFormData(prev => ({ ...prev, address: userProfile.address, city: userProfile.zone, zipCode: userProfile.phone }));
-                          
-                          // Try to find matching zone, or use first available zone as fallback
-                          const matchingZone = shippingZones.find(z => z.name === userProfile.zone);
-                          const zoneToUse = matchingZone?.name || (shippingZones.length > 0 ? shippingZones[0].name : userProfile.zone);
-                          console.log("📍 Zone selected:", zoneToUse, "from zones:", shippingZones);
-                          
-                          setSelectedZone(zoneToUse);
-                          
-                          if (matchingZone) {
-                            setShippingCost(matchingZone.shippingCost);
-                          } else if (shippingZones.length > 0) {
-                            setShippingCost(shippingZones[0].shippingCost);
-                          }
-                        }}
-                        className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100 transition-colors"
-                        data-testid="button-saved-address"
-                      >
-                        <p className="text-sm font-semibold">{t("useSavedAddress", language)}</p>
-                        <p className="text-xs text-gray-600">{userProfile.address} • {userProfile.zone}</p>
-                      </button>
-                    )}
-
+                  {userProfile?.address && (
                     <button
                       type="button"
-                      onClick={() => setShippingType("new")}
-                      className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100 transition-colors"
-                      data-testid="button-new-address"
+                      onClick={() => {
+                        console.log("📌 Saved address selected");
+                        setShippingType("saved");
+                        const matchingZone = shippingZones.find(z => z.name === userProfile.zone);
+                        const zoneToUse = matchingZone?.name || (shippingZones[0]?.name || "");
+                        setSelectedZone(zoneToUse);
+                        if (matchingZone) {
+                          setShippingCost(matchingZone.shippingCost);
+                        } else if (shippingZones[0]) {
+                          setShippingCost(shippingZones[0].shippingCost);
+                        }
+                      }}
+                      className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100 mb-2"
+                      data-testid="button-saved-address"
                     >
-                      <p className="text-sm font-semibold">{t("newAddress", language)}</p>
+                      <p className="text-sm font-semibold">{t("useSavedAddress", language)}</p>
+                      <p className="text-xs text-gray-600">{userProfile.address}</p>
                     </button>
-                  </div>
-                </div>
-              )}
-
-              {/* New Address Form */}
-              {shippingType === "new" && (
-                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-4 space-y-3">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-sm">{t("newAddress", language)}</h3>
-                    <button
-                      type="button"
-                      onClick={() => setShippingType(null)}
-                      className="text-xs text-primary"
-                      data-testid="button-back-address"
-                    >
-                      {t("change", language)}
-                    </button>
-                  </div>
-                  
-                  <input
-                    type="text"
-                    placeholder={t("streetAddress", language)}
-                    value={newAddress}
-                    onChange={(e) => setNewAddress(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
-                    data-testid="input-new-address"
-                  />
-
-                  <input
-                    type="tel"
-                    placeholder={t("phoneNumber", language)}
-                    value={newPhone}
-                    onChange={(e) => setNewPhone(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
-                    data-testid="input-new-phone"
-                  />
-
-                  <select
-                    value={selectedZone}
-                    onChange={(e) => {
-                      setSelectedZone(e.target.value);
-                      const zone = shippingZones.find(z => z.name === e.target.value);
-                      if (zone) setShippingCost(zone.shippingCost);
-                    }}
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
-                    data-testid="select-new-zone"
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setShippingType("new")}
+                    className="w-full p-3 bg-white border border-cyan-300 rounded-xl text-left hover:bg-cyan-100"
+                    data-testid="button-new-address"
                   >
-                    <option value="">{t("selectZone", language)}</option>
-                    {shippingZones.map((zone) => (
-                      <option key={zone.id} value={zone.name}>{zone.name} ({zone.shippingCost})</option>
-                    ))}
-                  </select>
+                    <p className="text-sm font-semibold">{t("newAddress", language)}</p>
+                  </button>
                 </div>
               )}
 
               {/* Saved Address Details */}
               {shippingType === "saved" && (
-                <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-4 space-y-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-sm">{t("deliveryAddress", language)}</h3>
-                    <button
-                      type="button"
-                      onClick={() => setShippingType(null)}
-                      className="text-xs text-primary"
-                      data-testid="button-back-zone"
-                    >
-                      {t("changeAddress", language)}
-                    </button>
-                  </div>
-                  
-                  <div className="bg-white border border-gray-200 rounded-lg p-3 text-sm space-y-2">
+                <div className="bg-green-50 border border-green-200 rounded-2xl p-4">
+                  <h3 className="font-semibold text-sm mb-3">{t("deliveryAddress", language)}</h3>
+                  <div className="bg-white p-3 rounded-lg text-sm space-y-2 mb-3">
                     <div>
                       <p className="text-xs text-gray-500">{t("address", language)}</p>
                       <p className="font-medium">{userProfile?.address}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">{t("phone", language)}</p>
-                      <p className="font-medium">{userProfile?.phone}</p>
-                    </div>
-                    <div>
                       <p className="text-xs text-gray-500">{t("zone", language)}</p>
-                      <p className="font-medium">{selectedZone || "Not selected"}</p>
+                      <p className="font-medium">{selectedZone}</p>
                     </div>
                   </div>
-
-                  {/* Zone selector for saved address - if no zone selected */}
                   {!selectedZone && shippingZones.length > 0 && (
                     <select
                       value={selectedZone}
@@ -646,96 +324,69 @@ export default function CheckoutPage() {
                         const zone = shippingZones.find(z => z.name === e.target.value);
                         if (zone) setShippingCost(zone.shippingCost);
                       }}
-                      className="w-full px-3 py-2 bg-white border border-green-300 rounded-lg text-sm"
+                      className="w-full p-2 border border-green-300 rounded-lg text-sm"
                       data-testid="select-saved-zone"
                     >
                       <option value="">{t("selectZone", language)}</option>
-                      {shippingZones.map((zone) => (
-                        <option key={zone.id} value={zone.name}>{zone.name} ({zone.shippingCost})</option>
+                      {shippingZones.map(zone => (
+                        <option key={zone.id} value={zone.name}>{zone.name} (L.E {zone.shippingCost})</option>
                       ))}
                     </select>
                   )}
                 </div>
               )}
 
+              {/* New Address Form */}
+              {shippingType === "new" && (
+                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 space-y-3">
+                  <input
+                    type="text"
+                    placeholder={t("streetAddress", language)}
+                    value={newAddress}
+                    onChange={(e) => setNewAddress(e.target.value)}
+                    className="w-full p-2 border border-gray-200 rounded-lg text-sm"
+                    data-testid="input-new-address"
+                  />
+                  <input
+                    type="tel"
+                    placeholder={t("phoneNumber", language)}
+                    value={newPhone}
+                    onChange={(e) => setNewPhone(e.target.value)}
+                    className="w-full p-2 border border-gray-200 rounded-lg text-sm"
+                    data-testid="input-new-phone"
+                  />
+                  <select
+                    value={selectedZone}
+                    onChange={(e) => {
+                      setSelectedZone(e.target.value);
+                      const zone = shippingZones.find(z => z.name === e.target.value);
+                      if (zone) setShippingCost(zone.shippingCost);
+                    }}
+                    className="w-full p-2 border border-gray-200 rounded-lg text-sm"
+                    data-testid="select-new-zone"
+                  >
+                    <option value="">{t("selectZone", language)}</option>
+                    {shippingZones.map(zone => (
+                      <option key={zone.id} value={zone.name}>{zone.name} (L.E {zone.shippingCost})</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {/* Shipping Cost Display */}
-              {shippingType && selectedZone && (
-                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 mb-4 text-sm">
-                  <div className="flex justify-between font-semibold">
-                    <span>{t("shippingCost", language)}:</span>
-                    <span>{shippingCost}</span>
+              {shippingType && selectedZone && shippingCost > 0 && (
+                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3">
+                  <div className="flex justify-between font-semibold text-sm">
+                    <span>{t("shippingCost", language)}</span>
+                    <span>L.E {shippingCost}</span>
                   </div>
                 </div>
               )}
 
-              {paymentMethod === "card" && (
-                <>
-                  <div>
-                    <label className="block text-sm font-semibold mb-2">{t("cardNumber", language)}</label>
-                    <input
-                      type="text"
-                      placeholder="4532 1234 5678 9010"
-                      value={formData.cardNumber}
-                      onChange={(e) => handleCardNumberChange(e.target.value)}
-                      className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      data-testid="input-card-number"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold mb-2">{t("cardholderName", language)}</label>
-                    <input
-                      type="text"
-                      placeholder="John Doe"
-                      value={formData.cardHolder}
-                      onChange={(e) => setFormData(prev => ({ ...prev, cardHolder: e.target.value }))}
-                      className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      data-testid="input-cardholder"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold mb-2">{t("expiry", language)}</label>
-                      <input
-                        type="text"
-                        placeholder="MM/YY"
-                        value={formData.expiryDate}
-                        onChange={(e) => handleExpiryChange(e.target.value)}
-                        className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                        data-testid="input-expiry"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold mb-2">{t("cvv", language)}</label>
-                      <input
-                        type="text"
-                        placeholder="123"
-                        value={formData.cvv}
-                        onChange={(e) => handleCVVChange(e.target.value)}
-                        className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                        data-testid="input-cvv"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {paymentMethod === "card" && (
-                <div className="bg-green-50 border border-green-200 rounded-2xl p-3 flex items-start gap-2">
-                  <Lock className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-green-800">{t("securePayment", language)}</p>
-                </div>
-              )}
-
+              {/* Final CTA */}
               <button
-                type="button"
-                onClick={async (e) => {
-                  console.log("🟢🟢🟢 BUTTON CLICKED DIRECTLY 🟢🟢🟢");
-                  console.log("paymentMethod:", paymentMethod);
-                  await handlePaymentSubmit(e as any);
-                }}
-                disabled={isProcessing}
+                onClick={handlePlaceOrder}
+                disabled={isProcessing || !shippingType || !selectedZone}
                 className="w-full bg-black text-white py-4 rounded-2xl font-semibold hover:bg-neutral-800 disabled:opacity-50 flex items-center justify-center gap-2"
                 data-testid="button-pay"
               >
@@ -745,12 +396,11 @@ export default function CheckoutPage() {
                     {t("processingPayment", language)}
                   </>
                 ) : (
-                  `${paymentMethod === "card" ? t("pay", language) : t("placeOrder", language)} L.E ${(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}`
+                  `${t("placeOrder", language)} L.E ${(calculateTotalWithDiscounts() + shippingCost).toFixed(2)}`
                 )}
               </button>
             </div>
           )}
-          </div>
         </div>
       </div>
     </MobileWrapper>
