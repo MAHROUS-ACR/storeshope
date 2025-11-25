@@ -190,16 +190,30 @@ export async function getOrderById(id: string) {
 
 export async function saveOrder(order: any) {
   try {
+    console.log("📝 saveOrder called with order:", order);
     const db = initDb();
+    console.log("✅ Database initialized");
+    
     const ordersRef = collection(db, "orders");
+    console.log("✅ Orders collection reference created");
+    
     const docRef = doc(ordersRef);
-    await setDoc(docRef, {
+    console.log("✅ New document reference created:", docRef.id);
+    
+    const orderData = {
       ...order,
       createdAt: Timestamp.now(),
-    });
+    };
+    console.log("📋 Order data prepared:", orderData);
+    
+    await setDoc(docRef, orderData);
+    console.log("✅ Order saved successfully with ID:", docRef.id);
     return docRef.id;
-  } catch (error) {
-    console.error("Error saving order:", error);
+  } catch (error: any) {
+    console.error("❌ Error saving order:", error);
+    console.error("Error code:", error.code);
+    console.error("Error message:", error.message);
+    console.error("Full error:", JSON.stringify(error, null, 2));
     return null;
   }
 }
