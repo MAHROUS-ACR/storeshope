@@ -242,14 +242,17 @@ export async function updateOrder(id: string, updates: any) {
   try {
     const db = initDb();
     const orderRef = doc(db, "orders", id);
-    console.log("🔄 Firebase updateDoc - Order:", id, "Updates:", updates);
-    await updateDoc(orderRef, updates);
-    console.log("✅ Firebase updateDoc success for order:", id);
+    console.log("🔴 FIREBASE: updateOrder called with id:", id, "updates:", JSON.stringify(updates));
+    
+    // Use setDoc with merge instead of updateDoc
+    await setDoc(orderRef, updates, { merge: true });
+    console.log("🟢 FIREBASE: setDoc success for order:", id);
     return true;
   } catch (error: any) {
-    console.error("❌ Error updating order:", error);
-    console.error("Error code:", error?.code);
-    console.error("Error message:", error?.message);
+    console.error("🔴 FIREBASE ERROR updating order:", id);
+    console.error("Code:", error?.code);
+    console.error("Message:", error?.message);
+    console.error("Full error:", JSON.stringify(error));
     return false;
   }
 }

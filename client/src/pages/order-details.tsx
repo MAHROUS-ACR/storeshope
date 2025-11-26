@@ -140,40 +140,53 @@ export default function OrderDetailsPage() {
   };
 
   const handleStatusUpdate = async (status: string) => {
-    if (!order?.id || !status || status === order.status) { 
-      toast.error("Invalid or same status");
-      return; 
+    console.log("🔵 BUTTON CLICKED - Current order:", order?.id, "Current status:", order?.status, "New status:", status);
+    
+    if (!order?.id) {
+      console.error("❌ No order ID");
+      toast.error("No order");
+      return;
     }
+    if (!status) {
+      console.error("❌ No status selected");
+      toast.error("No status");
+      return;
+    }
+    if (status === order.status) {
+      console.warn("⚠️ Same status selected");
+      toast.error("Select different status");
+      return;
+    }
+    
     setIsProcessing(true);
+    console.log("🔵 Starting update process...");
+    
     try {
-      console.log("🟢 Updating order", order.id, "to status:", status);
+      console.log("🔵 Calling updateOrder with:", { id: order.id, status });
       const success = await updateOrder(order.id, { status });
-      console.log("🟢 Update returned:", success);
+      console.log("🔵 updateOrder returned:", success, "typeof:", typeof success);
       
       if (success) {
-        // Update local state immediately
-        const newOrder = { ...order, status };
-        setOrder(newOrder);
+        console.log("🔵 SUCCESS! Setting new order state with status:", status);
+        setOrder(prevOrder => {
+          const updated = { ...prevOrder, status };
+          console.log("🔵 Old order:", prevOrder?.status, "New order:", updated.status);
+          return updated;
+        });
         setEditingStatus(false);
         setNewStatus("pending");
-        toast.success("Status updated to: " + status);
-        
-        // Send notification
-        if (order.userId) {
-          await sendNotification({ 
-            userIds: [order.userId], 
-            title: "Order Status Updated", 
-            body: `Order #${order.orderNumber} is now ${status}` 
-          });
-        }
+        toast.success("✅ Updated to: " + status);
       } else {
-        toast.error("Update failed");
+        console.error("❌ updateOrder returned false - check Firebase");
+        toast.error("❌ Firebase returned false");
       }
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error("Error updating order");
+    } catch (error: any) {
+      console.error("❌ Exception:", error?.message);
+      console.error("❌ Full error:", error);
+      toast.error("❌ " + error?.message);
     } finally {
       setIsProcessing(false);
+      console.log("🔵 Update process finished");
     }
   };
 
