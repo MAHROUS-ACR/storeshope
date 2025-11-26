@@ -196,16 +196,18 @@ export async function saveOrder(order: any) {
     
     // Verify all required fields
     if (!order.userId) {
-      console.error("❌ ERROR: userId is missing!");
-      throw new Error("User ID is missing");
+      const msg = "❌ ERROR: userId is missing!";
+      console.error(msg);
+      throw new Error(msg);
     }
     
-    console.log("📤 Saving order with addDoc...");
-    console.log("📦 Order data:", {
+    console.log("📤 Saving order to Firestore...");
+    console.log("🔍 Order validation:", {
+      hasUserId: !!order.userId,
       userId: order.userId,
-      total: order.totalPrice,
-      status: order.status,
-      itemCount: order.items?.length
+      hasItems: !!order.items,
+      itemCount: order.items?.length,
+      total: order.total,
     });
     
     // Use addDoc to let Firebase generate a unique ID
@@ -215,13 +217,21 @@ export async function saveOrder(order: any) {
     console.log("✅ Order saved successfully with ID:", generatedId);
     return generatedId;
   } catch (error: any) {
-    console.error("❌ FIRESTORE ERROR:", {
-      code: error?.code,
-      message: error?.message,
-    });
+    console.error("❌❌❌ SAVEORDER FAILED ❌❌❌");
+    console.error("Error code:", error?.code);
+    console.error("Error message:", error?.message);
+    console.error("Full error:", error);
+    
     if (error?.code === "permission-denied") {
-      console.error("🔐 SECURITY RULES BLOCKING WRITE - Check Firestore Rules!");
+      console.error("🔐 FIRESTORE SECURITY RULES BLOCKING WRITE!");
+      console.error("📝 Go to Firebase Console → Firestore → Rules");
+      console.error("Make sure your rules allow writes to 'orders' collection");
     }
+    
+    if (error?.code === "unauthenticated") {
+      console.error("🔐 USER NOT AUTHENTICATED - Please login first");
+    }
+    
     return null;
   }
 }
