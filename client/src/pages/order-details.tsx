@@ -7,7 +7,7 @@ import { useUser } from "@/lib/userContext";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
 import { toast } from "sonner";
-import { getOrders, updateOrder } from "@/lib/firebaseOps";
+import { getOrders, updateOrder, saveOrder } from "@/lib/firebaseOps";
 import { sendNotification } from "@/lib/notificationAPI";
 
 interface CartItem {
@@ -144,15 +144,33 @@ export default function OrderDetailsPage() {
     
     setIsProcessing(true);
     try {
-      const success = await updateOrder(order.id, { status });
-      if (success) {
-        setOrder(prev => prev ? { ...prev, status } : null);
+      // Create a new document with updated status instead of updating existing one
+      const newOrderData = {
+        ...order,
+        status,
+        updatedAt: new Date().toISOString()
+      };
+      
+      // Remove id from the data since saveOrder creates a new document
+      const { id, ...orderDataWithoutId } = newOrderData;
+      
+      // Save as new document
+      const newOrderId = await saveOrder(orderDataWithoutId);
+      
+      if (newOrderId) {
+        console.log("✅ New order document created with ID:", newOrderId);
+        toast.success(`Status updated! New document: ${newOrderId}`);
+        
+        // Update current view
+        setOrder(prev => prev ? { ...prev, status, id: newOrderId } : null);
         setEditingStatus(false);
         setNewStatus("pending");
-        toast.success("Status updated!");
       } else {
-        toast.error("Failed to update");
+        toast.error("Failed to create new document");
       }
+    } catch (error: any) {
+      console.error("❌ Error updating status:", error);
+      toast.error("Error: " + error?.message);
     } finally {
       setIsProcessing(false);
     }
