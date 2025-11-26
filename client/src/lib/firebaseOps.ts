@@ -220,14 +220,25 @@ export async function updateOrder(id: string, updates: any) {
   try {
     const db = initDb();
     const orderRef = doc(db, "orders", id);
-    console.log("🟠 updateOrder - ID:", id, "updates:", updates);
+    console.log("🟠 updateOrder START - ID:", id);
     
-    // Use updateDoc ONLY - this updates existing document without creating new one
+    // First check if document exists
+    const docSnapshot = await getDoc(orderRef);
+    if (!docSnapshot.exists()) {
+      console.error("🔴 Document NOT found:", id);
+      // Try to find it by querying
+      const allOrders = await getOrders();
+      console.log("📋 All orders in Firestore:", allOrders.map((o: any) => o.id));
+      return false;
+    }
+    
+    console.log("✅ Document exists, updating...");
+    // Now update it
     await updateDoc(orderRef, updates);
     console.log("🟢 updateOrder SUCCESS:", id);
     return true;
   } catch (error: any) {
-    console.error("🔴 updateOrder ERROR:", error?.code, error?.message);
+    console.error("🔴 updateOrder ERROR - Code:", error?.code, "Message:", error?.message);
     return false;
   }
 }
