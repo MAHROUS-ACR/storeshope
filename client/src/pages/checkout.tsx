@@ -36,7 +36,7 @@ export default function CheckoutPage() {
       const zones = await getShippingZones();
       console.log("📦 Shipping zones loaded:", zones);
       zones?.forEach((zone: any) => {
-        console.log("Zone:", { name: zone.name, cost: zone.cost, price: zone.price, id: zone.id, all: zone });
+        console.log("Zone:", { name: zone.name, shippingCost: zone.shippingCost, id: zone.id });
       });
       setShippingZones(zones || []);
     };
@@ -196,8 +196,7 @@ export default function CheckoutPage() {
               {shippingZones && shippingZones.length > 0 ? (
                 <div className="space-y-2">
                   {shippingZones.map((zone) => {
-                    const zoneCost = parseFloat(zone.cost || zone.price || 0);
-                    console.log("🚚 Rendering zone:", zone.name, "Cost:", zoneCost, "Type:", typeof zoneCost, "Raw:", zone.cost);
+                    const zoneCost = parseFloat(zone.shippingCost || 0);
                     return (
                       <button
                         key={zone.id || zone.name}
