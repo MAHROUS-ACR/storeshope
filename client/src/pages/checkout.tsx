@@ -127,7 +127,7 @@ export default function CheckoutPage() {
           <h1 className="text-2xl font-bold">Payment</h1>
         </div>
 
-        <div className="flex-1 overflow-y-auto pb-40 px-5 py-4">
+        <div className="flex-1 overflow-y-auto px-5 py-4" style={{ paddingBottom: "140px" }}>
           {/* Order Summary */}
           <div className="bg-blue-50 rounded-2xl p-4 mb-6">
             <h3 className="font-bold mb-3">Order Summary</h3>
@@ -181,18 +181,23 @@ export default function CheckoutPage() {
           {shippingType && (
             <div className="mb-6">
               <h3 className="font-bold mb-3">Shipping Zone</h3>
-              {shippingZones.map((zone) => (
-                <button
-                  key={zone.id}
-                  onClick={() => {
-                    setSelectedZone(zone.name);
-                    setShippingCost(zone.cost);
-                  }}
-                  className={`w-full p-3 rounded-xl border-2 mb-2 ${selectedZone === zone.name ? "border-black bg-black text-white" : "border-gray-200"}`}
-                >
-                  {zone.name} - L.E {zone.cost}
-                </button>
-              ))}
+              {shippingZones && shippingZones.length > 0 ? (
+                shippingZones.map((zone) => (
+                  <button
+                    key={zone.id || zone.name}
+                    onClick={() => {
+                      console.log("Zone selected:", zone.name, zone.cost);
+                      setSelectedZone(zone.name);
+                      setShippingCost(zone.cost);
+                    }}
+                    className={`w-full p-3 rounded-xl border-2 mb-2 ${selectedZone === zone.name ? "border-black bg-black text-white" : "border-gray-200"}`}
+                  >
+                    {zone.name} - L.E {zone.cost}
+                  </button>
+                ))
+              ) : (
+                <p className="text-gray-500">Loading zones...</p>
+              )}
             </div>
           )}
 
