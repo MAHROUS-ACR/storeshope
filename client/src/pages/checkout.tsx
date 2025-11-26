@@ -8,246 +8,286 @@ import { toast } from "sonner";
 import { getShippingZones, saveOrder } from "@/lib/firebaseOps";
 import { sendNotificationToAdmins } from "@/lib/notificationAPI";
 
+interface Zone {
+  id: string;
+  name: string;
+  shippingCost: number;
+}
+
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
   const { items, clearCart } = useCart();
   const { user, isLoggedIn, isLoading: authLoading } = useUser();
 
-  const [payment, setPayment] = useState<string>("");
-  const [shipping, setShipping] = useState<string>("");
-  const [zone, setZone] = useState<any>(null);
-  const [zones, setZones] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [placing, setPlacing] = useState(false);
+  // State management
+  const [paymentSelected, setPaymentSelected] = useState("");
+  const [shippingSelected, setShippingSelected] = useState("");
+  const [zoneSelected, setZoneSelected] = useState<Zone | null>(null);
+  const [zonesList, setZonesList] = useState<Zone[]>([]);
+  const [isLoadingZones, setIsLoadingZones] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Auth check
+  // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !isLoggedIn) {
       setLocation("/login");
     }
   }, [isLoggedIn, authLoading, setLocation]);
 
-  // Load zones
+  // Load zones on mount
   useEffect(() => {
-    (async () => {
-      setLoading(true);
+    const loadZones = async () => {
+      setIsLoadingZones(true);
       try {
-        const z = await getShippingZones();
-        setZones(z || []);
-      } catch (e) {
-        console.error("Error loading zones:", e);
+        const response = await getShippingZones();
+        const parsed = (response || []).map((z: any) => ({
+          id: z.id,
+          name: z.name,
+          shippingCost: Number(z.shippingCost) || 0,
+        }));
+        setZonesList(parsed);
+      } catch (err) {
+        console.error("Failed to load zones:", err);
+        toast.error("Failed to load zones");
       } finally {
-        setLoading(false);
+        setIsLoadingZones(false);
       }
-    })();
+    };
+    loadZones();
   }, []);
 
-  const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
-  const shippingCost = zone?.shippingCost ? parseFloat(zone.shippingCost) : 0;
-  const total = subtotal + shippingCost;
+  // Calculate prices
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = zoneSelected?.shippingCost || 0;
+  const grandTotal = subtotal + shipping;
 
-  const handleOrder = async () => {
-    if (!payment || !shipping || !zone) {
-      toast.error("ملء جميع الحقول - Fill all fields");
+  // Validate form
+  const isFormValid = paymentSelected && shippingSelected && zoneSelected;
+
+  // Handle order submission
+  const handleSubmit = async () => {
+    if (!isFormValid) {
+      toast.error("اختر جميع الخيارات - Select all options");
       return;
     }
 
     if (items.length === 0) {
-      toast.error("السلة فارغة - Cart empty");
+      toast.error("السلة فارغة - Cart is empty");
       return;
     }
 
-    setPlacing(true);
+    setIsSubmitting(true);
 
     try {
-      const order = {
-        id: `order-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+      // Create order object
+      const orderObj = {
+        id: `ord_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
         orderNumber: Math.floor(Date.now() / 1000),
         userId: user?.id,
-        items,
+        items: [...items], // Copy array to avoid reference issues
         subtotal,
-        shippingCost,
-        total,
+        shippingCost: shipping,
+        total: grandTotal,
         status: "pending",
-        paymentMethod: payment,
-        shippingType: shipping,
-        shippingZone: zone.name,
+        paymentMethod: paymentSelected,
+        shippingType: shippingSelected,
+        shippingZone: zoneSelected.name,
         createdAt: new Date().toISOString(),
       };
 
-      const orderId = await saveOrder(order);
+      console.log("Submitting order:", orderObj);
 
-      if (orderId) {
-        toast.success("✅ تم الطلب");
-        clearCart();
-        localStorage.removeItem("cart");
-        
-        sendNotificationToAdmins("New Order", `L.E ${total.toFixed(2)}`).catch(() => {});
+      // Save to Firestore
+      const savedId = await saveOrder(orderObj);
 
-        setTimeout(() => setLocation("/cart"), 800);
-      } else {
-        toast.error("فشل الحفظ");
-        setPlacing(false);
+      if (!savedId) {
+        throw new Error("Order save failed - no ID returned");
       }
-    } catch (e) {
-      console.error("Order error:", e);
-      toast.error("خطأ");
-      setPlacing(false);
+
+      // Success
+      toast.success("✅ Order placed successfully!");
+
+      // Clear cart
+      clearCart();
+      localStorage.removeItem("cart");
+
+      // Send notification
+      sendNotificationToAdmins(
+        "New Order",
+        `Order #${orderObj.orderNumber} - L.E ${grandTotal.toFixed(2)}`
+      ).catch(() => console.log("Notification skipped"));
+
+      // Redirect
+      setTimeout(() => {
+        setLocation("/cart");
+      }, 1000);
+    } catch (error) {
+      console.error("Order submission error:", error);
+      toast.error("Failed to place order");
+      setIsSubmitting(false);
     }
   };
 
+  // Empty cart check
   if (items.length === 0) {
     return (
       <MobileWrapper>
-        <div className="flex flex-col items-center justify-center h-screen px-5">
-          <h2 className="text-xl font-bold mb-4">السلة فارغة</h2>
-          <button
-            onClick={() => setLocation("/cart")}
-            className="px-6 py-3 bg-black text-white rounded-xl font-semibold"
-          >
-            العودة
-          </button>
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <h2 className="text-xl font-bold mb-4">السلة فارغة - Empty Cart</h2>
+            <button
+              onClick={() => setLocation("/cart")}
+              className="bg-black text-white px-6 py-3 rounded-lg font-semibold"
+            >
+              العودة - Back
+            </button>
+          </div>
         </div>
       </MobileWrapper>
     );
   }
 
+  // Main render
   return (
     <MobileWrapper>
-      <div className="flex flex-col h-screen">
+      <div className="w-full flex flex-col h-screen bg-white">
         {/* Header */}
-        <div className="px-5 py-4 border-b">
-          <div className="flex items-center gap-3 mb-4">
-            <button
-              onClick={() => setLocation("/cart")}
-              className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <h1 className="text-2xl font-bold">الدفع</h1>
-          </div>
+        <div className="border-b px-5 py-4 flex-shrink-0">
+          <button
+            onClick={() => setLocation("/cart")}
+            className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-3 hover:bg-gray-200"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-2xl font-bold">الدفع - Checkout</h1>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto px-5 py-4" style={{ paddingBottom: "140px" }}>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto px-5 py-4" style={{ paddingBottom: "160px" }}>
           {/* Order Summary */}
-          <div className="bg-blue-50 rounded-2xl p-4 mb-6">
-            <h2 className="font-bold text-lg mb-3">الملخص</h2>
-            {items.map((item, i) => (
-              <div key={i} className="flex justify-between text-sm mb-2">
-                <span>{item.quantity}x {item.title}</span>
-                <span>L.E {(item.price * item.quantity).toFixed(2)}</span>
+          <section className="bg-blue-50 rounded-xl p-4 mb-6">
+            <h2 className="font-bold text-lg mb-3">ملخص الطلب - Order Summary</h2>
+            <div className="space-y-2 mb-3">
+              {items.map((item, idx) => (
+                <div key={idx} className="flex justify-between text-sm">
+                  <span>{item.quantity}x {item.title}</span>
+                  <span>L.E {(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="border-t pt-2 mb-2">
+              <div className="flex justify-between font-semibold">
+                <span>Subtotal:</span>
+                <span>L.E {subtotal.toFixed(2)}</span>
               </div>
-            ))}
-            <div className="border-t pt-2 mt-2 mb-2 flex justify-between font-semibold">
-              <span>المجموع:</span>
-              <span>L.E {subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm mb-2">
-              <span>الشحن:</span>
-              <span>L.E {shippingCost.toFixed(2)}</span>
+              <span>Shipping:</span>
+              <span>L.E {shipping.toFixed(2)}</span>
             </div>
-            <div className="border-t pt-2 flex justify-between text-lg font-bold">
-              <span>الإجمالي:</span>
-              <span>L.E {total.toFixed(2)}</span>
+            <div className="border-t pt-2">
+              <div className="flex justify-between font-bold text-lg">
+                <span>Total:</span>
+                <span>L.E {grandTotal.toFixed(2)}</span>
+              </div>
             </div>
-          </div>
+          </section>
 
-          {/* Payment */}
-          <div className="mb-6">
-            <h3 className="font-bold text-lg mb-3">الدفع</h3>
+          {/* Payment Method */}
+          <section className="mb-6">
+            <h3 className="font-bold text-lg mb-3">طريقة الدفع - Payment Method</h3>
             <div className="space-y-2">
               <button
-                onClick={() => setPayment("delivery")}
-                className={`w-full p-4 rounded-xl border-2 font-semibold ${
-                  payment === "delivery"
+                onClick={() => setPaymentSelected("delivery")}
+                className={`w-full p-4 rounded-lg border-2 font-semibold transition ${
+                  paymentSelected === "delivery"
                     ? "border-black bg-black text-white"
-                    : "border-gray-200"
+                    : "border-gray-200 bg-white"
                 }`}
               >
-                💵 عند الاستلام
+                💵 الدفع عند الاستلام - Cash on Delivery
               </button>
               <button
-                onClick={() => setPayment("card")}
-                className={`w-full p-4 rounded-xl border-2 font-semibold ${
-                  payment === "card"
+                onClick={() => setPaymentSelected("card")}
+                className={`w-full p-4 rounded-lg border-2 font-semibold transition ${
+                  paymentSelected === "card"
                     ? "border-black bg-black text-white"
-                    : "border-gray-200"
+                    : "border-gray-200 bg-white"
                 }`}
               >
-                💳 بطاقة
+                💳 بطاقة ائتمان - Card Payment
               </button>
             </div>
-          </div>
+          </section>
 
-          {/* Shipping */}
-          <div className="mb-6">
-            <h3 className="font-bold text-lg mb-3">الشحن</h3>
+          {/* Shipping Type */}
+          <section className="mb-6">
+            <h3 className="font-bold text-lg mb-3">الشحن - Shipping</h3>
             <div className="space-y-2">
               <button
-                onClick={() => setShipping("saved")}
-                className={`w-full p-4 rounded-xl border-2 font-semibold ${
-                  shipping === "saved"
+                onClick={() => setShippingSelected("saved")}
+                className={`w-full p-4 rounded-lg border-2 font-semibold transition ${
+                  shippingSelected === "saved"
                     ? "border-black bg-black text-white"
-                    : "border-gray-200"
+                    : "border-gray-200 bg-white"
                 }`}
               >
-                📍 محفوظ
+                📍 العنوان المحفوظ - Saved Address
               </button>
               <button
-                onClick={() => setShipping("new")}
-                className={`w-full p-4 rounded-xl border-2 font-semibold ${
-                  shipping === "new"
+                onClick={() => setShippingSelected("new")}
+                className={`w-full p-4 rounded-lg border-2 font-semibold transition ${
+                  shippingSelected === "new"
                     ? "border-black bg-black text-white"
-                    : "border-gray-200"
+                    : "border-gray-200 bg-white"
                 }`}
               >
-                ✏️ جديد
+                ✏️ عنوان جديد - New Address
               </button>
             </div>
-          </div>
+          </section>
 
           {/* Zones */}
-          {shipping && (
-            <div className="mb-6 bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-4">
-              <h3 className="font-bold text-lg mb-3">المنطقة</h3>
-              {loading ? (
-                <p className="text-center text-gray-600">جاري التحميل...</p>
-              ) : zones.length > 0 ? (
+          {shippingSelected && (
+            <section className="mb-6 bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
+              <h3 className="font-bold text-lg mb-3">المنطقة - Select Zone</h3>
+              {isLoadingZones ? (
+                <p className="text-center text-gray-600 py-4">⏳ جاري التحميل...</p>
+              ) : zonesList.length === 0 ? (
+                <p className="text-center text-gray-600 py-4">لا توجد مناطق</p>
+              ) : (
                 <div className="space-y-2">
-                  {zones.map((z) => (
+                  {zonesList.map((z) => (
                     <button
                       key={z.id}
-                      onClick={() => setZone(z)}
-                      className={`w-full p-4 rounded-xl border-2 font-semibold ${
-                        zone?.id === z.id
+                      onClick={() => setZoneSelected(z)}
+                      className={`w-full p-4 rounded-lg border-2 font-semibold transition ${
+                        zoneSelected?.id === z.id
                           ? "border-black bg-black text-white"
-                          : "border-gray-300"
+                          : "border-gray-300 bg-white"
                       }`}
                     >
-                      {z.name} - L.E {(z.shippingCost || 0).toFixed(2)}
+                      {z.name} - L.E {z.shippingCost.toFixed(2)}
                     </button>
                   ))}
                 </div>
-              ) : (
-                <p className="text-center text-gray-600">لا توجد مناطق</p>
               )}
-            </div>
+            </section>
           )}
         </div>
 
-        {/* Button */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-5 max-w-[390px] mx-auto">
+        {/* Fixed Button at Bottom */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 max-w-[390px] mx-auto">
           <button
-            onClick={handleOrder}
-            disabled={placing}
-            className={`w-full py-4 rounded-2xl font-bold text-lg ${
-              placing
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-black text-white"
+            onClick={handleSubmit}
+            disabled={isSubmitting || !isFormValid}
+            className={`w-full py-4 rounded-lg font-bold text-lg transition ${
+              isSubmitting || !isFormValid
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-black text-white hover:bg-gray-900 active:scale-95"
             }`}
           >
-            {placing ? "جاري..." : `اطلب الآن - L.E ${total.toFixed(2)}`}
+            {isSubmitting ? "⏳ جاري الحفظ..." : `✅ اطلب الآن - Place Order`}
           </button>
         </div>
       </div>
