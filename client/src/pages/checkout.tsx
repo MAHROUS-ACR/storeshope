@@ -94,14 +94,18 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
-    console.log("🟢🟢🟢 PLACE ORDER CLICKED 🟢🟢🟢");
-    console.log("Current state:", { 
-      itemsCount: items.length, 
-      isProcessing,
-      paymentMethod, 
-      shippingType, 
-      selectedZone 
-    });
+    console.log("🟢🟢🟢🟢🟢 PLACE ORDER BUTTON CLICKED! 🟢🟢🟢🟢🟢");
+    console.log("Timestamp:", new Date().toISOString());
+    console.log("Items in cart:", items.length);
+    console.log("isProcessing:", isProcessing);
+    console.log("paymentMethod:", paymentMethod);
+    console.log("shippingType:", shippingType);
+    console.log("selectedZone:", selectedZone);
+    
+    if (isProcessing) {
+      console.warn("⚠️ Already processing an order!");
+      return;
+    }
     
     if (!paymentMethod) {
       toast.error("Please select payment method");
@@ -203,7 +207,12 @@ export default function CheckoutPage() {
         // Reset everything immediately
         setIsProcessing(false);
         clearCart();
-        localStorage.clear(); // Clear everything to be safe
+        // Only clear the cart from localStorage, not everything
+        try {
+          localStorage.removeItem("cart");
+        } catch (e) {
+          console.warn("Error clearing cart from localStorage:", e);
+        }
         
         setPaymentMethod(null);
         setShippingType(null);
