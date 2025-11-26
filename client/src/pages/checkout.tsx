@@ -177,27 +177,38 @@ export default function CheckoutPage() {
             </button>
           </div>
 
-          {/* Shipping Zone */}
+          {/* Shipping Zone - MUST SELECT ZONE */}
           {shippingType && (
-            <div className="mb-6">
-              <h3 className="font-bold mb-3">Shipping Zone</h3>
+            <div className="mb-6 bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-4">
+              <h3 className="font-bold mb-3 text-lg">📍 اختر المنطقة - Select Your Zone</h3>
               {shippingZones && shippingZones.length > 0 ? (
-                shippingZones.map((zone) => (
-                  <button
-                    key={zone.id || zone.name}
-                    onClick={() => {
-                      console.log("Zone selected:", zone.name, zone.cost);
-                      setSelectedZone(zone.name);
-                      setShippingCost(zone.cost);
-                    }}
-                    className={`w-full p-3 rounded-xl border-2 mb-2 ${selectedZone === zone.name ? "border-black bg-black text-white" : "border-gray-200"}`}
-                  >
-                    {zone.name} - L.E {zone.cost}
-                  </button>
-                ))
+                <div className="space-y-2">
+                  {shippingZones.map((zone) => (
+                    <button
+                      key={zone.id || zone.name}
+                      onClick={() => {
+                        console.log("✅ Zone selected:", zone.name, zone.cost);
+                        setSelectedZone(zone.name);
+                        setShippingCost(zone.cost);
+                      }}
+                      className={`w-full p-4 rounded-xl border-2 font-semibold ${selectedZone === zone.name ? "border-black bg-black text-white" : "border-gray-200 bg-white"}`}
+                    >
+                      {zone.name} - L.E {zone.cost}
+                    </button>
+                  ))}
+                </div>
               ) : (
-                <p className="text-gray-500">Loading zones...</p>
+                <div className="p-4 bg-white rounded-xl border-2 border-gray-200">
+                  <p className="text-gray-600">⏳ جاري تحميل المناطق...</p>
+                </div>
               )}
+            </div>
+          )}
+          
+          {/* Instructions if not filled */}
+          {!selectedZone && shippingType && (
+            <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-3 mb-20">
+              <p className="text-red-700 font-bold">⚠️ اختر منطقة الشحن من فوق!</p>
             </div>
           )}
 
