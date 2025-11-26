@@ -34,6 +34,10 @@ export default function CheckoutPage() {
   useEffect(() => {
     const load = async () => {
       const zones = await getShippingZones();
+      console.log("📦 Shipping zones loaded:", zones);
+      zones?.forEach((zone: any) => {
+        console.log("Zone:", { name: zone.name, cost: zone.cost, price: zone.price, id: zone.id, all: zone });
+      });
       setShippingZones(zones || []);
     };
     load();
@@ -192,7 +196,8 @@ export default function CheckoutPage() {
               {shippingZones && shippingZones.length > 0 ? (
                 <div className="space-y-2">
                   {shippingZones.map((zone) => {
-                    const zoneCost = zone.cost || 0;
+                    const zoneCost = zone.cost !== undefined ? zone.cost : (zone.price !== undefined ? zone.price : 0);
+                    console.log("🚚 Rendering zone:", zone.name, "Cost field:", zoneCost);
                     return (
                       <button
                         key={zone.id || zone.name}
