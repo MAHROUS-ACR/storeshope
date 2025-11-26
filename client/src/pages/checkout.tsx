@@ -102,16 +102,13 @@ export default function CheckoutPage() {
         .filter(k => k.startsWith("cart"))
         .forEach(k => localStorage.removeItem(k));
 
-      // RESET form لكن بدون تعطيل الفورم الجديد مباشرة
-      setPaymentSelected("");
-      setShippingSelected("");
-      setZoneSelected(null);
-
       // إرسال notification
       sendNotificationToAdmins("New Order", `L.E ${grandTotal.toFixed(2)}`).catch(() => {});
 
       setIsSubmitting(false);
-      setLocation("/cart");
+      
+      // Refresh page to reset all values
+      window.location.reload();
     } catch (error) {
       console.error("❌ Order error:", error);
       toast.error("خطأ في الطلب");
