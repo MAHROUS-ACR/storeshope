@@ -75,7 +75,8 @@ export default function OrderDetailsPage() {
     if (!authLoading && !isLoggedIn) {
       setLocation("/login");
     }
-  }, [isLoggedIn, authLoading, setLocation]);
+    console.log("📊 ORDER PAGE - User:", user?.email, "Role:", user?.role, "Is Admin:", user?.role === 'admin');
+  }, [isLoggedIn, authLoading, setLocation, user]);
 
   useEffect(() => {
     if (!orderId) return;
@@ -258,7 +259,7 @@ export default function OrderDetailsPage() {
                       <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${getStatusColor(order.status)}`}>
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </span>
-                      {user?.role === 'admin' && (
+                      {user?.role === 'admin' ? (
                         <button
                           onClick={() => {
                             console.log("✏️ Edit button clicked, opening dropdown");
@@ -267,9 +268,12 @@ export default function OrderDetailsPage() {
                           }}
                           className="p-1 text-primary hover:bg-primary/10 rounded transition"
                           data-testid="button-edit-status"
+                          type="button"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
+                      ) : (
+                        <div className="text-xs text-gray-500">Admin only</div>
                       )}
                     </div>
                   )}
