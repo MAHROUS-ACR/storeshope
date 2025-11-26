@@ -220,17 +220,14 @@ export async function updateOrder(id: string, updates: any) {
   try {
     const db = initDb();
     const orderRef = doc(db, "orders", id);
-    console.log("🟠 updateOrder - Updating document:", id, "with:", updates);
+    console.log("🟠 updateOrder - ID:", id, "updates:", updates);
     
-    // Use updateDoc to update only specific fields without creating new document
-    await updateDoc(orderRef, updates);
-    console.log("🟢 updateOrder SUCCESS - Document updated:", id);
+    // Use setDoc with merge to update fields
+    await setDoc(orderRef, updates, { merge: true });
+    console.log("🟢 updateOrder SUCCESS:", id);
     return true;
   } catch (error: any) {
-    console.error("🔴 updateOrder FAILED - Code:", error?.code, "Message:", error?.message);
-    if (error?.code === "not-found") {
-      console.error("Document does not exist with ID:", id);
-    }
+    console.error("🔴 updateOrder ERROR:", error?.code, error?.message);
     return false;
   }
 }
