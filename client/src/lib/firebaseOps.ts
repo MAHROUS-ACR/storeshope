@@ -206,11 +206,15 @@ export async function getOrderById(id: string) {
 }
 
 export async function saveOrder(order: any) {
+  console.log("🔵 [saveOrder] START - received order:", order.id);
   try {
     // Initialize DB first
+    console.log("🔵 [saveOrder] Initializing DB...");
     const db = initDb();
+    console.log("🔵 [saveOrder] DB initialized:", !!db);
 
     // Validate required fields
+    console.log("🔵 [saveOrder] Validating fields...");
     if (!order.userId) {
       throw new Error("User ID is required");
     }
@@ -221,7 +225,13 @@ export async function saveOrder(order: any) {
       throw new Error("Order must have items");
     }
 
-    console.log("📝 [saveOrder] Saving with ID:", order.id);
+    console.log("✅ [saveOrder] Validation passed");
+    console.log("📝 [saveOrder] Saving order:", {
+      id: order.id,
+      userId: order.userId,
+      itemsCount: order.items.length,
+      total: order.total,
+    });
 
     // Prepare order data
     const orderData = {
@@ -230,22 +240,38 @@ export async function saveOrder(order: any) {
     };
 
     const orderRef = doc(db, "orders", order.id);
+    console.log("📝 [saveOrder] Reference created for collection: orders, doc:", order.id);
 
     // Write to Firestore
+    console.log("📤 [saveOrder] About to write to Firestore...");
     await setDoc(orderRef, orderData, { merge: false });
-    console.log("✅ [saveOrder] Write successful");
+    console.log("✅ [saveOrder] Firestore write completed");
 
     // Verify save
+    console.log("🔍 [saveOrder] Verifying save...");
     const saved = await getDoc(orderRef);
+    console.log("🔍 [saveOrder] Read back:", saved.exists());
+    
     if (saved.exists()) {
-      console.log("✅ [saveOrder] Verified - items:", saved.data()?.items?.length || 0);
+      const savedData = saved.data();
+      console.log("✅ [saveOrder] SUCCESS - Order verified in Firestore");
+      console.log("✅ [saveOrder] Saved data summary:", {
+        id: savedData.id,
+        itemsCount: savedData.items?.length,
+        total: savedData.total,
+      });
       return order.id;
     }
 
-    console.error("❌ [saveOrder] Verification failed");
+    console.error("❌ [saveOrder] Verification failed - document not found after write");
     return null;
   } catch (error: any) {
-    console.error("❌ [saveOrder] ERROR:", error?.message || error);
+    console.error("❌ [saveOrder] EXCEPTION:", {
+      message: error?.message,
+      code: error?.code,
+      name: error?.name,
+    });
+    console.error("❌ [saveOrder] Full error:", error);
     return null;
   }
 }
