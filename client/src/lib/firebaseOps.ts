@@ -36,8 +36,13 @@ function getFirebaseConfig() {
 let db: any = null;
 let currentFirebaseConfig: any = null;
 let appInitialized = false;
+let configLoadAttempted = false;
 
 async function loadFirebaseConfigFromFirestore() {
+  // Only attempt once per session
+  if (configLoadAttempted) return;
+  configLoadAttempted = true;
+
   try {
     // Ensure DB is initialized first
     const database = initDb();
@@ -91,12 +96,6 @@ function initDb() {
     db = getFirestore();
   }
   return db;
-}
-
-// Ensure config is loaded once at startup only
-async function ensureConfigLoaded() {
-  // Always try to load config - but it has its own guard
-  await loadFirebaseConfigFromFirestore();
 }
 
 // ============= PRODUCTS =============
@@ -191,15 +190,12 @@ export async function getOrderById(id: string) {
 
 export async function saveOrder(order: any) {
   try {
-    // Validate required fields FIRST
+    // Validate required fields
     if (!order.userId || !order.id || !order.items || order.items.length === 0) {
       throw new Error("Missing required fields");
     }
 
-    // Ensure Firebase config is loaded
-    await ensureConfigLoaded();
-    
-    // Get fresh DB connection
+    // Get DB instance - no need to reload config on every save
     const dbInstance = initDb();
 
     // Write order to Firestore
