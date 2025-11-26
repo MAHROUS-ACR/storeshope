@@ -192,7 +192,6 @@ export async function getOrderById(id: string) {
 export async function saveOrder(order: any) {
   try {
     const db = initDb();
-    const ordersRef = collection(db, "orders");
     
     // Verify all required fields
     if (!order.userId) {
@@ -200,39 +199,36 @@ export async function saveOrder(order: any) {
       throw new Error("User ID is required");
     }
     
-    console.log("📤 Saving order to Firestore...");
-    
-    // Use addDoc - Firebase generates ID automatically
-    const docRef = await addDoc(ordersRef, order);
-    const generatedId = docRef.id;
-    
-    console.log("✅ Order saved with ID:", generatedId);
-    
-    // Verify it exists
-    const saved = await getDoc(docRef);
-    if (saved.exists()) {
-      console.log("✅ Order verified in Firestore");
-      return generatedId;
+    if (!order.id) {
+      console.error("❌ order.id is missing!");
+      throw new Error("Order ID is required");
     }
     
-    throw new Error("Order verification failed");
+    console.log("📤 Saving order with ID:", order.id);
+    
+    // Use setDoc with explicit document ID instead of addDoc
+    const orderRef = doc(db, "orders", order.id);
+    await setDoc(orderRef, {
+      ...order,
+      createdAt: new Date().toISOString()
+    }, { merge: false });
+    
+    console.log("✅ Order saved successfully");
+    
+    // Verify it was saved
+    const saved = await getDoc(orderRef);
+    if (saved.exists()) {
+      console.log("✅ Order verified in Firestore with ID:", order.id);
+      return order.id;
+    }
+    
+    throw new Error("Order verification failed - not found after save");
   } catch (error: any) {
-    console.error("❌ SAVEORDER ERROR:", error?.message);
-    console.error("Code:", error?.code);
+    console.error("❌ SAVEORDER FAILED:", error?.message);
+    console.error("Error code:", error?.code);
     
     if (error?.code === "permission-denied") {
-      console.error("🔐 FIX: Go to Firebase Console → Firestore Database → Rules tab");
-      console.error("Replace rules with this:");
-      console.error(`
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
-      `);
+      console.error("🔐 Firestore Security Rules are blocking writes!");
     }
     
     return null;

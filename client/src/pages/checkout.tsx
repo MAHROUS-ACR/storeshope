@@ -170,9 +170,13 @@ export default function CheckoutPage() {
       }
 
       const now = new Date();
-      const uniqueId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      // Create truly unique ID with timestamp + random
+      const randomPart = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const uniqueId = `${now.getTime()}-${randomPart}`;
+      const orderId = `order-${uniqueId}`;
+      
       const orderData = {
-        id: `order-${uniqueId}`,
+        id: orderId,
         orderNumber,
         items,
         subtotal: total,
@@ -193,8 +197,7 @@ export default function CheckoutPage() {
         userId: user?.id,
       };
 
-      console.log("📤 SAVING ORDER:", orderData);
-      console.log("🔵 Calling saveOrder with:", { id: orderData.id, userId: orderData.userId });
+      console.log("📤 SAVING ORDER:", { id: orderData.id, userId: orderData.userId, items: items.length });
       const savedOrderId = await saveOrder(orderData);
       console.log("🔵 saveOrder returned:", savedOrderId);
 
