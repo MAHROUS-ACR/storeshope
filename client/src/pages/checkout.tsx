@@ -72,6 +72,11 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!user?.id) {
+      toast.error("يجب تسجيل الدخول - You must login");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -79,7 +84,7 @@ export default function CheckoutPage() {
       const orderObj = {
         id: orderId,
         orderNumber: Math.floor(Date.now() / 1000),
-        userId: user?.id,
+        userId: user.id,
         items: [...items],
         subtotal,
         shippingCost: shipping,
@@ -91,9 +96,11 @@ export default function CheckoutPage() {
         createdAt: new Date().toISOString(),
       };
 
+      console.log("📝 Submitting order:", orderObj);
       const savedId = await saveOrder(orderObj);
       if (!savedId) throw new Error("saveOrder returned null");
 
+      console.log("✅ Order saved successfully:", savedId);
       toast.success("✅ تم الطلب");
 
       // تنظيف السلة
@@ -111,9 +118,9 @@ export default function CheckoutPage() {
       setTimeout(() => {
         window.location.href = "/storeshope/checkout";
       }, 2000);
-    } catch (error) {
-      console.error("❌ Order error:", error);
-      toast.error("خطأ في الطلب");
+    } catch (error: any) {
+      console.error("❌ Order error:", error?.message || error);
+      toast.error("خطأ في الطلب - " + (error?.message || "Unknown error"));
       setIsSubmitting(false);
     }
   };
