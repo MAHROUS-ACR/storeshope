@@ -39,6 +39,13 @@ export default function CheckoutPage() {
     zipCode: "",
   });
 
+  // Reset state when entering checkout page
+  useEffect(() => {
+    console.log("🛒 Checkout page loaded - resetting form state");
+    setIsProcessing(false);
+    // DON'T reset payment/shipping here - user may have already selected
+  }, []);
+
   useEffect(() => {
     console.log("🛒 Checkout - Auth state:", { isLoggedIn, authLoading });
     if (!authLoading && !isLoggedIn) {
@@ -202,7 +209,7 @@ export default function CheckoutPage() {
       console.log("🔵 saveOrder returned:", savedOrderId);
 
       if (savedOrderId) {
-        console.log("✅✅✅ ORDER SAVED SUCCESSFULLY - ID:", savedOrderId);
+        console.log("✅ ORDER SAVED - ID:", savedOrderId);
         
         // Send notification in background
         sendNotificationToAdmins(
@@ -210,16 +217,10 @@ export default function CheckoutPage() {
           `Order #${orderNumber} placed for L.E ${finalTotal.toFixed(2)}`
         ).catch(e => console.warn("Notification failed:", e));
 
-        // Reset everything immediately
-        setIsProcessing(false);
-        clearCart();
-        // Only clear the cart from localStorage, not everything
-        try {
-          localStorage.removeItem("cart");
-        } catch (e) {
-          console.warn("Error clearing cart from localStorage:", e);
-        }
+        toast.success("✅ Order placed!");
         
+        // Reset EVERYTHING synchronously
+        setIsProcessing(false);
         setPaymentMethod(null);
         setShippingType(null);
         setSelectedZone("");
@@ -227,23 +228,17 @@ export default function CheckoutPage() {
         setNewAddress("");
         setNewPhone("");
         setFormData({
-          cardNumber: "",
-          cardHolder: "",
-          expiryDate: "",
-          cvv: "",
-          email: "",
-          address: "",
-          city: "",
-          zipCode: "",
+          cardNumber: "", cardHolder: "", expiryDate: "", cvv: "",
+          email: "", address: "", city: "", zipCode: "",
         });
+        clearCart();
+        localStorage.removeItem("cart");
         
-        toast.success("✅ Order #" + orderNumber + " placed successfully!");
-        
-        // Wait a moment then redirect to orders page
+        // Go back to cart (not orders) so user can add more items
         setTimeout(() => {
-          console.log("🔵 Redirecting to orders");
-          setLocation("/orders");
-        }, 1500);
+          console.log("🔵 Redirecting to cart for next order");
+          setLocation("/cart");
+        }, 800);
       } else {
         console.error("❌ Failed to save order");
         setIsProcessing(false);
@@ -581,8 +576,16 @@ export default function CheckoutPage() {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  const now = new Date().toISOString();
-                  console.log(`[${now}] BUTTON CLICKED - Processing: ${isProcessing}`);
+                  const isDisabled = isProcessing || !paymentMethod || !shippingType || !selectedZone;
+                  console.log("🔴 BUTTON CLICK:", { isDisabled, isProcessing, paymentMethod, shippingType, selectedZone, itemsCount: items.length });
+                  
+                  if (isDisabled) {
+                    const reason = isProcessing ? "already processing" : !paymentMethod ? "no payment" : !shippingType ? "no shipping" : "no zone";
+                    console.warn("⛔ BUTTON DISABLED:", reason);
+                    toast.error("Please fill all fields: " + reason);
+                    return;
+                  }
+                  
                   if (!isProcessing) {
                     handlePlaceOrder();
                   } else {
