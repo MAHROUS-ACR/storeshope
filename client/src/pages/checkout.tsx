@@ -192,8 +192,7 @@ export default function CheckoutPage() {
       console.log("🔵 saveOrder returned:", savedOrderId);
 
       if (savedOrderId) {
-        console.log("✅ ORDER SAVED - ID:", savedOrderId);
-        toast.success("✅ Saving order...");
+        console.log("✅✅✅ ORDER SAVED SUCCESSFULLY - ID:", savedOrderId);
         
         // Send notification in background
         sendNotificationToAdmins(
@@ -201,17 +200,11 @@ export default function CheckoutPage() {
           `Order #${orderNumber} placed for L.E ${finalTotal.toFixed(2)}`
         ).catch(e => console.warn("Notification failed:", e));
 
-        // Step 1: Clear processing flag
+        // Reset everything immediately
         setIsProcessing(false);
-        console.log("✅ Processing flag reset");
-        
-        // Step 2: Clear cart from both Context and localStorage
         clearCart();
-        localStorage.removeItem("cart");
-        console.log("✅ Cart cleared");
-        toast.success("✅ Cart cleared");
+        localStorage.clear(); // Clear everything to be safe
         
-        // Step 3: Reset all checkout form state
         setPaymentMethod(null);
         setShippingType(null);
         setSelectedZone("");
@@ -228,19 +221,18 @@ export default function CheckoutPage() {
           city: "",
           zipCode: "",
         });
-        console.log("✅ Form state reset");
-        toast.success("✅ Form ready for next order");
         
-        // Step 4: Navigate to cart page (fresh start)
+        toast.success("✅ Order #" + orderNumber + " placed successfully!");
+        
+        // Wait a moment then redirect to orders page
         setTimeout(() => {
-          console.log("🔵 Redirecting to cart for next order");
-          setLocation("/cart?refresh=" + Date.now());
-        }, 500);
+          console.log("🔵 Redirecting to orders");
+          setLocation("/orders");
+        }, 1500);
       } else {
-        console.error("❌ FIRESTORE WRITE FAILED - Order NOT saved");
-        console.error("🔐 Check Firestore Security Rules");
+        console.error("❌ Failed to save order");
         setIsProcessing(false);
-        toast.error("❌ Failed to save order - check Firestore Rules");
+        toast.error("Failed to save order - try again");
       }
     } catch (error) {
       console.error("❌ ERROR IN PLACE ORDER:", error);
@@ -280,6 +272,18 @@ export default function CheckoutPage() {
         </div>
 
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 px-5 py-4">
+          {/* Debug Info */}
+          {items.length > 0 && (
+            <div className="bg-purple-50 border border-purple-200 rounded-2xl p-3 mb-4 text-xs">
+              <div className="font-bold mb-2">🔍 Debug Info:</div>
+              <div>Items: {items.length}</div>
+              <div>Payment: {paymentMethod || "❌ Not selected"}</div>
+              <div>Shipping: {shippingType || "❌ Not selected"}</div>
+              <div>Zone: {selectedZone || "❌ Not selected"}</div>
+              <div>Button disabled: {isProcessing || !paymentMethod || !shippingType || !selectedZone ? "YES" : "NO"}</div>
+            </div>
+          )}
+          
           {/* Order Summary */}
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6">
             <h3 className="font-semibold text-sm mb-3">{t("orderSummary", language)}</h3>
