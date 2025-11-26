@@ -122,8 +122,8 @@ export default function CheckoutPage() {
       // SECOND: Clear cart
       clearCart();
       
-      // THIRD: Clear localStorage
-      localStorage.clear();
+      // THIRD: Clear only cart from localStorage (NOT everything!)
+      localStorage.removeItem("cart");
       
       // FOURTH: Send notification (async, don't wait)
       sendNotificationToAdmins(
