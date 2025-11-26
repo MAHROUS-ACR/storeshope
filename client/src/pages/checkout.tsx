@@ -137,7 +137,15 @@ export default function CheckoutPage() {
                 <span>L.E {(item.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}
-            <div className="border-t pt-2 font-bold flex justify-between">
+            <div className="border-t pt-2 font-bold flex justify-between text-base">
+              <span>Subtotal:</span>
+              <span>L.E {items.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm mb-2">
+              <span>Shipping:</span>
+              <span>L.E {shippingCost.toFixed(2)}</span>
+            </div>
+            <div className="border-t pt-2 font-bold flex justify-between text-lg">
               <span>Total:</span>
               <span>L.E {(items.reduce((sum, item) => sum + item.price * item.quantity, 0) + shippingCost).toFixed(2)}</span>
             </div>
@@ -183,19 +191,22 @@ export default function CheckoutPage() {
               <h3 className="font-bold mb-3 text-lg">📍 اختر المنطقة - Select Your Zone</h3>
               {shippingZones && shippingZones.length > 0 ? (
                 <div className="space-y-2">
-                  {shippingZones.map((zone) => (
-                    <button
-                      key={zone.id || zone.name}
-                      onClick={() => {
-                        console.log("✅ Zone selected:", zone.name, zone.cost);
-                        setSelectedZone(zone.name);
-                        setShippingCost(zone.cost);
-                      }}
-                      className={`w-full p-4 rounded-xl border-2 font-semibold ${selectedZone === zone.name ? "border-black bg-black text-white" : "border-gray-200 bg-white"}`}
-                    >
-                      {zone.name} - L.E {zone.cost}
-                    </button>
-                  ))}
+                  {shippingZones.map((zone) => {
+                    const zoneCost = zone.cost || 0;
+                    return (
+                      <button
+                        key={zone.id || zone.name}
+                        onClick={() => {
+                          console.log("✅ Zone selected:", zone.name, "Cost:", zoneCost);
+                          setSelectedZone(zone.name);
+                          setShippingCost(zoneCost);
+                        }}
+                        className={`w-full p-4 rounded-xl border-2 font-semibold text-base ${selectedZone === zone.name ? "border-black bg-black text-white" : "border-gray-200 bg-white"}`}
+                      >
+                        {zone.name} - L.E {zoneCost}
+                      </button>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="p-4 bg-white rounded-xl border-2 border-gray-200">
