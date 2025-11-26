@@ -104,11 +104,19 @@ export default function OrdersPage() {
   };
 
   const handleStatusUpdate = async () => {
-    if (!selectedOrder?.id || !newStatus || newStatus === selectedOrder.status) return;
+    console.log("🔵 BUTTON CLICKED - handleStatusUpdate");
+    console.log("   selectedOrder:", selectedOrder);
+    console.log("   newStatus:", newStatus);
+    
+    if (!selectedOrder?.id || !newStatus || newStatus === selectedOrder.status) {
+      console.warn("❌ Validation failed - returning early");
+      return;
+    }
     
     setIsUpdating(true);
     try {
-      console.log("🔵 Updating status - Order ID:", selectedOrder.id);
+      console.log("🔵 STARTING UPDATE");
+      console.log("   Order ID:", selectedOrder.id);
       console.log("   New Status:", newStatus);
       
       const success = await updateOrder(selectedOrder.id, { 
@@ -116,26 +124,26 @@ export default function OrdersPage() {
         updatedAt: new Date().toISOString()
       });
       
+      console.log("   Update result:", success);
+      
       if (success) {
-        console.log("✅ Status updated successfully");
-        toast.success("تم تحديث الحالة بنجاح");
+        console.log("✅ FIRESTORE UPDATE SUCCESS");
+        toast.success("✅ تم تحديث الحالة بنجاح!");
         
-        // Update local state
+        // Update local state immediately
+        setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
         const updatedOrders = orders.map(o => 
           o.id === selectedOrder.id ? { ...o, status: newStatus } : o
         );
         setOrders(updatedOrders);
-        
-        // Update selected order
-        setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
         setEditingStatus(false);
         setNewStatus("");
       } else {
-        console.error("🔴 updateOrder returned false");
-        toast.error("فشل تحديث الحالة");
+        console.error("🔴 FIRESTORE UPDATE FAILED");
+        toast.error("❌ فشل تحديث الحالة - تحقق من Console");
       }
     } catch (error: any) {
-      console.error("❌ Error updating status:", error);
+      console.error("❌ CATCH ERROR:", error);
       toast.error("خطأ: " + error?.message);
     } finally {
       setIsUpdating(false);
