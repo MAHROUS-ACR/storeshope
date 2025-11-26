@@ -152,8 +152,9 @@ export default function CheckoutPage() {
       }
 
       const now = new Date();
+      const uniqueId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       const orderData = {
-        id: `order-${Date.now()}`,
+        id: `order-${uniqueId}`,
         orderNumber,
         items,
         subtotal: total,
