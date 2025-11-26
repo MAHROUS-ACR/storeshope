@@ -190,52 +190,27 @@ export async function getOrderById(id: string) {
 }
 
 export async function saveOrder(order: any) {
-  console.log("🔵 [saveOrder] START");
   try {
-    // CRITICAL: Reset connections for fresh connection on every order
+    // Validate required fields FIRST
+    if (!order.userId || !order.id || !order.items || order.items.length === 0) {
+      throw new Error("Missing required fields");
+    }
+
+    // Reset DB for fresh connection
     db = null;
-    appInitialized = false;
-    
-    // Load config first - ensures Firebase is properly initialized
-    await ensureConfigLoaded();
-    console.log("✅ [saveOrder] Config loaded");
-    
-    // Get fresh DB connection
     const dbInstance = initDb();
-    console.log("✅ [saveOrder] DB ready");
 
-    // Validate required fields
-    if (!order.userId) {
-      throw new Error("User ID is required");
-    }
-    if (!order.id) {
-      throw new Error("Order ID is required");
-    }
-    if (!order.items || order.items.length === 0) {
-      throw new Error("Order must have items");
-    }
-
-    // Prepare and write order
+    // Write order to Firestore
     const orderData = {
       ...order,
       createdAt: new Date().toISOString(),
     };
 
-    const orderRef = doc(dbInstance, "orders", order.id);
-    await setDoc(orderRef, orderData, { merge: false });
-    console.log("✅ [saveOrder] Write complete");
-
-    // Verify save
-    const saved = await getDoc(orderRef);
-    if (saved.exists()) {
-      console.log("✅ [saveOrder] SUCCESS");
-      return order.id;
-    }
-
-    console.error("❌ [saveOrder] Verification failed");
-    return null;
+    await setDoc(doc(dbInstance, "orders", order.id), orderData);
+    console.log("✅ Order saved:", order.id);
+    return order.id;
   } catch (error: any) {
-    console.error("❌ [saveOrder] ERROR:", error?.message);
+    console.error("❌ Save order failed:", error?.message);
     return null;
   }
 }
