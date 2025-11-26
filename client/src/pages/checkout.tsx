@@ -114,9 +114,9 @@ export default function CheckoutPage() {
 
       setIsSubmitting(false);
       
-      // Refresh page after 2 seconds to reset all values
+      // Refresh page after 2 seconds to reset all values and Firebase state
       setTimeout(() => {
-        window.location.href = "/storeshope/checkout";
+        window.location.reload();
       }, 2000);
     } catch (error: any) {
       console.error("❌ Order error:", error?.message || error);
