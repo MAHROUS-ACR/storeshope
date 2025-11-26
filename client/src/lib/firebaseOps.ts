@@ -196,8 +196,10 @@ export async function saveOrder(order: any) {
       throw new Error("Missing required fields");
     }
 
-    // Reset DB for fresh connection
-    db = null;
+    // Ensure Firebase config is loaded
+    await ensureConfigLoaded();
+    
+    // Get fresh DB connection
     const dbInstance = initDb();
 
     // Write order to Firestore
