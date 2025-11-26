@@ -196,11 +196,14 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {/* Place Order Button */}
+        </div>
+
+        {/* Sticky Place Order Button at Bottom */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-5 max-w-[390px] mx-auto">
           <button
             onClick={handlePlaceOrder}
             disabled={isProcessing || !paymentMethod || !shippingType || !selectedZone}
-            className="w-full bg-black text-white py-4 rounded-2xl font-bold disabled:opacity-50 mb-4"
+            className="w-full bg-black text-white py-4 rounded-2xl font-bold disabled:opacity-50"
           >
             {isProcessing ? "Processing..." : "Place Order"}
           </button>
