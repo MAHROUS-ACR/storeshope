@@ -66,25 +66,36 @@ export default function CheckoutPage() {
 
   // Handle order submission
   const handleSubmit = async () => {
+    console.log("🛒 handleSubmit called. Items:", items.length, "formValid:", isFormValid);
+
     if (!isFormValid) {
+      console.log("❌ Form not valid");
       toast.error("اختر جميع الخيارات - Select all options");
       return;
     }
 
-    if (items.length === 0) {
+    if (!items || items.length === 0) {
+      console.log("❌ Items empty");
       toast.error("السلة فارغة - Cart is empty");
       return;
     }
 
     setIsSubmitting(true);
+    console.log("🚀 Starting order submission");
 
     try {
-      // Create order object
+      // Get fresh items from context right here
+      const itemsToSave = items && items.length > 0 ? [...items] : [];
+      
+      if (itemsToSave.length === 0) {
+        throw new Error("Items list is empty after validation");
+      }
+
       const orderObj = {
         id: `ord_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
         orderNumber: Math.floor(Date.now() / 1000),
         userId: user?.id,
-        items: [...items], // Copy array to avoid reference issues
+        items: itemsToSave,
         subtotal,
         shippingCost: shipping,
         total: grandTotal,
@@ -95,35 +106,38 @@ export default function CheckoutPage() {
         createdAt: new Date().toISOString(),
       };
 
-      console.log("Submitting order:", orderObj);
-
-      // Save to Firestore
+      console.log("📤 Saving order with", itemsToSave.length, "items");
       const savedId = await saveOrder(orderObj);
+      console.log("✅ SaveOrder returned:", savedId);
 
       if (!savedId) {
-        throw new Error("Order save failed - no ID returned");
+        throw new Error("saveOrder returned null");
       }
 
-      // Success
-      toast.success("✅ Order placed successfully!");
+      // FIRST: Show success
+      toast.success("✅ تم الطلب");
+      console.log("🧹 Clearing cart");
 
-      // Clear cart
+      // SECOND: Clear cart
       clearCart();
-      localStorage.removeItem("cart");
-
-      // Send notification
+      
+      // THIRD: Clear localStorage
+      localStorage.clear();
+      
+      // FOURTH: Send notification (async, don't wait)
       sendNotificationToAdmins(
         "New Order",
-        `Order #${orderObj.orderNumber} - L.E ${grandTotal.toFixed(2)}`
-      ).catch(() => console.log("Notification skipped"));
+        `L.E ${grandTotal.toFixed(2)}`
+      ).catch(() => {});
 
-      // Redirect
+      // FIFTH: Redirect after delay
+      console.log("🔄 Redirecting to /cart");
       setTimeout(() => {
         setLocation("/cart");
-      }, 1000);
+      }, 800);
     } catch (error) {
-      console.error("Order submission error:", error);
-      toast.error("Failed to place order");
+      console.error("❌ Order error:", error);
+      toast.error("خطأ في الطلب");
       setIsSubmitting(false);
     }
   };
