@@ -221,12 +221,13 @@ export async function updateOrder(id: string, updates: any) {
     const db = initDb();
     const orderRef = doc(db, "orders", id);
     
-    // Use setDoc with merge - updates existing fields only, never creates new doc with different ID
-    await setDoc(orderRef, updates, { merge: true });
-    console.log("✅ updateOrder SUCCESS - ID:", id);
+    // ONLY use updateDoc - this NEVER creates new document, only updates existing
+    // If document doesn't exist, it throws error (which is correct behavior)
+    await updateDoc(orderRef, updates);
+    console.log("✅ updateOrder SUCCESS - Updated:", id);
     return true;
   } catch (error: any) {
-    console.error("❌ updateOrder ERROR:", error?.message);
+    console.error("❌ updateOrder ERROR:", error?.code, error?.message);
     return false;
   }
 }
