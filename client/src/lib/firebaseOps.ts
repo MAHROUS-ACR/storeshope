@@ -37,6 +37,8 @@ let db: any = null;
 let currentFirebaseConfig: any = null;
 let appInitialized = false;
 
+let configLoadPromise: Promise<void> | null = null;
+
 async function loadFirebaseConfigFromFirestore() {
   try {
     // initialize with default config if missing
@@ -50,7 +52,16 @@ async function loadFirebaseConfigFromFirestore() {
       }
     }
 
-    const database = getFirestore();
+    // Get database with retry
+    let database;
+    try {
+      database = getFirestore();
+    } catch (err) {
+      // If getFirestore fails, initialize DB
+      const db = initDb();
+      database = db;
+    }
+
     const configRef = doc(database, "settings", "firebase");
     const configSnap = await getDoc(configRef);
 
@@ -68,12 +79,10 @@ async function loadFirebaseConfigFromFirestore() {
       if (JSON.stringify(newConfig) !== JSON.stringify(currentFirebaseConfig)) {
         console.log("🔄 Firebase config changed in Firestore. Updating local config (no reload).");
         currentFirebaseConfig = newConfig;
-        // نختار هنا ألا نعمل window.location.reload() لأن ده سبب مشاكل
       }
     }
   } catch (error) {
     console.error("Error loading Firebase config from Firestore:", error);
-    // لا نرمي هنا - فقط نُبقي على currentFirebaseConfig الافتراضي
   }
 }
 
@@ -100,13 +109,10 @@ function initDb() {
   return db;
 }
 
-// Check Firebase config on first call
-let configCheckDone = false;
+// Ensure config is loaded once at startup only
 async function ensureConfigLoaded() {
-  if (!configCheckDone) {
-    configCheckDone = true;
-    await loadFirebaseConfigFromFirestore();
-  }
+  // Always try to load config - but it has its own guard
+  await loadFirebaseConfigFromFirestore();
 }
 
 // ============= PRODUCTS =============
@@ -201,8 +207,7 @@ export async function getOrderById(id: string) {
 
 export async function saveOrder(order: any) {
   try {
-    // ensure config and DB are ready
-    await ensureConfigLoaded();
+    // Initialize DB first
     const db = initDb();
 
     // Validate required fields
@@ -216,6 +221,8 @@ export async function saveOrder(order: any) {
       throw new Error("Order must have items");
     }
 
+    console.log("📝 [saveOrder] Saving with ID:", order.id);
+
     // Prepare order data
     const orderData = {
       ...order,
@@ -224,24 +231,21 @@ export async function saveOrder(order: any) {
 
     const orderRef = doc(db, "orders", order.id);
 
-    // استخدم merge: true لحماية من الكتابة الكاملة غير المقصودة
-    await setDoc(orderRef, orderData, { merge: true });
+    // Write to Firestore
+    await setDoc(orderRef, orderData, { merge: false });
+    console.log("✅ [saveOrder] Write successful");
 
-    // تحقق للتيقن
+    // Verify save
     const saved = await getDoc(orderRef);
     if (saved.exists()) {
-      console.log("[saveOrder] saved order OK, items:", saved.data()?.items?.length || 0);
+      console.log("✅ [saveOrder] Verified - items:", saved.data()?.items?.length || 0);
       return order.id;
     }
 
-    console.error("[saveOrder] Verification failed - order not found after save");
+    console.error("❌ [saveOrder] Verification failed");
     return null;
   } catch (error: any) {
-    console.error("[saveOrder] ERROR:", {
-      message: error?.message,
-      code: error?.code,
-      stack: error?.stack,
-    });
+    console.error("❌ [saveOrder] ERROR:", error?.message || error);
     return null;
   }
 }
