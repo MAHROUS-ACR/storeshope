@@ -193,9 +193,14 @@ export async function saveOrder(order: any) {
     const db = initDb();
     const ordersRef = collection(db, "orders");
     
-    // Use the order's own ID if provided, otherwise create one
-    const orderId = order.id || `order-${Date.now()}`;
-    console.log("📝 saveOrder - Using ID:", orderId);
+    // MUST use order.id from checkout - never auto-generate
+    if (!order.id) {
+      console.error("❌ ERROR: order.id is missing!");
+      return null;
+    }
+    
+    const orderId = order.id;
+    console.log("✅ saveOrder - Using ID from checkout:", orderId);
     
     // Create reference with specific ID
     const docRef = doc(ordersRef, orderId);
@@ -208,7 +213,7 @@ export async function saveOrder(order: any) {
     
     console.log("📤 Saving order with ID:", orderId);
     await setDoc(docRef, orderData);
-    console.log("✅ Order saved successfully with ID:", orderId);
+    console.log("✅ Order saved with ID:", orderId);
     return orderId;
   } catch (error: any) {
     console.error("❌ saveOrder ERROR:", error?.message);
