@@ -11,6 +11,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  addDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -193,53 +194,39 @@ export async function saveOrder(order: any) {
     const db = initDb();
     const ordersRef = collection(db, "orders");
     
-    // MUST use order.id from checkout - never auto-generate
-    if (!order.id) {
-      console.error("❌ ERROR: order.id is missing!");
-      throw new Error("Order ID is missing");
-    }
-    
-    const orderId = order.id;
-    console.log("✅ saveOrder - Using ID from checkout:", orderId);
-    console.log("📊 Order data:", order);
-    
     // Verify all required fields
     if (!order.userId) {
       console.error("❌ ERROR: userId is missing!");
       throw new Error("User ID is missing");
     }
     
-    // Create reference with specific ID
-    const docRef = doc(ordersRef, orderId);
-    
-    // Verify document doesn't exist yet
-    try {
-      const existing = await getDoc(docRef);
-      if (existing.exists()) {
-        console.warn("⚠️ Order already exists, will overwrite:", orderId);
-      }
-    } catch (e) {
-      console.log("No existing document found (expected)");
-    }
-    
-    // Keep createdAt as ISO string
+    // Prepare order data WITHOUT relying on frontend ID
     const orderData = {
       ...order,
-      id: orderId,
       savedAt: new Date().toISOString(),
     };
     
-    console.log("📤 Saving order with ID:", orderId);
+    console.log("📤 Saving order with addDoc (Firebase will generate ID)");
     console.log("📦 Full data to save:", orderData);
     
-    await setDoc(docRef, orderData);
+    // Use addDoc to let Firebase generate a unique ID - this is more reliable
+    const docRef = await addDoc(ordersRef, orderData);
+    const generatedId = docRef.id;
+    
+    console.log("✅ Order saved with Firebase-generated ID:", generatedId);
+    
+    // Update document with its own ID field for reference
+    await updateDoc(docRef, { 
+      firebaseId: generatedId,
+      id: generatedId 
+    });
     
     // Verify it was saved
     const verification = await getDoc(docRef);
     if (verification.exists()) {
-      console.log("✅ Order VERIFIED saved with ID:", orderId);
+      console.log("✅ Order VERIFIED saved with ID:", generatedId);
       console.log("✅ Saved data:", verification.data());
-      return orderId;
+      return generatedId;
     } else {
       console.error("❌ Order NOT found after saving!");
       throw new Error("Order verification failed");
