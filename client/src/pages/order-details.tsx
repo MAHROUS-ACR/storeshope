@@ -140,22 +140,28 @@ export default function OrderDetailsPage() {
   };
 
   const handleStatusUpdate = async (status: string) => {
-    if (!order?.id) { toast.error("No order"); return; }
+    if (!order?.id || !status) { toast.error("Invalid data"); return; }
+    console.log("🔄 Updating order", order.id, "to status:", status);
     setIsProcessing(true);
     try {
       const success = await updateOrder(order.id, { status });
+      console.log("✅ Update result:", success);
       if (success) {
+        console.log("📝 Setting new order state with status:", status);
         setOrder({ ...order, status });
         setEditingStatus(false);
-        setNewStatus("");
-        toast.success("✅ Status updated!");
+        setNewStatus("pending");
+        toast.success("Status updated!");
         if (order.userId) {
-          await sendNotification({ userIds: [order.userId], title: "Order Updated", body: `Status: ${status}` });
+          await sendNotification({ userIds: [order.userId], title: "Order Status Updated", body: `Status: ${status}` });
         }
+      } else {
+        console.error("❌ Update failed - Firebase returned false");
+        toast.error("Update failed");
       }
     } catch (error) {
-      console.error("Error:", error);
-      toast.error("Failed to update");
+      console.error("❌ Error updating:", error);
+      toast.error("Error updating order");
     } finally {
       setIsProcessing(false);
     }

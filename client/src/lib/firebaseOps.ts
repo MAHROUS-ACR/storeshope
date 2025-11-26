@@ -242,10 +242,14 @@ export async function updateOrder(id: string, updates: any) {
   try {
     const db = initDb();
     const orderRef = doc(db, "orders", id);
+    console.log("🔄 Firebase updateDoc - Order:", id, "Updates:", updates);
     await updateDoc(orderRef, updates);
+    console.log("✅ Firebase updateDoc success for order:", id);
     return true;
-  } catch (error) {
-    console.error("Error updating order:", error);
+  } catch (error: any) {
+    console.error("❌ Error updating order:", error);
+    console.error("Error code:", error?.code);
+    console.error("Error message:", error?.message);
     return false;
   }
 }
