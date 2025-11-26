@@ -190,50 +190,28 @@ export async function getOrderById(id: string) {
 
 export async function saveOrder(order: any) {
   try {
-    console.log("📝 saveOrder called with order:", order);
-    
-    // Ensure database is initialized
     const db = initDb();
-    console.log("✅ Database initialized - db object:", !!db);
-    
-    if (!db) {
-      console.error("❌ Database initialization failed - db is null");
-      throw new Error("Database not initialized");
-    }
-    
     const ordersRef = collection(db, "orders");
-    console.log("✅ Orders collection reference created");
     
-    const docRef = doc(ordersRef);
-    console.log("✅ New document reference created:", docRef.id);
+    // Use the order's own ID if provided, otherwise create one
+    const orderId = order.id || `order-${Date.now()}`;
+    console.log("📝 saveOrder - Using ID:", orderId);
     
-    // Keep createdAt as ISO string - don't convert to Timestamp
+    // Create reference with specific ID
+    const docRef = doc(ordersRef, orderId);
+    
+    // Keep createdAt as ISO string
     const orderData = {
       ...order,
+      id: orderId,
     };
-    console.log("📋 Order data prepared - fields:", Object.keys(orderData));
-    console.log("📋 Full order data:", orderData);
     
-    console.log("📤 Calling setDoc...");
-    const result = await setDoc(docRef, orderData);
-    console.log("✅ setDoc returned:", result);
-    
-    console.log("✅ Order saved successfully with ID:", docRef.id);
-    console.log("🎉 SUCCESS - Order ID:", docRef.id);
-    return docRef.id;
+    console.log("📤 Saving order with ID:", orderId);
+    await setDoc(docRef, orderData);
+    console.log("✅ Order saved successfully with ID:", orderId);
+    return orderId;
   } catch (error: any) {
-    console.error("❌ CRITICAL ERROR saving order:");
-    console.error("Error code:", error?.code);
-    console.error("Error message:", error?.message);
-    console.error("Error name:", error?.name);
-    console.error("Full error:", error);
-    console.error("Error stack:", error?.stack);
-    
-    // Additional debugging
-    if (error?.code === "permission-denied") {
-      console.error("🔒 Firestore security rule blocked the write operation");
-    }
-    
+    console.error("❌ saveOrder ERROR:", error?.message);
     return null;
   }
 }
