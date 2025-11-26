@@ -1,20 +1,20 @@
-// Unified status color definitions
+// Unified status color definitions - Dark, vibrant colors for clear distinction
 export const getStatusColor = (status: string) => {
   switch (status?.toLowerCase()) {
     case "completed":
-      return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      return "bg-emerald-600 text-white border-emerald-700";
     case "confirmed":
-      return "bg-blue-50 text-blue-700 border-blue-200";
+      return "bg-blue-600 text-white border-blue-700";
     case "pending":
-      return "bg-amber-50 text-amber-700 border-amber-200";
+      return "bg-amber-500 text-white border-amber-600";
     case "cancelled":
-      return "bg-red-50 text-red-700 border-red-200";
+      return "bg-red-600 text-white border-red-700";
     case "processing":
-      return "bg-orange-50 text-orange-700 border-orange-200";
+      return "bg-orange-600 text-white border-orange-700";
     case "shipped":
-      return "bg-indigo-50 text-indigo-700 border-indigo-200";
+      return "bg-indigo-600 text-white border-indigo-700";
     default:
-      return "bg-gray-50 text-gray-700 border-gray-200";
+      return "bg-gray-600 text-white border-gray-700";
   }
 };
 
