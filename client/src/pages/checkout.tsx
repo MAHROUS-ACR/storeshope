@@ -195,6 +195,7 @@ export default function CheckoutPage() {
 
         toast.success("Order placed successfully!");
         clearCart();
+        setIsProcessing(false);
         
         // Reset form state completely
         setPaymentMethod(null);
@@ -215,17 +216,17 @@ export default function CheckoutPage() {
         });
         
         // Wait longer for Firestore to sync before redirecting
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 2000));
         console.log("🔵 Redirecting to orders page");
         setLocation("/orders?refresh=" + Date.now());
       } else {
-        console.error("❌ saveOrder returned null - CHECK FIRESTORE SECURITY RULES");
-        toast.error("Failed to save order - check console for details");
+        console.error("❌ saveOrder returned null");
+        toast.error("Failed to save order");
+        setIsProcessing(false);
       }
     } catch (error) {
       console.error("❌ ERROR IN PLACE ORDER:", error);
       toast.error("Failed to place order");
-    } finally {
       setIsProcessing(false);
     }
   };
