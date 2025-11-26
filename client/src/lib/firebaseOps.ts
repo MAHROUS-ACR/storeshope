@@ -35,13 +35,17 @@ function getFirebaseConfig() {
 
 let db: any = null;
 let currentFirebaseConfig: any = null;
+let appInitialized = false;
 
 async function loadFirebaseConfigFromFirestore() {
   try {
     // Initialize with default config first
     if (!currentFirebaseConfig) {
       currentFirebaseConfig = getFirebaseConfig();
-      initializeApp(currentFirebaseConfig);
+      if (!appInitialized) {
+        initializeApp(currentFirebaseConfig);
+        appInitialized = true;
+      }
     }
     
     const database = getFirestore();
@@ -79,11 +83,24 @@ function initDb() {
       if (!currentFirebaseConfig) {
         currentFirebaseConfig = getFirebaseConfig();
       }
-      initializeApp(currentFirebaseConfig);
-    } catch (error: any) {
-      if (!error.message?.includes('duplicate-app')) {
-        console.error('Firebase initialization error:', error);
+      
+      // Only initialize app once
+      if (!appInitialized) {
+        try {
+          initializeApp(currentFirebaseConfig);
+          appInitialized = true;
+        } catch (error: any) {
+          if (!error.message?.includes('duplicate-app')) {
+            console.error('Firebase initialization error:', error);
+            throw error;
+          }
+          // App already initialized, just continue
+          appInitialized = true;
+        }
       }
+    } catch (error: any) {
+      console.error('Failed to initialize Firebase:', error);
+      throw error;
     }
     db = getFirestore();
   }
@@ -191,9 +208,7 @@ export async function getOrderById(id: string) {
 
 export async function saveOrder(order: any) {
   try {
-    const db = initDb();
-    
-    // Verify all required fields
+    // Verify all required fields first
     if (!order.userId) {
       console.error("❌ userId is missing!");
       throw new Error("User ID is required");
@@ -204,33 +219,45 @@ export async function saveOrder(order: any) {
       throw new Error("Order ID is required");
     }
     
-    console.log("📤 Saving order with ID:", order.id);
+    if (!order.items || order.items.length === 0) {
+      console.error("❌ order.items is missing or empty!");
+      throw new Error("Order must have items");
+    }
+
+    console.log("📤 [saveOrder] Getting Firestore connection...");
+    const db = initDb();
+    console.log("✅ [saveOrder] Firestore connected");
     
-    // Use setDoc with explicit document ID instead of addDoc
-    const orderRef = doc(db, "orders", order.id);
-    await setDoc(orderRef, {
+    console.log("📤 [saveOrder] Saving order with ID:", order.id, "Items:", order.items.length);
+    
+    // Prepare the order data
+    const orderData = {
       ...order,
-      createdAt: new Date().toISOString()
-    }, { merge: false });
+      createdAt: new Date().toISOString(),
+    };
     
-    console.log("✅ Order saved successfully");
+    // Save to Firestore with setDoc
+    const orderRef = doc(db, "orders", order.id);
+    await setDoc(orderRef, orderData, { merge: false });
     
-    // Verify it was saved
+    console.log("✅ [saveOrder] Order saved, verifying...");
+    
+    // Verify it was saved by reading it back
     const saved = await getDoc(orderRef);
     if (saved.exists()) {
-      console.log("✅ Order verified in Firestore with ID:", order.id);
+      const savedData = saved.data();
+      console.log("✅ [saveOrder] Order verified in Firestore. Items in DB:", savedData.items?.length || 0);
       return order.id;
     }
     
-    throw new Error("Order verification failed - not found after save");
+    console.error("❌ [saveOrder] Verification failed - order not found after save");
+    throw new Error("Order verification failed");
   } catch (error: any) {
-    console.error("❌ SAVEORDER FAILED:", error?.message);
-    console.error("Error code:", error?.code);
-    
-    if (error?.code === "permission-denied") {
-      console.error("🔐 Firestore Security Rules are blocking writes!");
-    }
-    
+    console.error("❌ [saveOrder] ERROR:", {
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack
+    });
     return null;
   }
 }
