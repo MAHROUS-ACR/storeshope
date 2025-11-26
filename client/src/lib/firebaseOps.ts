@@ -244,9 +244,12 @@ export async function updateOrder(id: string, updates: any) {
     const orderRef = doc(db, "orders", id);
     console.log("🔴 FIREBASE: updateOrder called with id:", id, "updates:", JSON.stringify(updates));
     
-    // Use setDoc with merge instead of updateDoc
-    await setDoc(orderRef, { ...updates, updatedAt: new Date().toISOString() }, { merge: true });
-    console.log("🟢 FIREBASE: setDoc success for order:", id);
+    // Use updateDoc to update existing document fields only (don't create new)
+    await updateDoc(orderRef, { 
+      ...updates, 
+      updatedAt: new Date().toISOString() 
+    });
+    console.log("🟢 FIREBASE: updateDoc success for order:", id);
     return true;
   } catch (error: any) {
     console.error("🔴 FIREBASE ERROR updating order:", id);
