@@ -196,27 +196,60 @@ export async function saveOrder(order: any) {
     // MUST use order.id from checkout - never auto-generate
     if (!order.id) {
       console.error("❌ ERROR: order.id is missing!");
-      return null;
+      throw new Error("Order ID is missing");
     }
     
     const orderId = order.id;
     console.log("✅ saveOrder - Using ID from checkout:", orderId);
+    console.log("📊 Order data:", order);
+    
+    // Verify all required fields
+    if (!order.userId) {
+      console.error("❌ ERROR: userId is missing!");
+      throw new Error("User ID is missing");
+    }
     
     // Create reference with specific ID
     const docRef = doc(ordersRef, orderId);
+    
+    // Verify document doesn't exist yet
+    try {
+      const existing = await getDoc(docRef);
+      if (existing.exists()) {
+        console.warn("⚠️ Order already exists, will overwrite:", orderId);
+      }
+    } catch (e) {
+      console.log("No existing document found (expected)");
+    }
     
     // Keep createdAt as ISO string
     const orderData = {
       ...order,
       id: orderId,
+      savedAt: new Date().toISOString(),
     };
     
     console.log("📤 Saving order with ID:", orderId);
+    console.log("📦 Full data to save:", orderData);
+    
     await setDoc(docRef, orderData);
-    console.log("✅ Order saved with ID:", orderId);
-    return orderId;
+    
+    // Verify it was saved
+    const verification = await getDoc(docRef);
+    if (verification.exists()) {
+      console.log("✅ Order VERIFIED saved with ID:", orderId);
+      console.log("✅ Saved data:", verification.data());
+      return orderId;
+    } else {
+      console.error("❌ Order NOT found after saving!");
+      throw new Error("Order verification failed");
+    }
   } catch (error: any) {
-    console.error("❌ saveOrder ERROR:", error?.message);
+    console.error("❌ saveOrder FULL ERROR:", {
+      message: error?.message,
+      code: error?.code,
+      details: error
+    });
     return null;
   }
 }

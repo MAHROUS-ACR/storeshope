@@ -176,10 +176,12 @@ export default function CheckoutPage() {
       };
 
       console.log("📤 SAVING ORDER:", orderData);
+      console.log("🔵 Calling saveOrder with:", { id: orderData.id, userId: orderData.userId });
       const savedOrderId = await saveOrder(orderData);
-      console.log("✅ ORDER SAVED WITH ID:", savedOrderId);
+      console.log("🔵 saveOrder returned:", savedOrderId);
 
       if (savedOrderId) {
+        console.log("✅ ORDER SAVED SUCCESSFULLY");
         try {
           console.log("🔔 SENDING NOTIFICATION");
           await sendNotificationToAdmins(
@@ -193,14 +195,13 @@ export default function CheckoutPage() {
 
         toast.success("Order placed successfully!");
         clearCart();
-        // Wait for Firestore to sync before redirecting
-        setTimeout(() => {
-          // Force refresh by adding timestamp to location
-          setLocation("/orders?refresh=" + Date.now());
-        }, 2000);
+        // Wait longer for Firestore to sync before redirecting
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        console.log("🔵 Redirecting to orders page");
+        setLocation("/orders?refresh=" + Date.now());
       } else {
-        console.error("❌ saveOrder returned null");
-        toast.error("Failed to save order");
+        console.error("❌ saveOrder returned null - CHECK FIRESTORE SECURITY RULES");
+        toast.error("Failed to save order - check console for details");
       }
     } catch (error) {
       console.error("❌ ERROR IN PLACE ORDER:", error);
