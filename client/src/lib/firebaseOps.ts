@@ -33,69 +33,25 @@ function getFirebaseConfig() {
   };
 }
 
-let db: any = null;
-let currentFirebaseConfig: any = null;
-let appInitialized = false;
-let configLoadAttempted = false;
-
-async function loadFirebaseConfigFromFirestore() {
-  // Only attempt once per session
-  if (configLoadAttempted) return;
-  configLoadAttempted = true;
-
-  try {
-    // Ensure DB is initialized first
-    const database = initDb();
-    
-    const configRef = doc(database, "settings", "firebase");
-    const configSnap = await getDoc(configRef);
-
-    if (configSnap.exists()) {
-      const firestoreConfig = configSnap.data();
-      const newConfig = {
-        apiKey: firestoreConfig.firebaseApiKey || currentFirebaseConfig?.apiKey,
-        authDomain: firestoreConfig.firebaseAuthDomain || currentFirebaseConfig?.authDomain,
-        projectId: firestoreConfig.firebaseProjectId || currentFirebaseConfig?.projectId,
-        storageBucket: firestoreConfig.firebaseStorageBucket || currentFirebaseConfig?.storageBucket,
-        messagingSenderId: firestoreConfig.firebaseMessagingSenderId || currentFirebaseConfig?.messagingSenderId,
-        appId: firestoreConfig.firebaseAppId || currentFirebaseConfig?.appId,
-      };
-
-      if (JSON.stringify(newConfig) !== JSON.stringify(currentFirebaseConfig)) {
-        console.log("🔄 Firebase config updated from Firestore");
-        currentFirebaseConfig = newConfig;
-      }
-    }
-  } catch (error) {
-    console.error("Error loading Firebase config from Firestore:", error);
-  }
-}
-
 function initDb() {
-  if (!db) {
-    // Set config if not already set
-    if (!currentFirebaseConfig) {
-      currentFirebaseConfig = getFirebaseConfig();
-    }
+  // Always use environment config
+  const config = getFirebaseConfig();
 
-    // Initialize app if not already initialized
-    if (!appInitialized) {
-      if (!getApps().length) {
-        try {
-          initializeApp(currentFirebaseConfig);
-        } catch (error: any) {
-          if (!error.message?.includes('duplicate-app')) {
-            throw error;
-          }
-        }
+  // Initialize app if not already done
+  if (!getApps().length) {
+    try {
+      initializeApp(config);
+      console.log("✅ Firebase app initialized");
+    } catch (error: any) {
+      console.error("❌ Firebase app init error:", error?.message);
+      if (!error.message?.includes('duplicate-app')) {
+        throw error;
       }
-      appInitialized = true;
     }
-
-    // Get Firestore instance
-    db = getFirestore();
   }
-  return db;
+
+  // Get fresh Firestore instance each time
+  return getFirestore();
 }
 
 // ============= PRODUCTS =============
@@ -188,26 +144,29 @@ export async function getOrderById(id: string) {
 }
 
 export async function saveOrder(order: any) {
+  console.log("🔵 saveOrder START - Order ID:", order?.id);
+  
   try {
-    // Validate required fields
-    if (!order.userId || !order.id || !order.items || order.items.length === 0) {
-      throw new Error("Missing required fields");
+    // Validate
+    if (!order?.userId || !order?.id || !order?.items?.length) {
+      throw new Error("Missing userId, id, or items");
     }
 
-    // Get DB instance - no need to reload config on every save
-    const dbInstance = initDb();
+    // Get fresh DB connection
+    const db = initDb();
+    console.log("✅ DB ready");
 
-    // Write order to Firestore
+    // Prepare and save
     const orderData = {
       ...order,
       createdAt: new Date().toISOString(),
     };
 
-    await setDoc(doc(dbInstance, "orders", order.id), orderData);
-    console.log("✅ Order saved:", order.id);
+    await setDoc(doc(db, "orders", order.id), orderData);
+    console.log("✅ saveOrder SUCCESS - Order saved:", order.id);
     return order.id;
   } catch (error: any) {
-    console.error("❌ Save order failed:", error?.message);
+    console.error("❌ saveOrder FAILED:", error?.message || error);
     return null;
   }
 }
