@@ -1,13 +1,13 @@
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { ArrowLeft, ChevronRight, X } from "lucide-react";
+import { ArrowLeft, ChevronRight, X, Edit2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/userContext";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
 import { toast } from "sonner";
-import { getOrders } from "@/lib/firebaseOps";
+import { getOrders, updateOrder } from "@/lib/firebaseOps";
 
 interface CartItem {
   id: string;
@@ -45,6 +45,9 @@ export default function OrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [firebaseConfigured, setFirebaseConfigured] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [editingStatus, setEditingStatus] = useState(false);
+  const [newStatus, setNewStatus] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isLoggedIn) {
@@ -100,6 +103,45 @@ export default function OrdersPage() {
     }
   };
 
+  const handleStatusUpdate = async () => {
+    if (!selectedOrder?.id || !newStatus || newStatus === selectedOrder.status) return;
+    
+    setIsUpdating(true);
+    try {
+      console.log("🔵 Updating status - Order ID:", selectedOrder.id);
+      console.log("   New Status:", newStatus);
+      
+      const success = await updateOrder(selectedOrder.id, { 
+        status: newStatus,
+        updatedAt: new Date().toISOString()
+      });
+      
+      if (success) {
+        console.log("✅ Status updated successfully");
+        toast.success("تم تحديث الحالة بنجاح");
+        
+        // Update local state
+        const updatedOrders = orders.map(o => 
+          o.id === selectedOrder.id ? { ...o, status: newStatus } : o
+        );
+        setOrders(updatedOrders);
+        
+        // Update selected order
+        setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
+        setEditingStatus(false);
+        setNewStatus("");
+      } else {
+        console.error("🔴 updateOrder returned false");
+        toast.error("فشل تحديث الحالة");
+      }
+    } catch (error: any) {
+      console.error("❌ Error updating status:", error);
+      toast.error("خطأ: " + error?.message);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
@@ -151,11 +193,7 @@ export default function OrdersPage() {
                 .map((order) => (
                 <div key={order.id}>
                   <button
-                    onClick={() => {
-                      setSelectedOrder(selectedOrder?.id === order.id ? null : order);
-                      // Also navigate to order details page with correct ID
-                      setLocation(`/order/${order.id}`);
-                    }}
+                    onClick={() => setSelectedOrder(selectedOrder?.id === order.id ? null : order)}
                     className="w-full p-4 bg-white rounded-2xl border border-gray-100 hover:border-primary hover:shadow-sm transition-all text-left"
                     data-testid={`order-${order.id}`}
                   >
@@ -302,6 +340,59 @@ export default function OrdersPage() {
                       <div className="mt-3 text-xs text-gray-500">
                         <p>{t("placedAt", language)} {new Date(selectedOrder.createdAt).toLocaleString()}</p>
                       </div>
+
+                      {/* Status Update Section */}
+                      {user?.role === 'admin' && (
+                        <div className="mt-4 pt-4 border-t border-gray-100">
+                          {!editingStatus ? (
+                            <button
+                              onClick={() => {
+                                setEditingStatus(true);
+                                setNewStatus(selectedOrder.status);
+                              }}
+                              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition"
+                              data-testid="button-edit-status"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                              تعديل الحالة
+                            </button>
+                          ) : (
+                            <div className="space-y-2">
+                              <select
+                                value={newStatus}
+                                onChange={(e) => setNewStatus(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary"
+                                data-testid="select-status"
+                              >
+                                <option value="pending">pending</option>
+                                <option value="confirmed">confirmed</option>
+                                <option value="completed">completed</option>
+                                <option value="cancelled">cancelled</option>
+                              </select>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={handleStatusUpdate}
+                                  disabled={isUpdating}
+                                  className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-300 transition"
+                                  data-testid="button-save-status"
+                                >
+                                  {isUpdating ? "جاري..." : "حفظ"}
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setEditingStatus(false);
+                                    setNewStatus("");
+                                  }}
+                                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
+                                  data-testid="button-cancel-edit"
+                                >
+                                  إلغاء
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
