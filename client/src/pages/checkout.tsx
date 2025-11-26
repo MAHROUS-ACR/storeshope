@@ -116,8 +116,8 @@ export default function CheckoutPage() {
 
   return (
     <MobileWrapper>
-      <div className="w-full flex-1 flex flex-col">
-        <div className="px-5 py-4 border-b">
+      <div className="w-full h-screen flex flex-col">
+        <div className="px-5 py-4 border-b flex-shrink-0">
           <button
             onClick={() => setLocation("/cart")}
             className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-4"
