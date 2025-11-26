@@ -107,8 +107,10 @@ export default function CheckoutPage() {
 
       setIsSubmitting(false);
       
-      // Refresh page to reset all values
-      window.location.reload();
+      // Refresh page after 2 seconds to reset all values
+      setTimeout(() => {
+        window.location.href = "/storeshope/checkout";
+      }, 2000);
     } catch (error) {
       console.error("❌ Order error:", error);
       toast.error("خطأ في الطلب");
