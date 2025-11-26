@@ -1,13 +1,13 @@
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { ArrowLeft, ChevronRight, X, Edit2 } from "lucide-react";
+import { ArrowLeft, ChevronRight, X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/userContext";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
 import { toast } from "sonner";
-import { getOrders, updateOrder } from "@/lib/firebaseOps";
+import { getOrders } from "@/lib/firebaseOps";
 
 interface CartItem {
   id: string;
@@ -45,9 +45,6 @@ export default function OrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [firebaseConfigured, setFirebaseConfigured] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [editingStatus, setEditingStatus] = useState(false);
-  const [newStatus, setNewStatus] = useState("");
-  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isLoggedIn) {
@@ -100,33 +97,6 @@ export default function OrdersPage() {
         return "bg-red-50 text-red-700 border-red-200";
       default:
         return "bg-gray-50 text-gray-700 border-gray-200";
-    }
-  };
-
-  const handleStatusUpdate = async () => {
-    if (!selectedOrder?.id || !newStatus || newStatus === selectedOrder.status) return;
-    
-    setIsUpdating(true);
-    try {
-      const success = await updateOrder(selectedOrder.id, { status: newStatus });
-      
-      if (success) {
-        toast.success("✅ تم تحديث الحالة!");
-        
-        // Update UI immediately
-        setSelectedOrder(prev => prev ? { ...prev, status: newStatus } : null);
-        setOrders(orders.map(o => 
-          o.id === selectedOrder.id ? { ...o, status: newStatus } : o
-        ));
-        setEditingStatus(false);
-        setNewStatus("");
-      } else {
-        toast.error("❌ فشل التحديث");
-      }
-    } catch (error: any) {
-      toast.error("خطأ: " + error?.message);
-    } finally {
-      setIsUpdating(false);
     }
   };
 
@@ -328,62 +298,6 @@ export default function OrdersPage() {
                       <div className="mt-3 text-xs text-gray-500">
                         <p>{t("placedAt", language)} {new Date(selectedOrder.createdAt).toLocaleString()}</p>
                       </div>
-
-                      {/* Status Update Section - for admins only */}
-                      {user?.role === 'admin' && (
-                        <div className="mt-4 pt-4 border-t border-gray-100">
-                          {!editingStatus ? (
-                            <button
-                              onClick={() => {
-                                setEditingStatus(true);
-                                setNewStatus(selectedOrder.status);
-                              }}
-                              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition"
-                              data-testid="button-edit-status"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                              تعديل الحالة
-                            </button>
-                          ) : (
-                            <div className="space-y-2">
-                              <div className="text-xs text-gray-600 mb-2">
-                                الـ ID: {selectedOrder.id}
-                              </div>
-                              <select
-                                value={newStatus}
-                                onChange={(e) => setNewStatus(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-primary"
-                                data-testid="select-status"
-                              >
-                                <option value="pending">pending</option>
-                                <option value="confirmed">confirmed</option>
-                                <option value="completed">completed</option>
-                                <option value="cancelled">cancelled</option>
-                              </select>
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={handleStatusUpdate}
-                                  disabled={isUpdating}
-                                  className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-300 transition"
-                                  data-testid="button-save-status"
-                                >
-                                  {isUpdating ? "جاري..." : "حفظ"}
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setEditingStatus(false);
-                                    setNewStatus("");
-                                  }}
-                                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
-                                  data-testid="button-cancel-edit"
-                                >
-                                  إلغاء
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
