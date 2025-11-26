@@ -151,7 +151,11 @@ export default function OrdersPage() {
                 .map((order) => (
                 <div key={order.id}>
                   <button
-                    onClick={() => setSelectedOrder(selectedOrder?.id === order.id ? null : order)}
+                    onClick={() => {
+                      setSelectedOrder(selectedOrder?.id === order.id ? null : order);
+                      // Also navigate to order details page with correct ID
+                      setLocation(`/order/${order.id}`);
+                    }}
                     className="w-full p-4 bg-white rounded-2xl border border-gray-100 hover:border-primary hover:shadow-sm transition-all text-left"
                     data-testid={`order-${order.id}`}
                   >
