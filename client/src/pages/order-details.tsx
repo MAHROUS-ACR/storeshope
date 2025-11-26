@@ -140,34 +140,38 @@ export default function OrderDetailsPage() {
   };
 
   const handleStatusUpdate = async (status: string) => {
-    if (!order?.id || !status) { toast.error("Invalid data"); return; }
-    console.log("🔄 Updating order", order.id, "status from", order.status, "to:", status);
+    if (!order?.id || !status || status === order.status) { 
+      toast.error("Invalid or same status");
+      return; 
+    }
     setIsProcessing(true);
     try {
+      console.log("🟢 Updating order", order.id, "to status:", status);
       const success = await updateOrder(order.id, { status });
-      console.log("✅ Firebase update result:", success);
+      console.log("🟢 Update returned:", success);
+      
       if (success) {
-        console.log("📝 Reloading order from Firebase after update...");
-        // Reload order from Firebase to get updated data
-        const orders = await getOrders(user?.role === 'admin' ? undefined : user?.id);
-        const reloadedOrder = orders?.find((o: any) => o.id === order.id);
-        if (reloadedOrder) {
-          console.log("✅ Reloaded order:", reloadedOrder);
-          setOrder(reloadedOrder as Order);
-        }
+        // Update local state immediately
+        const newOrder = { ...order, status };
+        setOrder(newOrder);
         setEditingStatus(false);
         setNewStatus("pending");
-        toast.success("✅ Status updated!");
+        toast.success("Status updated to: " + status);
+        
+        // Send notification
         if (order.userId) {
-          await sendNotification({ userIds: [order.userId], title: "Order Status Updated", body: `Status: ${status}` });
+          await sendNotification({ 
+            userIds: [order.userId], 
+            title: "Order Status Updated", 
+            body: `Order #${order.orderNumber} is now ${status}` 
+          });
         }
       } else {
-        console.error("❌ Firebase returned false");
-        toast.error("❌ Update failed");
+        toast.error("Update failed");
       }
     } catch (error) {
-      console.error("❌ Exception:", error);
-      toast.error("❌ Error updating");
+      console.error("Error:", error);
+      toast.error("Error updating order");
     } finally {
       setIsProcessing(false);
     }
