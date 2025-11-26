@@ -9,6 +9,7 @@ import { t } from "@/lib/translations";
 import { toast } from "sonner";
 import { getOrders } from "@/lib/firebaseOps";
 import { getStatusColor } from "@/lib/statusColors";
+import { getFirestore, collection, query, where, onSnapshot } from "firebase/firestore";
 
 interface CartItem {
   id: string;
@@ -54,37 +55,48 @@ export default function OrdersPage() {
   }, [isLoggedIn, authLoading, setLocation]);
 
   useEffect(() => {
-    async function fetchOrders() {
-      setIsLoading(true);
-      try {
-        setFirebaseConfigured(true);
-        
-        // Fetch orders from Firebase only (filtered by user ID if available)
-        const firebaseOrders = await getOrders(user?.id);
+    if (!user?.id) {
+      setIsLoading(false);
+      setOrders([]);
+      return;
+    }
+
+    setIsLoading(true);
+    setFirebaseConfigured(true);
+    
+    try {
+      const db = getFirestore();
+      const ordersRef = collection(db, "orders");
+      
+      // Create query for user's orders
+      const ordersQuery = query(ordersRef, where("userId", "==", user.id));
+      
+      // Set up real-time listener
+      const unsubscribe = onSnapshot(ordersQuery, (snapshot) => {
+        const firebaseOrders = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Order[];
         
         if (firebaseOrders && firebaseOrders.length > 0) {
-          setOrders(firebaseOrders as Order[]);
+          setOrders(firebaseOrders);
         } else {
           setOrders([]);
         }
-      } catch (error) {
+        setIsLoading(false);
+      }, (error) => {
         console.error("Error fetching orders:", error);
         setOrders([]);
-      } finally {
         setIsLoading(false);
-      }
+      });
+      
+      return () => unsubscribe();
+    } catch (error) {
+      console.error("Error setting up orders listener:", error);
+      setOrders([]);
+      setIsLoading(false);
     }
-
-    fetchOrders();
-    // Refresh orders when page becomes visible or location changes
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        fetchOrders();
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [location, user?.id]);
+  }, [user?.id]);
 
 
   return (
