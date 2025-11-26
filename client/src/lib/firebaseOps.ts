@@ -226,16 +226,35 @@ export async function updateOrder(id: string, updates: any) {
     const db = initDb();
     const orderRef = doc(db, "orders", id);
     
-    console.log("🟠 updateOrder - Updating ID:", id);
+    console.log("🟠 updateOrder START");
+    console.log("   ID to update:", id);
+    console.log("   Updates:", updates);
     
-    // Use updateDoc ONLY - never creates new document, only updates existing
+    // Get existing document first to verify it exists
+    const existing = await getDoc(orderRef);
+    if (!existing.exists()) {
+      console.error("❌ Document not found with ID:", id);
+      console.log("   Trying to find matching order in collection...");
+      
+      const allOrders = await getOrders();
+      const found = allOrders.find((o: any) => o.id === id);
+      if (found) {
+        console.log("   Found order:", found.id);
+      } else {
+        console.error("   No matching order found in entire collection");
+        return false;
+      }
+    }
+    
+    // Update the document
     await updateDoc(orderRef, updates);
-    console.log("✅ updateOrder SUCCESS");
+    console.log("✅ updateOrder SUCCESS - Document updated");
     return true;
   } catch (error: any) {
-    console.error("❌ updateOrder ERROR - Code:", error?.code);
+    console.error("❌ updateOrder ERROR");
+    console.error("   Code:", error?.code);
     console.error("   Message:", error?.message);
-    console.error("   Checked ID:", id);
+    console.error("   Full error:", error);
     return false;
   }
 }

@@ -341,7 +341,7 @@ export default function OrdersPage() {
                         <p>{t("placedAt", language)} {new Date(selectedOrder.createdAt).toLocaleString()}</p>
                       </div>
 
-                      {/* Status Update Section */}
+                      {/* Status Update Section - for admins only */}
                       {user?.role === 'admin' && (
                         <div className="mt-4 pt-4 border-t border-gray-100">
                           {!editingStatus ? (
@@ -358,6 +358,9 @@ export default function OrdersPage() {
                             </button>
                           ) : (
                             <div className="space-y-2">
+                              <div className="text-xs text-gray-600 mb-2">
+                                الـ ID: {selectedOrder.id}
+                              </div>
                               <select
                                 value={newStatus}
                                 onChange={(e) => setNewStatus(e.target.value)}
