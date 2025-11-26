@@ -95,7 +95,13 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     console.log("🟢🟢🟢 PLACE ORDER CLICKED 🟢🟢🟢");
-    console.log("State:", { paymentMethod, shippingType, selectedZone });
+    console.log("Current state:", { 
+      itemsCount: items.length, 
+      isProcessing,
+      paymentMethod, 
+      shippingType, 
+      selectedZone 
+    });
     
     if (!paymentMethod) {
       toast.error("Please select payment method");
@@ -104,6 +110,11 @@ export default function CheckoutPage() {
 
     if (!shippingType || !selectedZone) {
       toast.error(t("selectShippingAddressAndZone", language));
+      return;
+    }
+    
+    if (items.length === 0) {
+      toast.error("Cart is empty!");
       return;
     }
 
@@ -189,10 +200,18 @@ export default function CheckoutPage() {
           `Order #${orderNumber} placed for L.E ${finalTotal.toFixed(2)}`
         ).catch(e => console.warn("Notification failed:", e));
 
-        toast.success("Order placed successfully!");
-        
-        // Reset ALL state FIRST - before redirect
+        // Reset ALL state IMMEDIATELY
         setIsProcessing(false);
+        clearCart();
+        
+        // Force clear localStorage to ensure fresh cart
+        try {
+          localStorage.removeItem("cart");
+        } catch (e) {
+          console.warn("Could not clear localStorage");
+        }
+        
+        // Reset form completely
         setPaymentMethod(null);
         setShippingType(null);
         setSelectedZone("");
@@ -210,12 +229,13 @@ export default function CheckoutPage() {
           zipCode: "",
         });
         
-        // Clear cart after state reset
-        clearCart();
+        toast.success("✅ Order placed successfully!");
         
-        // Redirect to orders page
-        console.log("🔵 Redirecting to orders page");
-        setTimeout(() => setLocation("/orders?refresh=" + Date.now()), 500);
+        // Navigate to orders after a brief delay
+        setTimeout(() => {
+          console.log("🔵 Navigating to orders page");
+          setLocation("/orders?refresh=" + Date.now());
+        }, 1000);
       } else {
         console.error("❌ saveOrder returned null");
         setIsProcessing(false);
