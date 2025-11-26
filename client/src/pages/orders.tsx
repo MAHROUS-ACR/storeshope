@@ -47,12 +47,21 @@ export default function OrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [firebaseConfigured, setFirebaseConfigured] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !isLoggedIn) {
       setLocation("/login");
     }
   }, [isLoggedIn, authLoading, setLocation]);
+
+  // Detect when page is visited from checkout (has refresh param)
+  useEffect(() => {
+    const params = new URLSearchParams(location.split('?')[1]);
+    if (params.has('refresh')) {
+      setRefetchTrigger(prev => prev + 1);
+    }
+  }, [location]);
 
   useEffect(() => {
     if (!user?.id) {
@@ -96,7 +105,7 @@ export default function OrdersPage() {
       setOrders([]);
       setIsLoading(false);
     }
-  }, [user?.id]);
+  }, [user?.id, refetchTrigger]);
 
 
   return (

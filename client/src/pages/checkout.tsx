@@ -193,7 +193,11 @@ export default function CheckoutPage() {
 
         toast.success("Order placed successfully!");
         clearCart();
-        setTimeout(() => setLocation("/orders"), 1000);
+        // Wait for Firestore to sync before redirecting
+        setTimeout(() => {
+          // Force refresh by adding timestamp to location
+          setLocation("/orders?refresh=" + Date.now());
+        }, 2000);
       } else {
         console.error("❌ saveOrder returned null");
         toast.error("Failed to save order");
