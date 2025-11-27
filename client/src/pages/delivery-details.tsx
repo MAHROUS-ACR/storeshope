@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { ArrowLeft, MapPin, Phone, User, CreditCard, Truck, FileText, Loader, ChevronDown, ChevronUp, Navigation } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, User, CreditCard, Truck, FileText, Loader, ChevronDown, ChevronUp, Navigation, Target } from "lucide-react";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/lib/languageContext";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
@@ -384,6 +384,14 @@ export default function DeliveryDetailsPage() {
     }
   }, [mapLat, mapLng, isNavigating]);
 
+  // Function to recenter map on delivery location
+  const recenterMap = () => {
+    if (map.current && mapLat && mapLng) {
+      map.current.setView([mapLat, mapLng], 15);
+      userInteractedWithMap.current = false;
+    }
+  };
+
   // Fetch order
   useEffect(() => {
     const fetchOrder = async () => {
@@ -475,6 +483,16 @@ export default function DeliveryDetailsPage() {
                 >
                   <Navigation size={16} />
                   <span className="text-xs font-semibold">{language === "ar" ? "ملاحة" : "Navigate"}</span>
+                </button>
+              )}
+              {showMap && mapLat && mapLng && (
+                <button
+                  onClick={recenterMap}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                  data-testid="button-recenter-map"
+                  title={language === "ar" ? "توسيط الخريطة" : "Center map"}
+                >
+                  <Target size={16} className="text-gray-700" />
                 </button>
               )}
               <button
