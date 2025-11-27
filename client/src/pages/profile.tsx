@@ -1102,7 +1102,7 @@ export default function ProfilePage() {
                     <div className="text-center py-8 text-gray-500">No orders yet</div>
                   ) : (
                     <div className="space-y-2">
-                      {orders.filter(order => selectedStatusFilter === null || order.status === selectedStatusFilter).map((order) => (
+                      {orders.filter(order => selectedStatusFilter === null || order.status === selectedStatusFilter).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((order) => (
                         <button
                           key={order.id}
                           onClick={() => {
