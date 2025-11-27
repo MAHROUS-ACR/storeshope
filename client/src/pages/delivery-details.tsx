@@ -379,54 +379,45 @@ export default function DeliveryDetailsPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-5 py-0.5 border-b border-gray-100 flex-shrink-0">
-          <div className="flex items-center justify-between gap-2 mb-0.5">
-            <button onClick={() => setLocation("/delivery")} className="flex items-center gap-1">
-              <ArrowLeft size={16} />
-              <span className="font-semibold text-xs">{language === "ar" ? "رجوع" : "Back"}</span>
+        <div className="px-3 py-0 border-b border-gray-100 flex-shrink-0">
+          <div className="flex items-center justify-between gap-1 h-8">
+            <button onClick={() => setLocation("/delivery")} className="flex items-center gap-0.5 min-w-0">
+              <ArrowLeft size={14} />
+              <span className="font-semibold text-[10px] truncate">{language === "ar" ? "رجوع" : "Back"}</span>
             </button>
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-0 flex-shrink-0">
               {order?.status !== "received" && (
                 <button
                   onClick={() => setIsNavigating(!isNavigating)}
-                  className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs transition-colors ${isNavigating ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+                  className={`p-1 rounded transition-colors ${isNavigating ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   data-testid="button-navigation"
+                  title={language === "ar" ? "ملاحة" : "Navigate"}
                 >
-                  <Navigation size={14} />
-                  <span className="font-semibold text-[10px]">{language === "ar" ? "ملاحة" : "Nav"}</span>
+                  <Navigation size={12} />
                 </button>
               )}
               {showMap && mapLat && mapLng && (
                 <button
                   onClick={recenterMap}
-                  className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs transition-colors ${isAutoCentering ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+                  className={`p-1 rounded transition-colors ${isAutoCentering ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   data-testid="button-recenter-map"
                   title={language === "ar" ? "توسيط الخريطة" : "Center map"}
                 >
-                  <Target size={14} />
+                  <Target size={12} />
                 </button>
               )}
               <button
                 onClick={() => setShowMap(!showMap)}
-                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-gray-100 hover:bg-gray-200 transition-colors text-xs"
+                className="p-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
                 data-testid="button-toggle-map"
+                title={showMap ? (language === "ar" ? "إغلاق الخريطة" : "Close") : (language === "ar" ? "فتح الخريطة" : "Open")}
               >
-                {showMap ? (
-                  <>
-                    <ChevronUp size={14} className="text-gray-700" />
-                    <span className="font-semibold text-[10px] text-gray-700">{language === "ar" ? "إغلاق" : "Close"}</span>
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown size={14} className="text-gray-700" />
-                    <span className="font-semibold text-[10px] text-gray-700">{language === "ar" ? "فتح" : "Open"}</span>
-                  </>
-                )}
+                {showMap ? <ChevronUp size={12} className="text-gray-700" /> : <ChevronDown size={12} className="text-gray-700" />}
               </button>
             </div>
           </div>
-          <h1 className="text-sm font-bold">Order #{order.orderNumber || "N/A"}</h1>
-          <p className="text-[11px] text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
+          <h1 className="text-xs font-bold truncate leading-tight">Order #{order.orderNumber || "N/A"}</h1>
+          <p className="text-[9px] text-gray-500 leading-tight">{new Date(order.createdAt).toLocaleDateString()}</p>
         </div>
 
         {/* Map - Full Width at Top */}
