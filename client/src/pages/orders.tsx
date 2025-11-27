@@ -252,10 +252,17 @@ export default function OrdersPage() {
     }
   }, [mapLat, mapLng, language, selectedOrder?.latitude, selectedOrder?.longitude]);
 
-  // Geocode when order is selected
+  // Reset map and geocode when order is selected
   useEffect(() => {
-    if (selectedOrder && (selectedOrder.shippingAddress || selectedOrder.deliveryAddress) && !mapLat) {
-      geocodeAddress(selectedOrder.shippingAddress || selectedOrder.deliveryAddress || "");
+    if (selectedOrder?.id) {
+      // Reset map state for new order
+      setMapLat(null);
+      setMapLng(null);
+      
+      // Then geocode the new order's address
+      if (selectedOrder.shippingAddress || selectedOrder.deliveryAddress) {
+        geocodeAddress(selectedOrder.shippingAddress || selectedOrder.deliveryAddress || "");
+      }
     }
   }, [selectedOrder?.id]);
 
