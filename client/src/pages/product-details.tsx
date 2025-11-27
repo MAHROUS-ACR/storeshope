@@ -199,7 +199,7 @@ export default function ProductDetailsPage() {
             {/* Category */}
             {product.category && (
               <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-1">Category</p>
+                <p className="text-sm text-gray-600 mb-1">{language === "ar" ? "الفئة" : "Category"}</p>
                 <p className="text-sm font-semibold" data-testid="text-category">{product.category}</p>
               </div>
             )}
@@ -215,7 +215,7 @@ export default function ProductDetailsPage() {
             {/* Variants */}
             {hasVariants && (
               <div className="mb-6">
-                <h3 className="font-semibold text-sm mb-3">Options</h3>
+                <h3 className="font-semibold text-sm mb-3">{language === "ar" ? "الخيارات" : "Options"}</h3>
                 
                 {product.units && product.units.length > 0 && (
                   <div className="mb-4">
@@ -226,7 +226,7 @@ export default function ProductDetailsPage() {
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
                       data-testid="select-unit"
                     >
-                      <option value="">Select Unit</option>
+                      <option value="">{language === "ar" ? "اختر الوحدة" : "Select Unit"}</option>
                       {product.units.map((unit: string) => (
                         <option key={unit} value={unit || ""}>{unit}</option>
                       ))}
@@ -243,7 +243,7 @@ export default function ProductDetailsPage() {
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
                       data-testid="select-size"
                     >
-                      <option value="">Select Size</option>
+                      <option value="">{language === "ar" ? "اختر الحجم" : "Select Size"}</option>
                       {product.sizes.map((size: string) => (
                         <option key={size} value={size || ""}>{size}</option>
                       ))}
