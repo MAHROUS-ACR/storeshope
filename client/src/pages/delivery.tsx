@@ -227,7 +227,10 @@ export default function DeliveryPage() {
                     {/* Action Button */}
                     {order.status === "shipped" && (
                       <button
-                        onClick={() => handleMarkAsReceived(order.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMarkAsReceived(order.id);
+                        }}
                         className="w-full py-2 px-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
                         data-testid={`button-mark-received-${order.id}`}
                       >
