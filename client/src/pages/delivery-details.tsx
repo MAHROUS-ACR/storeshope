@@ -52,7 +52,7 @@ export default function DeliveryDetailsPage() {
 
   const orderId = location.split("/delivery-order/")[1]?.split("?")[0];
 
-  // Get current location
+  // Get current location once on mount
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -68,6 +68,22 @@ export default function DeliveryDetailsPage() {
       );
     }
   }, []);
+
+  // Refresh current location when order changes
+  useEffect(() => {
+    if (navigator.geolocation && orderId) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log("Refreshed current position:", position.coords.latitude, position.coords.longitude);
+          setCurrentLat(position.coords.latitude);
+          setCurrentLng(position.coords.longitude);
+        },
+        (error) => {
+          console.log("Geolocation refresh error:", error);
+        }
+      );
+    }
+  }, [orderId]);
 
   // Geocode address to get lat/lng as fallback
   const geocodeAddress = async (address: string) => {
