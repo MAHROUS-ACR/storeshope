@@ -4,6 +4,7 @@ import { ArrowLeft, MapPin, User, Phone, Mail, FileText, ShoppingBag } from "luc
 import { useLocation } from "wouter";
 import { useCart } from "@/lib/cartContext";
 import { useUser } from "@/lib/userContext";
+import { useLanguage } from "@/lib/languageContext";
 import { toast } from "sonner";
 import { getShippingZones, saveOrder } from "@/lib/firebaseOps";
 
@@ -17,6 +18,7 @@ export default function CheckoutPage() {
   const [, setLocation] = useLocation();
   const { items, clearCart } = useCart();
   const { user, isLoggedIn, isLoading: authLoading, updateUserProfile } = useUser();
+  const { language } = useLanguage();
 
   // Form states
   const [paymentSelected, setPaymentSelected] = useState("");
@@ -219,8 +221,8 @@ export default function CheckoutPage() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">🛒 الدفع</h1>
-            <p className="text-sm text-gray-600">أتمم عملية الشراء</p>
+            <h1 className="text-2xl font-bold text-gray-900">🛒 {language === "ar" ? "الدفع" : "Checkout"}</h1>
+            <p className="text-sm text-gray-600">{language === "ar" ? "أتمم عملية الشراء" : "Complete your purchase"}</p>
           </div>
         </div>
 
@@ -230,7 +232,7 @@ export default function CheckoutPage() {
           {/* Order Summary */}
           <section className="bg-white rounded-xl p-5 mb-5 border border-gray-200 shadow-sm">
             <h2 className="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5" /> ملخص الطلب
+              <ShoppingBag className="w-5 h-5" /> {language === "ar" ? "ملخص الطلب" : "Order Summary"}
             </h2>
             <div className="space-y-3 mb-4 max-h-40 overflow-y-auto">
               {items.map((item, idx) => (
@@ -243,14 +245,14 @@ export default function CheckoutPage() {
                   </div>
                   {(item.selectedColor || item.selectedSize || item.selectedUnit) && (
                     <div className="mt-2 p-2 bg-white rounded border border-gray-200 text-[10px] space-y-1">
-                      {item.selectedUnit && <p className="font-semibold text-gray-600">الوحدة: <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium text-[11px]">{item.selectedUnit}</span></p>}
-                      {item.selectedSize && <p className="font-semibold text-gray-600">المقاس: <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium text-[11px]">{item.selectedSize}</span></p>}
+                      {item.selectedUnit && <p className="font-semibold text-gray-600">{language === "ar" ? "الوحدة:" : "Unit:"} <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium text-[11px]">{item.selectedUnit}</span></p>}
+                      {item.selectedSize && <p className="font-semibold text-gray-600">{language === "ar" ? "المقاس:" : "Size:"} <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium text-[11px]">{item.selectedSize}</span></p>}
                       {item.selectedColor && (() => {
                         const [colorName, colorHex] = typeof item.selectedColor === 'string' 
                           ? item.selectedColor.split('|') 
                           : [item.selectedColor, '#000000'];
                         return (
-                          <p className="font-semibold text-gray-600">اللون: <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-gray-300 bg-white text-[11px] font-medium"><div className="w-2.5 h-2.5 rounded-full border border-gray-300" style={{backgroundColor: colorHex || '#000000'}}></div>{colorName}</span></p>
+                          <p className="font-semibold text-gray-600">{language === "ar" ? "اللون:" : "Color:"} <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-gray-300 bg-white text-[11px] font-medium"><div className="w-2.5 h-2.5 rounded-full border border-gray-300" style={{backgroundColor: colorHex || '#000000'}}></div>{colorName}</span></p>
                         );
                       })()}
                     </div>
@@ -260,15 +262,15 @@ export default function CheckoutPage() {
             </div>
             <div className="border-t border-gray-200 pt-4 space-y-2">
               <div className="flex justify-between text-gray-700">
-                <span>المجموع:</span>
+                <span>{language === "ar" ? "المجموع:" : "Subtotal:"}</span>
                 <span>L.E {subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-700">
-                <span>التوصيل:</span>
+                <span>{language === "ar" ? "التوصيل:" : "Shipping:"}</span>
                 <span className="text-orange-600 font-semibold">+ L.E {shipping.toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
-                <span className="font-bold text-lg text-gray-900">الإجمالي:</span>
+                <span className="font-bold text-lg text-gray-900">{language === "ar" ? "الإجمالي:" : "Total:"}</span>
                 <span className="text-2xl font-bold text-green-600">L.E {grandTotal.toFixed(2)}</span>
               </div>
             </div>
@@ -277,7 +279,7 @@ export default function CheckoutPage() {
           {/* Shipping Type */}
           <section className="bg-white rounded-xl p-5 mb-5 border border-gray-200 shadow-sm">
             <h3 className="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
-              <MapPin className="w-5 h-5" /> طريقة التوصيل
+              <MapPin className="w-5 h-5" /> {language === "ar" ? "طريقة التوصيل" : "Delivery Method"}
             </h3>
             <div className="space-y-2">
               <button
@@ -287,9 +289,9 @@ export default function CheckoutPage() {
                 }`}
               >
                 <span className="text-lg">📍</span>
-                <div className="text-left">
-                  <p>بيانات محفوظة</p>
-                  <p className="text-sm opacity-75">استخدم البيانات المحفوظة</p>
+                <div className={language === "ar" ? "text-left" : "text-right"}>
+                  <p>{language === "ar" ? "بيانات محفوظة" : "Saved Address"}</p>
+                  <p className="text-sm opacity-75">{language === "ar" ? "استخدم البيانات المحفوظة" : "Use saved address"}</p>
                 </div>
               </button>
               <button
@@ -299,9 +301,9 @@ export default function CheckoutPage() {
                 }`}
               >
                 <span className="text-lg">✏️</span>
-                <div className="text-left">
-                  <p>عنوان جديد</p>
-                  <p className="text-sm opacity-75">أدخل بيانات مختلفة</p>
+                <div className={language === "ar" ? "text-left" : "text-right"}>
+                  <p>{language === "ar" ? "عنوان جديد" : "New Address"}</p>
+                  <p className="text-sm opacity-75">{language === "ar" ? "أدخل بيانات مختلفة" : "Enter different details"}</p>
                 </div>
               </button>
             </div>
@@ -312,16 +314,16 @@ export default function CheckoutPage() {
             <section className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 mb-5 border-2 border-blue-300 shadow-md">
               <h3 className="font-bold text-lg text-gray-900 mb-5 flex items-center gap-2">
                 <User className="w-5 h-5" />
-                {shippingSelected === "saved" ? "بيانات الطلب" : "بيانات التوصيل"}
+                {language === "ar" ? (shippingSelected === "saved" ? "بيانات الطلب" : "بيانات التوصيل") : (shippingSelected === "saved" ? "Order Information" : "Delivery Information")}
               </h3>
               
               {/* Customer Info Fields */}
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">👤 الاسم</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">👤 {language === "ar" ? "الاسم" : "Name"}</label>
                   <input
                     type="text"
-                    placeholder={shippingSelected === "saved" ? "اسمك الكامل" : "اسم المستقبل"}
+                    placeholder={language === "ar" ? (shippingSelected === "saved" ? "اسمك الكامل" : "اسم المستقبل") : (shippingSelected === "saved" ? "Your full name" : "Recipient's name")}
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     disabled={shippingSelected === "saved"}
@@ -333,10 +335,10 @@ export default function CheckoutPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">📱 رقم الهاتف</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">📱 {language === "ar" ? "رقم الهاتف" : "Phone"}</label>
                   <input
                     type="tel"
-                    placeholder="+201012345678"
+                    placeholder={language === "ar" ? "+201012345678" : "+20 1012345678"}
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     disabled={shippingSelected === "saved"}
@@ -349,9 +351,9 @@ export default function CheckoutPage() {
                 </div>
                 {shippingSelected === "new" && (
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">📍 العنوان الكامل</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">📍 {language === "ar" ? "العنوان الكامل" : "Full Address"}</label>
                     <textarea
-                      placeholder="الشارع، الحي، المدينة"
+                      placeholder={language === "ar" ? "الشارع، الحي، المدينة" : "Street, District, City"}
                       value={deliveryAddress}
                       onChange={(e) => setDeliveryAddress(e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white"
@@ -361,9 +363,9 @@ export default function CheckoutPage() {
                 )}
                 {shippingSelected === "saved" && (
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">📍 العنوان المحفوظ</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">📍 {language === "ar" ? "العنوان المحفوظ" : "Saved Address"}</label>
                     <textarea
-                      placeholder="عنوانك المحفوظ"
+                      placeholder={language === "ar" ? "عنوانك المحفوظ" : "Your saved address"}
                       value={deliveryAddress}
                       disabled
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed resize-none"
@@ -373,7 +375,7 @@ export default function CheckoutPage() {
                 )}
                 {shippingSelected === "saved" && (
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">✉️ البريد الإلكتروني</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">✉️ {language === "ar" ? "البريد الإلكتروني" : "Email"}</label>
                     <input
                       type="email"
                       value={user?.email || ""}
@@ -387,12 +389,12 @@ export default function CheckoutPage() {
               {/* Zone Selection Inside */}
               <div className="border-t-2 border-blue-200 pt-6">
                 <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <span className="text-lg">🚚</span> منطقة التوصيل
+                  <span className="text-lg">🚚</span> {language === "ar" ? "منطقة التوصيل" : "Delivery Zone"}
                 </label>
                 {isLoadingZones ? (
-                  <p className="text-center py-4 text-gray-600">⏳ جاري تحميل المناطق...</p>
+                  <p className="text-center py-4 text-gray-600">{language === "ar" ? "⏳ جاري تحميل المناطق..." : "⏳ Loading zones..."}</p>
                 ) : zonesList.length === 0 ? (
-                  <p className="text-center py-4 text-gray-600">لا توجد مناطق متاحة</p>
+                  <p className="text-center py-4 text-gray-600">{language === "ar" ? "لا توجد مناطق متاحة" : "No zones available"}</p>
                 ) : (
                   <select
                     value={zoneSelected?.id || ""}
@@ -407,7 +409,7 @@ export default function CheckoutPage() {
                         : "bg-white border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     }`}
                   >
-                    <option value="">-- اختر منطقة التوصيل --</option>
+                    <option value="">{language === "ar" ? "-- اختر منطقة التوصيل --" : "-- Select delivery zone --"}</option>
                     {zonesList.map((z) => (
                       <option key={z.id} value={z.id}>
                         {z.name} - L.E {z.shippingCost}
@@ -421,7 +423,7 @@ export default function CheckoutPage() {
 
           {/* Payment Method */}
           <section className="bg-white rounded-xl p-5 mb-5 border border-gray-200 shadow-sm">
-            <h3 className="font-bold text-lg text-gray-900 mb-4">💳 طريقة الدفع</h3>
+            <h3 className="font-bold text-lg text-gray-900 mb-4">💳 {language === "ar" ? "طريقة الدفع" : "Payment Method"}</h3>
             <div className="space-y-2">
               <button
                 onClick={() => setPaymentSelected("delivery")}
@@ -430,7 +432,7 @@ export default function CheckoutPage() {
                 }`}
               >
                 <span className="text-xl">💵</span>
-                الدفع عند الاستلام
+                {language === "ar" ? "الدفع عند الاستلام" : "Pay on Delivery"}
               </button>
               <button
                 onClick={() => setPaymentSelected("card")}
@@ -439,7 +441,7 @@ export default function CheckoutPage() {
                 }`}
               >
                 <span className="text-xl">💳</span>
-                بطاقة ائتمان
+                {language === "ar" ? "بطاقة ائتمان" : "Credit Card"}
               </button>
             </div>
           </section>
@@ -447,40 +449,40 @@ export default function CheckoutPage() {
           {/* Card Payment Details */}
           {paymentSelected === "card" && (
             <section className="bg-purple-50 rounded-xl p-5 mb-5 border-2 border-purple-200">
-              <h3 className="font-bold text-lg text-gray-900 mb-4">💳 بيانات البطاقة</h3>
+              <h3 className="font-bold text-lg text-gray-900 mb-4">💳 {language === "ar" ? "بيانات البطاقة" : "Card Details"}</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">اسم حامل البطاقة</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{language === "ar" ? "اسم حامل البطاقة" : "Cardholder Name"}</label>
                   <input
                     type="text"
-                    placeholder="اسمك كما يظهر على البطاقة"
+                    placeholder={language === "ar" ? "اسمك كما يظهر على البطاقة" : "Your name as shown on card"}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">رقم البطاقة</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{language === "ar" ? "رقم البطاقة" : "Card Number"}</label>
                   <input
                     type="text"
-                    placeholder="1234 5678 9012 3456"
+                    placeholder={language === "ar" ? "1234 5678 9012 3456" : "1234 5678 9012 3456"}
                     maxLength={19}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">انتهاء الصلاحية</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">{language === "ar" ? "انتهاء الصلاحية" : "Expiry"}</label>
                     <input
                       type="text"
-                      placeholder="MM/YY"
+                      placeholder={language === "ar" ? "MM/YY" : "MM/YY"}
                       maxLength={5}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">CVV</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">{language === "ar" ? "CVV" : "CVV"}</label>
                     <input
                       type="text"
-                      placeholder="123"
+                      placeholder={language === "ar" ? "123" : "123"}
                       maxLength={4}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
                     />
@@ -493,10 +495,10 @@ export default function CheckoutPage() {
           {/* Notes */}
           <section className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
             <h3 className="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5" /> ملاحظات إضافية (اختياري)
+              <FileText className="w-5 h-5" /> {language === "ar" ? "ملاحظات إضافية (اختياري)" : "Additional Notes (Optional)"}
             </h3>
             <textarea
-              placeholder="أي ملاحظات خاصة بالطلب؟"
+              placeholder={language === "ar" ? "أي ملاحظات خاصة بالطلب؟" : "Any special notes for the order?"}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none"
