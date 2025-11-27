@@ -1265,8 +1265,11 @@ export default function ProfilePage() {
                                       {language === "ar" ? "✎ تعديل" : "✎ Edit"}
                                     </button>
                                   </div>
-                                  {order.status === "shipped" && order.deliveryUsername && (
+                                  {order.deliveryUsername && (
                                     <p className="text-xs text-orange-600 font-semibold">🚚 {order.deliveryUsername}</p>
+                                  )}
+                                  {order.recipientName && (
+                                    <p className="text-xs text-gray-600 font-semibold">{order.recipientName}</p>
                                   )}
                                 </div>
                               </div>
