@@ -31,6 +31,8 @@ interface DeliveryOrderDetails {
   customerName?: string;
   latitude?: number;
   longitude?: number;
+  deliveryLat?: number;
+  deliveryLng?: number;
 }
 
 export default function DeliveryDetailsPage() {
@@ -40,6 +42,8 @@ export default function DeliveryDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [mapLat, setMapLat] = useState<number | null>(null);
   const [mapLng, setMapLng] = useState<number | null>(null);
+  const [deliveryLat, setDeliveryLat] = useState<number | null>(null);
+  const [deliveryLng, setDeliveryLng] = useState<number | null>(null);
   const [currentLat, setCurrentLat] = useState<number | null>(null);
   const [currentLng, setCurrentLng] = useState<number | null>(null);
   const [mapLoading, setMapLoading] = useState(false);
@@ -88,8 +92,8 @@ export default function DeliveryDetailsPage() {
             currentMarker.current.setIcon(createDeliveryIcon(true));
             
             // Calculate remaining distance
-            if (mapLat && mapLng) {
-              const remaining = calculateDistance(lat, lng, mapLat, mapLng);
+            if (deliveryLat && deliveryLng) {
+              const remaining = calculateDistance(lat, lng, deliveryLat, deliveryLng);
               setRemainingDistance(remaining);
             }
           }
@@ -107,7 +111,7 @@ export default function DeliveryDetailsPage() {
         navigator.geolocation.clearWatch(watchId);
       }
     };
-  }, [isNavigating, mapLat, mapLng]);
+  }, [isNavigating, deliveryLat, deliveryLng]);
 
   // Save driver location to Firebase in real-time
   useEffect(() => {
@@ -173,8 +177,8 @@ export default function DeliveryDetailsPage() {
       );
       const results = await response.json();
       if (results.length > 0) {
-        setMapLat(parseFloat(results[0].lat));
-        setMapLng(parseFloat(results[0].lon));
+        setDeliveryLat(parseFloat(results[0].lat));
+        setDeliveryLng(parseFloat(results[0].lon));
       }
     } catch (error) {
       console.log("Geocoding error:", error);
@@ -186,7 +190,7 @@ export default function DeliveryDetailsPage() {
 
   // Initialize Leaflet map with routing
   useEffect(() => {
-    if (!mapContainer.current || !mapLat || !mapLng) return;
+    if (!mapContainer.current || !deliveryLat || !deliveryLng) return;
     
     // Clear existing map
     if (map.current) {
@@ -194,7 +198,7 @@ export default function DeliveryDetailsPage() {
     }
 
     // Show delivery location only - no auto-centering
-    map.current = L.map(mapContainer.current).setView([mapLat, mapLng], 15);
+    map.current = L.map(mapContainer.current).setView([deliveryLat, deliveryLng], 15);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; OpenStreetMap',
       maxZoom: 19,
@@ -208,8 +212,8 @@ export default function DeliveryDetailsPage() {
       userInteractedWithMap.current = true;
     });
 
-    // Delivery destination marker
-    L.marker([mapLat, mapLng], {
+    // Delivery destination marker (RED)
+    L.marker([deliveryLat, deliveryLng], {
       icon: L.icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -224,7 +228,7 @@ export default function DeliveryDetailsPage() {
 
     // Mark that map was initialized (don't auto-pan unless user clicks center button)
     userInteractedWithMap.current = true;
-  }, [orderId, mapLat, mapLng, language, showMap, order?.status]);
+  }, [orderId, deliveryLat, deliveryLng, language, showMap, order?.status]);
 
   // Add current location marker and route when location becomes available
   useEffect(() => {
@@ -245,7 +249,7 @@ export default function DeliveryDetailsPage() {
       const fetchBestRoute = async () => {
         try {
           const response = await fetch(
-            `https://router.project-osrm.org/route/v1/driving/${currentLng},${currentLat};${mapLng},${mapLat}?geometries=geojson&overview=full&alternatives=true&steps=false`,
+            `https://router.project-osrm.org/route/v1/driving/${currentLng},${currentLat};${deliveryLng},${deliveryLat}?geometries=geojson&overview=full&alternatives=true&steps=false`,
             { signal: AbortSignal.timeout(6000) }
           );
           
@@ -288,7 +292,7 @@ export default function DeliveryDetailsPage() {
       // Update existing marker position
       currentMarker.current.setLatLng([currentLat, currentLng]);
     }
-  }, [currentLat, currentLng, mapLat, mapLng, order?.status, language, isNavigating]);
+  }, [currentLat, currentLng, deliveryLat, deliveryLng, order?.status, language, isNavigating]);
 
   // Keep marker updated when location changes during navigation
   useEffect(() => {
@@ -300,7 +304,7 @@ export default function DeliveryDetailsPage() {
 
   // Toggle auto-centering and recenter map
   const recenterMap = () => {
-    if (!map.current || !mapLat || !mapLng) return;
+    if (!map.current || !deliveryLat || !deliveryLng) return;
     
     setIsAutoCentering(!isAutoCentering);
     userInteractedWithMap.current = false;
@@ -310,14 +314,14 @@ export default function DeliveryDetailsPage() {
       map.current.setView([currentLat, currentLng], 18);
     } else if (currentLat && currentLng) {
       // Not navigating: show both markers and route
-      const bounds = L.latLngBounds([[currentLat, currentLng], [mapLat, mapLng]]);
+      const bounds = L.latLngBounds([[currentLat, currentLng], [deliveryLat, deliveryLng]]);
       map.current.fitBounds(bounds, { padding: [80, 80] });
     }
   };
 
   // Keep auto-centering active if enabled
   useEffect(() => {
-    if (!isAutoCentering || !map.current || !currentLat || !currentLng || !mapLat || !mapLng) return;
+    if (!isAutoCentering || !map.current || !currentLat || !currentLng || !deliveryLat || !deliveryLng) return;
     
     if (isNavigating) {
       map.current.panTo([currentLat, currentLng]);
@@ -337,16 +341,22 @@ export default function DeliveryDetailsPage() {
           const data = orderSnap.data() as DeliveryOrderDetails;
           setOrder(data);
           
-          // Use latitude and longitude if available
-          if (data.latitude && data.longitude) {
-            setMapLat(data.latitude);
-            setMapLng(data.longitude);
+          // Delivery destination location
+          if (data.deliveryLat && data.deliveryLng) {
+            setDeliveryLat(data.deliveryLat);
+            setDeliveryLng(data.deliveryLng);
           } else {
             // Fallback: geocode the address
             const addr = data.shippingAddress || (data as any).deliveryAddress || data.shippingZone || "";
             if (addr) {
               geocodeAddress(addr);
             }
+          }
+          
+          // Driver current location
+          if (data.latitude && data.longitude) {
+            setMapLat(data.latitude);
+            setMapLng(data.longitude);
           }
         }
       } catch (error) {
@@ -417,7 +427,7 @@ export default function DeliveryDetailsPage() {
                   <Navigation size={12} />
                 </button>
               )}
-              {showMap && mapLat && mapLng && (
+              {showMap && deliveryLat && deliveryLng && (
                 <button
                   onClick={recenterMap}
                   className={`p-1 rounded transition-colors ${isAutoCentering ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
@@ -449,7 +459,7 @@ export default function DeliveryDetailsPage() {
                 <Loader size={18} className="animate-spin text-blue-600" />
                 <span className="text-blue-600 font-semibold text-sm">{language === "ar" ? "جاري تحميل الخريطة..." : "Loading map..."}</span>
               </div>
-            ) : mapLat && mapLng ? (
+            ) : deliveryLat && deliveryLng ? (
               <div className="w-full bg-blue-100 border-b border-blue-300 overflow-hidden h-80" ref={mapContainer}></div>
             ) : (
               <div className="w-full bg-gray-200 border-b border-gray-300 py-12 flex items-center justify-center gap-2">
