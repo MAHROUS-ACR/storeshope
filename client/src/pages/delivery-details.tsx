@@ -246,18 +246,8 @@ export default function DeliveryDetailsPage() {
       map.current.remove();
     }
 
-    // Calculate center and zoom to fit both markers if current location exists
-    let centerLat = mapLat;
-    let centerLng = mapLng;
-    let zoomLevel = 15;
-
-    if (currentLat && currentLng) {
-      centerLat = (mapLat + currentLat) / 2;
-      centerLng = (mapLng + currentLng) / 2;
-      zoomLevel = 14;
-    }
-
-    map.current = L.map(mapContainer.current).setView([centerLat, centerLng], zoomLevel);
+    // Show delivery location only - no auto-centering
+    map.current = L.map(mapContainer.current).setView([mapLat, mapLng], 15);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; OpenStreetMap',
       maxZoom: 19,
@@ -295,15 +285,6 @@ export default function DeliveryDetailsPage() {
         .bindPopup(`<div style="text-align: center; direction: ${language === "ar" ? "rtl" : "ltr"}"><strong>${language === "ar" ? "موقعك الحالي" : "Your Location"}</strong></div>`);
       
       currentMarker.current = marker;
-
-      // Don't auto-center on init - let user control it with button
-      // Just show delivery location by default
-      if (currentLat && currentLng) {
-        const bounds = L.latLngBounds([[currentLat, currentLng], [mapLat, mapLng]]);
-        map.current.fitBounds(bounds, { padding: [80, 80] });
-      } else {
-        map.current.setView([mapLat, mapLng], 15);
-      }
       
       // Mark that map was initialized (don't auto-pan unless user clicks center button)
       userInteractedWithMap.current = true;
