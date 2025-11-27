@@ -52,10 +52,11 @@ export default function DeliveryDetailsPage() {
 
   const orderId = location.split("/delivery-order/")[1]?.split("?")[0];
 
-  // Get current location once on mount
+  // Watch current location continuously for accuracy
   useEffect(() => {
+    let watchId: number | null = null;
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
+      watchId = navigator.geolocation.watchPosition(
         (position) => {
           console.log("Got current position:", position.coords.latitude, position.coords.longitude);
           setCurrentLat(position.coords.latitude);
@@ -64,26 +65,17 @@ export default function DeliveryDetailsPage() {
         (error) => {
           console.log("Geolocation error:", error);
           setLocationError(language === "ar" ? "لا يمكن الوصول للموقع الحالي" : "Cannot access current location");
-        }
-      );
-    }
-  }, []);
-
-  // Refresh current location when order changes
-  useEffect(() => {
-    if (navigator.geolocation && orderId) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          console.log("Refreshed current position:", position.coords.latitude, position.coords.longitude);
-          setCurrentLat(position.coords.latitude);
-          setCurrentLng(position.coords.longitude);
         },
-        (error) => {
-          console.log("Geolocation refresh error:", error);
-        }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     }
-  }, [orderId]);
+    
+    return () => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
+  }, []);
 
   // Geocode address to get lat/lng as fallback
   const geocodeAddress = async (address: string) => {
