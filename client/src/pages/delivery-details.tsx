@@ -149,8 +149,8 @@ export default function DeliveryDetailsPage() {
       .bindPopup(`<div style="text-align: center; direction: ${language === "ar" ? "rtl" : "ltr"}"><strong>${language === "ar" ? "موقع التسليم" : "Delivery Location"}</strong></div>`)
       .openPopup();
 
-    // Current location marker if available
-    if (currentLat && currentLng) {
+    // Current location marker and route - only for non-received orders
+    if (currentLat && currentLng && order?.status !== "received") {
       L.marker([currentLat, currentLng], {
         icon: L.icon({
           iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
@@ -178,7 +178,7 @@ export default function DeliveryDetailsPage() {
         }
       });
     }
-  }, [mapLat, mapLng, currentLat, currentLng, language, showMap]);
+  }, [mapLat, mapLng, currentLat, currentLng, language, showMap, order?.status]);
 
   // Fetch order
   useEffect(() => {
@@ -270,12 +270,12 @@ export default function DeliveryDetailsPage() {
               {showMap ? (
                 <>
                   <ChevronUp size={16} className="text-gray-700" />
-                  <span className="text-xs font-semibold text-gray-700">{language === "ar" ? "إغلاق" : "Close"}</span>
+                  <span className="text-xs font-semibold text-gray-700">{language === "ar" ? "كلوز ماب" : "Close Map"}</span>
                 </>
               ) : (
                 <>
                   <ChevronDown size={16} className="text-gray-700" />
-                  <span className="text-xs font-semibold text-gray-700">{language === "ar" ? "فتح" : "Open"}</span>
+                  <span className="text-xs font-semibold text-gray-700">{language === "ar" ? "اوبن ماب" : "Open Map"}</span>
                 </>
               )}
             </button>
