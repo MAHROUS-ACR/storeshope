@@ -51,6 +51,8 @@ export default function ProfilePage() {
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
   const [newStatus, setNewStatus] = useState<string>("");
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
+  const [deliveryUsers, setDeliveryUsers] = useState<any[]>([]);
+  const [selectedDeliveryUserId, setSelectedDeliveryUserId] = useState<string>("");
   const [showFirebaseSettings, setShowFirebaseSettings] = useState(false);
   const [showOrders, setShowOrders] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -674,14 +676,38 @@ export default function ProfilePage() {
     }
   };
 
+  const fetchDeliveryUsers = async () => {
+    try {
+      const db = getFirestore();
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("role", "==", "delivery"));
+      const snapshot = await getDocs(q);
+      const deliveryList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        email: doc.data().email || "",
+        username: doc.data().username || ""
+      }));
+      setDeliveryUsers(deliveryList);
+    } catch (error) {
+      toast.error("Failed to load delivery users");
+    }
+  };
+
   const handleStatusUpdate = async (orderId: string, status: string) => {
     try {
       const db = getFirestore();
       const orderRef = doc(db, "orders", orderId);
-      await updateDoc(orderRef, { status });
+      const updateData: any = { status };
+      
+      if (status === "shipped" && selectedDeliveryUserId) {
+        updateData.deliveryUserId = selectedDeliveryUserId;
+      }
+      
+      await updateDoc(orderRef, updateData);
       toast.success("Order status updated!");
       setEditingOrderId(null);
       setNewStatus("");
+      setSelectedDeliveryUserId("");
       fetchAllOrders();
     } catch (error) {
 
