@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { ArrowLeft, Database, Save, LogOut, Copy, Check } from "lucide-react";
+import { ArrowLeft, Database, Save, LogOut, Copy, Check, Upload } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { saveFirebaseConfig, getFirebaseConfig, clearFirebaseConfig } from "@/lib/firebaseConfig";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { setupFirebaseSettingsFromEnv } from "@/lib/setupFirebaseSettings";
 
 export default function SettingsPage() {
@@ -34,6 +35,7 @@ export default function SettingsPage() {
   
   const [isLoading, setIsLoading] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
 
   // Load Firebase config and Store settings from Firestore on mount
   useEffect(() => {
@@ -84,8 +86,42 @@ export default function SettingsPage() {
   const handleCopyToClipboard = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);
     setCopiedField(fieldName);
-    toast.success(`L.E fieldName} copied!`);
+    toast.success(`${fieldName} copied!`);
     setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    try {
+      const storage = getStorage();
+      const storageRef = ref(storage, `logos/${Date.now()}-${file.name}`);
+      
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      
+      setStoreLogo(downloadURL);
+      toast.success("Logo uploaded successfully!");
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload logo");
+    } finally {
+      setIsUploadingLogo(false);
+    }
   };
 
   const handleSaveAllSettings = async () => {
@@ -340,15 +376,25 @@ export default function SettingsPage() {
 
                 <div>
                   <label className="block text-sm font-semibold mb-2" htmlFor="storeLogo">
-                    Store Logo URL
+                    Store Logo
+                  </label>
+                  <label
+                    htmlFor="storeLogo"
+                    className="w-full px-5 py-4 bg-white border-2 border-dashed border-gray-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer hover:border-gray-400 transition-colors flex items-center justify-center gap-2"
+                    data-testid="button-upload-logo"
+                  >
+                    <Upload className="w-4 h-4" />
+                    <span className="text-gray-600">
+                      {isUploadingLogo ? "Uploading..." : "Click to upload logo"}
+                    </span>
                   </label>
                   <input
                     id="storeLogo"
-                    type="text"
-                    value={storeLogo}
-                    onChange={(e) => setStoreLogo(e.target.value)}
-                    placeholder="https://example.com/logo.png"
-                    className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    disabled={isUploadingLogo}
+                    className="hidden"
                     data-testid="input-store-logo"
                   />
                   {storeLogo && (
@@ -358,7 +404,7 @@ export default function SettingsPage() {
                         alt="Logo Preview" 
                         className="w-12 h-12 rounded-xl object-cover border border-gray-200"
                       />
-                      <span className="text-xs text-muted-foreground">Preview</span>
+                      <span className="text-xs text-muted-foreground">Logo set</span>
                     </div>
                   )}
                 </div>
