@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import admin from "firebase-admin";
 import notificationsRouter from "./notifications";
+import { sendEmail } from "./send-email";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -31,6 +32,12 @@ try {
 
 // Routes
 app.use("/api/notifications", notificationsRouter);
+
+// Email endpoint
+app.post("/api/send-email", async (req, res) => {
+  const result = await sendEmail(req.body);
+  res.json(result);
+});
 
 // Health check
 app.get("/health", (req, res) => {
