@@ -135,9 +135,19 @@ export function MapSelector({
             </div>`
           );
         }
+      } else {
+        // Address not found
+        const message = language === "ar" 
+          ? "⚠️ لم نجد هذا العنوان! اضغط على الخريطة أو استخدم موقعك الحالي"
+          : "⚠️ Address not found! Click on the map or use your current location";
+        alert(message);
       }
     } catch (error) {
       console.log("Forward geocoding error:", error);
+      const errorMsg = language === "ar" 
+        ? "خطأ في البحث. اضغط على الخريطة بدلاً من ذلك"
+        : "Error searching. Try clicking on the map instead";
+      alert(errorMsg);
     } finally {
       setIsLoadingLocation(false);
     }
@@ -237,10 +247,17 @@ export function MapSelector({
         </button>
       </div>
 
-      <p className="text-xs text-gray-600 text-center">
-        {language === "ar"
-          ? "👆 اضغط على الخريطة لتحديد الموقع أو استخدم زر الموقع الحالي"
-          : "👆 Click on the map to select location or use current location button"}
+      <p className="text-xs text-gray-600 text-center space-y-1">
+        <div>
+          {language === "ar"
+            ? "👆 اضغط على الخريطة لتحديد الموقع أو استخدم زر الموقع الحالي"
+            : "👆 Click on the map to select location or use current location button"}
+        </div>
+        <div className="text-orange-600 font-semibold">
+          {language === "ar"
+            ? "💡 إذا لم يعمل البحث، اضغط مباشرة على الخريطة"
+            : "💡 If search doesn't work, click directly on the map"}
+        </div>
       </p>
     </div>
   );
