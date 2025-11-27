@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { ArrowLeft, MapPin, Phone, User, CreditCard, Truck, FileText } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, User, CreditCard, Truck, FileText, Loader } from "lucide-react";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/lib/languageContext";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 interface DeliveryOrderDetails {
   id: string;
@@ -35,9 +37,56 @@ export default function DeliveryDetailsPage() {
   const { language } = useLanguage();
   const [order, setOrder] = useState<DeliveryOrderDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mapLat, setMapLat] = useState<number | null>(null);
+  const [mapLng, setMapLng] = useState<number | null>(null);
+  const [mapLoading, setMapLoading] = useState(false);
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<L.Map | null>(null);
 
   const orderId = location.split("/delivery-order/")[1]?.split("?")[0];
 
+  // Geocode address to get lat/lng
+  const geocodeAddress = async (address: string) => {
+    if (!address.trim()) return;
+    setMapLoading(true);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`
+      );
+      const results = await response.json();
+      if (results.length > 0) {
+        setMapLat(parseFloat(results[0].lat));
+        setMapLng(parseFloat(results[0].lon));
+      }
+    } catch (error) {
+      console.log("Geocoding error:", error);
+    } finally {
+      setMapLoading(false);
+    }
+  };
+
+  // Initialize Leaflet map
+  useEffect(() => {
+    if (!mapContainer.current || !mapLat || !mapLng) return;
+    
+    // Clear existing map
+    if (map.current) {
+      map.current.remove();
+    }
+
+    map.current = L.map(mapContainer.current).setView([mapLat, mapLng], 15);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 19,
+    }).addTo(map.current);
+
+    L.marker([mapLat, mapLng])
+      .addTo(map.current)
+      .bindPopup(`<div style="text-align: center"><strong>${language === "ar" ? "موقع التسليم" : "Delivery Location"}</strong></div>`)
+      .openPopup();
+  }, [mapLat, mapLng, language]);
+
+  // Fetch order
   useEffect(() => {
     const fetchOrder = async () => {
       if (!orderId) return;
@@ -47,7 +96,19 @@ export default function DeliveryDetailsPage() {
         const orderRef = doc(db, "orders", orderId);
         const orderSnap = await getDoc(orderRef);
         if (orderSnap.exists()) {
-          setOrder(orderSnap.data() as DeliveryOrderDetails);
+          const data = orderSnap.data() as DeliveryOrderDetails;
+          setOrder(data);
+          
+          // Try to get coordinates from address
+          if (data.latitude && data.longitude) {
+            setMapLat(data.latitude);
+            setMapLng(data.longitude);
+          } else {
+            const addr = data.shippingAddress || (data as any).deliveryAddress || data.shippingZone || "";
+            if (addr) {
+              geocodeAddress(addr);
+            }
+          }
         }
       } catch (error) {
         console.error("Error fetching order:", error);
@@ -111,20 +172,16 @@ export default function DeliveryDetailsPage() {
 
         {/* Content */}
         <div className="flex-1 flex flex-col overflow-y-auto px-5 py-4 space-y-4">
-          {/* Map Button */}
-          {mapsLink ? (
-            <a
-              href={mapsLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-2xl transition-colors flex items-center justify-center gap-2"
-              data-testid="button-open-maps"
-            >
-              <MapPin size={20} />
-              {language === "ar" ? "فتح الخريطة وأفضل مسار" : "Open Maps & Best Route"}
-            </a>
+          {/* Map */}
+          {mapLoading ? (
+            <div className="w-full bg-blue-50 rounded-2xl p-4 border border-blue-200 flex items-center justify-center gap-2 h-64">
+              <Loader size={20} className="animate-spin text-blue-600" />
+              <span className="text-blue-600 font-semibold">{language === "ar" ? "جاري تحميل الخريطة..." : "Loading map..."}</span>
+            </div>
+          ) : mapLat && mapLng ? (
+            <div className="w-full rounded-2xl overflow-hidden border border-blue-200 shadow-sm h-64" ref={mapContainer}></div>
           ) : (
-            <div className="w-full bg-gray-200 text-gray-600 font-semibold py-3 px-4 rounded-2xl flex items-center justify-center gap-2">
+            <div className="w-full bg-gray-200 rounded-2xl p-4 text-gray-600 font-semibold flex items-center justify-center gap-2 h-32">
               <MapPin size={20} />
               {language === "ar" ? "لا توجد معلومات موقع" : "No location info"}
             </div>
