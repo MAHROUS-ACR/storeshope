@@ -5,8 +5,9 @@ import { useUser } from "@/lib/userContext";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 import { toast } from "sonner";
+import { Check } from "lucide-react";
 
 interface DeliveryOrder {
   id: string;
@@ -49,6 +50,18 @@ export default function DeliveryPage() {
       toast.error("Failed to load orders");
     } finally {
       setOrdersLoading(false);
+    }
+  };
+
+  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    try {
+      const db = getFirestore();
+      const orderRef = doc(db, "orders", orderId);
+      await updateDoc(orderRef, { status: newStatus });
+      toast.success(language === "ar" ? "تم تحديث الحالة بنجاح" : "Status updated successfully");
+      fetchMyOrders();
+    } catch (error) {
+      toast.error(language === "ar" ? "فشل تحديث الحالة" : "Failed to update status");
     }
   };
 
@@ -150,7 +163,19 @@ export default function DeliveryPage() {
                           : language === "ar" ? "🚚 تم الشحن" : "🚚 Shipped"}
                       </span>
                     </div>
-                    <p className="text-sm font-bold text-orange-600">L.E {order.total.toFixed(2)}</p>
+                    <p className="text-sm font-bold text-orange-600 mb-3">L.E {order.total.toFixed(2)}</p>
+                    
+                    {/* Action Button */}
+                    {order.status === "shipped" && (
+                      <button
+                        onClick={() => updateOrderStatus(order.id, "completed")}
+                        className="w-full py-2 px-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                        data-testid={`button-mark-received-${order.id}`}
+                      >
+                        <Check size={16} />
+                        {language === "ar" ? "تم الاستقبال" : "Mark as Received"}
+                      </button>
+                    )}
                   </div>
                 ))}
             </div>
