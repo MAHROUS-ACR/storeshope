@@ -85,6 +85,7 @@ export default function ProfilePage() {
   const [sizeInput, setSizeInput] = useState("");
   const [colorInput, setColorInput] = useState("");
   const [currentColorHex, setCurrentColorHex] = useState("#000000");
+  const [isSavingItem, setIsSavingItem] = useState(false);
   const [users, setUsers] = useState<any[]>([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
@@ -1780,8 +1781,18 @@ export default function ProfilePage() {
               {showItems && (
                 <div className="mb-6">
                   {/* Add New Item Form */}
-                  <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4">
-                    <h3 className="text-sm font-bold mb-3">{editingItemId ? t("editProduct", language) : t("addNewProduct", language)}</h3>
+                  <div 
+                    className={`bg-white rounded-2xl p-4 border-2 mb-4 transition-all ${
+                      editingItemId 
+                        ? "border-amber-300 shadow-lg shadow-amber-100" 
+                        : "border-gray-200"
+                    }`}
+                    data-testid="form-add-item"
+                  >
+                    <h3 className={`text-sm font-bold mb-3 ${editingItemId ? "text-amber-700" : ""}`}>
+                      {editingItemId ? t("editProduct", language) : t("addNewProduct", language)}
+                      {editingItemId && <span className="ml-2 text-xs text-amber-600">{language === "ar" ? "(وضع التعديل)" : "(Edit Mode)"}</span>}
+                    </h3>
                     <div className="space-y-3">
                       {/* Product Main Image */}
                       <div>
@@ -2008,6 +2019,7 @@ export default function ProfilePage() {
                         <button
                           onClick={async () => {
                             if (newItemForm.title && newItemForm.price && newItemForm.category) {
+                              setIsSavingItem(true);
                               try {
                                 const db = getFirestore();
                                 const productData = {
@@ -2027,13 +2039,13 @@ export default function ProfilePage() {
                                   const itemRef = doc(db, "products", editingItemId);
                                   await updateDoc(itemRef, productData);
                                   setItems(items.map(i => i.id === editingItemId ? { id: editingItemId, ...productData } : i));
-                                  toast.success("Product updated!");
+                                  toast.success(language === "ar" ? "تم تحديث المنتج!" : "Product updated!");
                                   setEditingItemId(null);
                                 } else {
                                   const productsRef = collection(db, "products");
                                   const docRef = await addDoc(productsRef, productData);
                                   setItems([...items, { id: docRef.id, ...productData }]);
-                                  toast.success("Product added!");
+                                  toast.success(language === "ar" ? "تم إضافة المنتج!" : "Product added!");
                                 }
                                 setNewItemForm({ title: "", description: "", price: "", category: "", image: "", images: [], units: [], sizes: [], colors: [], available: true });
                                 setUnitInput("");
@@ -2041,17 +2053,33 @@ export default function ProfilePage() {
                                 setColorInput("");
                                 setCurrentColorHex("#000000");
                               } catch (error) {
-                                toast.error("Failed to save product");
+                                toast.error(language === "ar" ? "فشل حفظ المنتج" : "Failed to save product");
+                              } finally {
+                                setIsSavingItem(false);
                               }
                             } else {
-                              toast.error("Please fill all fields");
+                              toast.error(language === "ar" ? "الرجاء ملء جميع الحقول" : "Please fill all fields");
                             }
                           }}
-                          className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors text-sm"
+                          disabled={isSavingItem}
+                          className={`flex-1 py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all text-sm ${
+                            isSavingItem 
+                              ? "bg-blue-400 text-white cursor-not-allowed opacity-75" 
+                              : "bg-blue-600 text-white hover:bg-blue-700"
+                          }`}
                           data-testid="button-add-item"
                         >
-                          <Plus className="w-4 h-4" />
-                          {editingItemId ? t("update", language) : t("add", language)}
+                          {isSavingItem ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              {editingItemId ? (language === "ar" ? "جاري التحديث..." : "Updating...") : (language === "ar" ? "جاري الإضافة..." : "Adding...")}
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="w-4 h-4" />
+                              {editingItemId ? t("update", language) : t("add", language)}
+                            </>
+                          )}
                         </button>
                         {editingItemId && (
                           <button
@@ -2146,6 +2174,13 @@ export default function ProfilePage() {
                                 setSizeInput("");
                                 setColorInput("");
                                 setCurrentColorHex("#000000");
+                                // Scroll to form
+                                setTimeout(() => {
+                                  const formElement = document.querySelector('[data-testid="form-add-item"]');
+                                  if (formElement) {
+                                    formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                  }
+                                }, 100);
                               }}
                               className="flex-1 px-3 py-2 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center gap-2 hover:bg-amber-200 transition-colors text-xs font-semibold"
                               data-testid={`button-edit-item-${item.id}`}
