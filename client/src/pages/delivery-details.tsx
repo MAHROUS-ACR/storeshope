@@ -241,9 +241,14 @@ export default function DeliveryDetailsPage() {
       
       currentMarker.current = marker;
 
-      // Fit bounds to show both markers immediately
-      const bounds = L.latLngBounds([[currentLat, currentLng], [mapLat, mapLng]]);
-      map.current.fitBounds(bounds, { padding: [80, 80] });
+      // Fit bounds to show both markers immediately (unless navigating)
+      if (!isNavigating) {
+        const bounds = L.latLngBounds([[currentLat, currentLng], [mapLat, mapLng]]);
+        map.current.fitBounds(bounds, { padding: [80, 80] });
+      } else {
+        // If navigating, focus on current location with close zoom
+        map.current.setView([currentLat, currentLng], 18);
+      }
 
       // Fetch best route with alternatives
       const fetchBestRoute = async () => {
@@ -289,7 +294,21 @@ export default function DeliveryDetailsPage() {
       
       fetchBestRoute();
     }
-  }, [orderId, mapLat, mapLng, currentLat, currentLng, language, showMap, order?.status]);
+  }, [orderId, mapLat, mapLng, currentLat, currentLng, language, showMap, order?.status, isNavigating]);
+
+  // Update map zoom and center when navigation mode changes
+  useEffect(() => {
+    if (!map.current || !currentLat || !currentLng || !mapLat || !mapLng) return;
+    
+    if (isNavigating) {
+      // Focus on current location with close zoom
+      map.current.setView([currentLat, currentLng], 18);
+    } else {
+      // Show both markers
+      const bounds = L.latLngBounds([[currentLat, currentLng], [mapLat, mapLng]]);
+      map.current.fitBounds(bounds, { padding: [80, 80] });
+    }
+  }, [isNavigating, currentLat, currentLng, mapLat, mapLng]);
 
   // Fetch order
   useEffect(() => {
