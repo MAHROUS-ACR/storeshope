@@ -156,6 +156,10 @@ export default function CheckoutPage() {
           title: item.title || "",
           price: Number(item.price) || 0,
           quantity: Number(item.quantity) || 1,
+          selectedColor: item.selectedColor || "",
+          selectedSize: item.selectedSize || "",
+          selectedUnit: item.selectedUnit || "",
+          image: item.image || "",
         })),
         
         subtotal: Number(subtotal) || 0,
