@@ -275,8 +275,16 @@ export default function DeliveryDetailsPage() {
       .bindPopup(`<div style="text-align: center; direction: ${language === "ar" ? "rtl" : "ltr"}"><strong>${language === "ar" ? "موقع التسليم" : "Delivery Location"}</strong></div>`)
       .openPopup();
 
-    // Current location marker - only for non-received orders
-    if (currentLat && currentLng && order?.status !== "received") {
+    // Mark that map was initialized (don't auto-pan unless user clicks center button)
+    userInteractedWithMap.current = true;
+  }, [orderId, mapLat, mapLng, language, showMap, order?.status]);
+
+  // Add current location marker and route when location becomes available
+  useEffect(() => {
+    if (!map.current || !currentLat || !currentLng || order?.status === "received") return;
+    
+    // Only add marker if it doesn't exist yet
+    if (!currentMarker.current) {
       console.log("Adding current location marker:", currentLat, currentLng);
       const marker = L.marker([currentLat, currentLng], {
         icon: createDeliveryIcon(isNavigating)
@@ -286,10 +294,7 @@ export default function DeliveryDetailsPage() {
       
       currentMarker.current = marker;
       
-      // Mark that map was initialized (don't auto-pan unless user clicks center button)
-      userInteractedWithMap.current = true;
-
-      // Fetch best route with alternatives
+      // Fetch and display route
       const fetchBestRoute = async () => {
         try {
           const response = await fetch(
@@ -310,7 +315,7 @@ export default function DeliveryDetailsPage() {
               
               const coords = bestRoute.geometry.coordinates.map((coord: [number, number]) => [coord[1], coord[0]]);
               
-              if (coords && coords.length > 0 && map.current) {
+              if (coords && coords.length > 0 && map.current && !routePolyline.current) {
                 const polyline = L.polyline(coords, {
                   color: '#2563eb',
                   weight: 3,
@@ -332,8 +337,11 @@ export default function DeliveryDetailsPage() {
       };
       
       fetchBestRoute();
+    } else {
+      // Update existing marker position
+      currentMarker.current.setLatLng([currentLat, currentLng]);
     }
-  }, [orderId, mapLat, mapLng, language, showMap, order?.status]);
+  }, [currentLat, currentLng, mapLat, mapLng, order?.status, language, isNavigating]);
 
   // Keep marker updated when location changes during navigation
   useEffect(() => {
