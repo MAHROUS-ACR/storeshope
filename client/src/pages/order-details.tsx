@@ -127,7 +127,7 @@ export default function OrderDetailsPage() {
       setUserLoading(true);
       try {
         const db = getFirestore();
-        const userDocRef = doc(db, "users", order.userId);
+        const userDocRef = doc(db, "users", order.userId || "");
         const userDocSnapshot = await getDoc(userDocRef);
         
         if (userDocSnapshot.exists()) {
