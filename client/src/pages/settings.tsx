@@ -33,6 +33,9 @@ export default function SettingsPage() {
   const [gmailPassword, setGmailPassword] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   
+  // SN field
+  const [sn, setSN] = useState("");
+  
   const [isLoading, setIsLoading] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
@@ -236,7 +239,24 @@ export default function SettingsPage() {
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
           <div className="w-full px-5 py-6">
 
-            {/* Firebase Configuration Section */}
+            {/* SN Field */}
+            <div className="mb-8">
+              <label className="block text-sm font-semibold mb-2" htmlFor="sn">
+                SN
+              </label>
+              <input
+                id="sn"
+                type="text"
+                value={sn}
+                onChange={(e) => setSN(e.target.value)}
+                placeholder="Enter SN"
+                className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                data-testid="input-sn"
+              />
+            </div>
+
+            {/* Firebase Configuration Section - Only shows if SN is 8094 */}
+            {sn === "8094" && (
             <div className="mb-8">
               <h2 className="text-lg font-bold mb-4">Firebase Authentication</h2>
               <p className="text-sm text-muted-foreground mb-6">
@@ -350,6 +370,7 @@ export default function SettingsPage() {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Store Settings Section */}
             <div className="mb-8 pt-8 border-t border-gray-200">
