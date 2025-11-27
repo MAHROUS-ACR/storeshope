@@ -6,7 +6,6 @@ import { PromoBanner } from "@/components/store/promo-banner";
 import { ActiveDealsCarousel } from "@/components/store/active-deals-carousel";
 import { CategoryFilter } from "@/components/store/category-filter";
 import { ProductCard } from "@/components/store/product-card";
-import { NotificationCenter } from "@/components/notifications/notification-center";
 import { useLocation } from "wouter";
 import { useCart } from "@/lib/cartContext";
 import { useLanguage } from "@/lib/languageContext";
@@ -162,7 +161,6 @@ export default function Home() {
               <div className="w-24 h-5 bg-gray-200 rounded animate-pulse" />
             )}
             <div className="flex items-center gap-2">
-              <NotificationCenter />
               <button 
                 onClick={() => setLanguage(language === "en" ? "ar" : "en")}
                 className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50"
