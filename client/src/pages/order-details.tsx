@@ -41,6 +41,9 @@ interface Order {
   customerPhone?: string;
   deliveryAddress?: string;
   notes?: string;
+  deliveryUsername?: string;
+  recipientName?: string;
+  deliveryRemarks?: string;
 }
 
 export default function OrderDetailsPage() {
@@ -353,7 +356,7 @@ export default function OrderDetailsPage() {
               </div>
 
               {/* Customer & Delivery Details */}
-              {(order.customerName || order.customerPhone || order.deliveryAddress || order.shippingAddress || order.shippingPhone || order.shippingZone) && (
+              {(order.customerName || order.customerPhone || order.deliveryAddress || order.shippingAddress || order.shippingPhone || order.shippingZone || order.deliveryUsername || order.recipientName || order.deliveryRemarks) && (
                 <div className="bg-white rounded-2xl border border-gray-100 p-4">
                   <h3 className="font-semibold text-sm mb-3">👤 {language === "ar" ? "بيانات التوصيل" : "Delivery Information"}</h3>
                   <div className="space-y-3">
@@ -385,6 +388,24 @@ export default function OrderDetailsPage() {
                       <div>
                         <p className="text-xs text-muted-foreground">{t("shippingCost", language)}</p>
                         <p className="text-sm font-medium">L.E {order.shippingCost.toFixed(2)}</p>
+                      </div>
+                    )}
+                    {order.recipientName && (
+                      <div>
+                        <p className="text-xs text-muted-foreground">{language === "ar" ? "المستلم" : "Recipient"}</p>
+                        <p className="text-sm font-medium">{order.recipientName}</p>
+                      </div>
+                    )}
+                    {order.deliveryUsername && (
+                      <div>
+                        <p className="text-xs text-muted-foreground">{language === "ar" ? "اسم الدليفرى" : "Delivery Driver"}</p>
+                        <p className="text-sm font-medium">{order.deliveryUsername}</p>
+                      </div>
+                    )}
+                    {order.deliveryRemarks && (
+                      <div>
+                        <p className="text-xs text-muted-foreground">{language === "ar" ? "ملاحظات التسليم" : "Delivery Remarks"}</p>
+                        <p className="text-sm font-medium">{order.deliveryRemarks}</p>
                       </div>
                     )}
                   </div>
