@@ -229,8 +229,9 @@ export async function saveOrder(order: any) {
 
     await setDoc(doc(db, "orders", order.id), cleanOrder);
 
-    // Send confirmation emails to customer and admin
-    await sendOrderEmail(cleanOrder, order.customerEmail || order.email);
+    // TODO: Email sending requires backend server or external service (Resend, SendGrid, Firebase Cloud Function)
+    // Currently disabled for GitHub deployment compatibility
+    // await sendOrderEmail(cleanOrder, order.customerEmail || order.email);
 
     return order.id;
   } catch (error: any) {

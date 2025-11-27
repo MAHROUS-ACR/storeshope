@@ -17,79 +17,50 @@ Flux Wallet is a high-fidelity mobile e-commerce application built as a progress
 - Complete discount/promotions system
 - Push Notifications with Firebase Cloud Messaging
 - Dynamic Firebase project switching (change Firebase credentials anytime)
+- Bilingual support (Arabic/English)
+- Interactive Leaflet.js maps with OSRM routing for delivery tracking
+- Mobile-optimized design with Tailwind CSS
 
-## Architecture Changes (Nov 24, 2025)
+## Recent Changes (Nov 27, 2025)
 
-**🎉 COMPLETE FIREBASE-ONLY TRANSITION:**
+### Email System - Deferred Implementation ⏳
+- **Status:** Disabled for GitHub deployment compatibility
+- **Setup in place:** 
+  - Gmail settings fields in Settings page (Gmail User, Gmail Password, Admin Email)
+  - `sendOrderEmail()` function in firebaseOps.ts
+  - Backend endpoint `/api/send-email` configured in server/index.ts
+  - Nodemailer package installed
+- **Why disabled:** Backend server cannot run alongside frontend on GitHub
+- **Future Solutions:**
+  1. Use Firebase Cloud Functions (recommended)
+  2. Use Resend/SendGrid API
+  3. Deploy backend separately (Heroku, Railway, etc.)
+  4. Use Zapier/Make webhooks
+
+### Store Settings Cleanup (Nov 27, 2025)
+- ✅ Removed duplicate Store Settings section from admin page (profile.tsx)
+- ✅ Kept Store Settings only in Settings page (settings.tsx) to eliminate redundancy
+- ✅ Removed associated state, functions, and UI from profile.tsx
+
+### Previous Changes (Nov 24-25, 2025)
+
+**Architecture:**
+- 🎉 COMPLETE FIREBASE-ONLY TRANSITION
 - ✅ **Removed:** Express.js server completely
 - ✅ **Removed:** PostgreSQL + Drizzle ORM
-- ✅ **Removed:** All server-side API endpoints
-- ✅ **Removed:** Node.js dependencies (express, drizzle-kit, passport, etc.)
+- ✅ **Removed:** All server-side API endpoints (except notifications server on PORT 3001)
 - ✅ **Added:** Direct Firebase Firestore operations from client
 - ✅ **New File:** `client/src/lib/firebaseOps.ts` - All Firebase CRUD operations
-- ✅ **Updated:** All pages to use `firebaseOps` instead of REST API calls
 - ✅ **Dynamic Firebase Config:** Settings page allows switching Firebase projects anytime
 
-**Key Benefits:**
-- No server maintenance needed
-- Direct client-to-Firestore operations
-- Simpler deployment (frontend-only on Replit)
-- Real-time data sync with Firestore listeners
-- Reduced latency and complexity
-- **Can switch Firebase projects without code changes** ⭐
-
-## Recent Changes (Nov 25, 2025)
-
-### Push Notifications Implementation ✅ COMPLETE
-- **Express Server:** Running on port 3001 with Firebase Admin SDK
-- **FCM Token Generation:** Firebase Cloud Messaging tokens generation ready
-- **VAPID Key:** Added `VITE_FIREBASE_VAPID_KEY` environment variable for web push
-- **Notification API Endpoints:**
-  - `POST /api/notifications/send-to-admins` - Send notification to all admin users
-  - `POST /api/notifications/send` - Send notification to specific users
-- **Checkout Integration:** Orders automatically trigger admin notifications
-- **Backend Status:** ✅ FULLY WORKING - API endpoints tested and responding
-- **Frontend Status:** ⏳ Awaiting Firebase Authorization - one-time setup required
-
-**To Complete Setup:**
-1. Add authorized domains in Firebase Console (Authentication → Settings → Authorized domains)
-2. Add: `localhost:5000`, production domain
-3. Refresh app to generate FCM tokens
-4. Test by placing an order - admin should receive notification
-
-**Documentation Files:**
-- `QUICK_START_NOTIFICATIONS.md` - Simple setup guide
-- `NOTIFICATIONS_SETUP.md` - Complete technical documentation
-
-## Previous Changes (Nov 24, 2025)
-
-### Firebase Configuration Management
-- **Settings Page (`settings.tsx`):** Now displays all 7 Firebase credentials
-- **Dynamic Firebase Switching:** Edit credentials in Settings and app automatically reconnects to new project
-- **Firestore-Backed Config:** Firebase settings are stored in `settings/firebase` doc in Firestore
-- **Auto-Reload:** App reloads when Firebase project credentials change
-- **Credentials Required (7 fields):**
-  1. Firebase API Key
-  2. Firebase Project ID
-  3. Firebase App ID
-  4. Auth Domain
-  5. Storage Bucket
-  6. Messaging Sender ID
-  7. Measurement ID
-
-### Firebase-Only Migration Complete
-- **Removed Express Server:** All `/api/*` endpoints replaced with direct Firestore calls
-- **firebaseOps.ts Module:** Central module for all Firebase operations:
-  - `getProducts()` - Fetch products from Firestore
-  - `getOrders()` - Fetch orders by user or all orders
-  - `getStoreSettings()` - Load store configuration
-  - `getShippingZones()` - Fetch shipping zones
-  - `getDiscounts()` - Fetch active discounts
-  - `saveOrder()` - Create new orders
-  - `updateUser()` - Update user profiles
-  - And more...
-- **Updated Pages:** home.tsx, checkout.tsx, profile.tsx all use firebaseOps
-- **Workflow:** Now runs `vite dev` only (no Express server)
+**Push Notifications (Working):**
+- Express Server running on PORT 3001 with Firebase Admin SDK
+- FCM Token Generation ready
+- VAPID Key configured
+- Notification API Endpoints:
+  - `POST /api/notifications/send-to-admins` - Send to admins
+  - `POST /api/notifications/send` - Send to specific users
+- Orders automatically trigger admin notifications
 
 ## System Architecture
 
@@ -100,20 +71,23 @@ Flux Wallet is a high-fidelity mobile e-commerce application built as a progress
 - **Routing:** Wouter (lightweight client-side routing)
 - **State Management:** 
   - React Context API for cart state
-  - TanStack React Query for server state and data fetching
+  - TanStack React Query for server state
   - Local Storage for cart persistence
 - **UI Library:** Radix UI primitives with shadcn/ui components
 - **Styling:** Tailwind CSS v4 with custom design tokens
-- **Animation:** Framer Motion for transitions and micro-interactions
-- **Database:** Firebase Firestore (cloud-hosted, no backend server)
+- **Animation:** Framer Motion for transitions
+- **Maps:** Leaflet.js with react-leaflet for delivery tracking
+- **Database:** Firebase Firestore (cloud-hosted)
+- **Authentication:** Firebase Authentication
 
 **Key Components:**
-- `MobileWrapper`: Simulates iPhone device chrome and constraints
-- `BottomNav`: Fixed navigation bar with active state animations
-- `CartProvider`: Global cart state with localStorage persistence
-- `NotificationCenter`: Real-time notification bell with dropdown
-- **Admin Panel (profile.tsx)**: Tab-based interface for all admin functions
-- **Settings Page (settings.tsx)**: Manage Firebase project credentials, store info, branding
+- `MobileWrapper`: Simulates iPhone device
+- `BottomNav`: Fixed navigation bar
+- `CartProvider`: Global cart state with localStorage
+- `NotificationCenter`: Real-time notifications
+- `Admin Panel (profile.tsx)`: Tab-based admin interface
+- `Settings Page (settings.tsx)`: Firebase & store configuration
+- `DeliveryDetails`: Map-based delivery tracking with OSRM routing
 
 ### Data Storage
 
@@ -123,9 +97,9 @@ Flux Wallet is a high-fidelity mobile e-commerce application built as a progress
 - `discounts` - Product discounts with date ranges
 - `shippingZones` - Shipping cost configuration
 - `notifications` - Order and system notifications
-- `fcmTokens` - Firebase Cloud Messaging tokens for push notifications
-- `settings/firebase` - Firebase project credentials (editable via Settings page)
-- `settings/store` - Store branding and configuration
+- `fcmTokens` - Firebase Cloud Messaging tokens
+- `settings/firebase` - Firebase project credentials
+- `settings/store` - Store branding and configuration (includes Gmail settings)
 - `users` - User profiles and roles
 
 ### Authentication
@@ -134,54 +108,57 @@ Flux Wallet is a high-fidelity mobile e-commerce application built as a progress
 - Email/password signup and login
 - User ID stored as Firebase UID
 - Role-based access (admin/user)
-- No server-side session management needed
-
-### External Services
-
-**Firebase Integration:**
-- **Firestore:** Primary database for all data
-- **Firebase Auth:** User authentication
-- **Firebase Cloud Messaging:** Push notifications
-- **Firebase Admin SDK:** (for future backend services if needed)
-
-**Development Stack:**
-- **Runtime:** Browser (no Node.js server)
-- **Dev Server:** Vite with HMR
-- **Build:** Vite ESBuild
-- **Port:** 5000
+- SN field (8094) gates Firebase Authentication settings visibility
 
 ## How to Switch Firebase Projects
 
 1. Navigate to Settings page (`/settings`)
 2. Locate "Firebase Configuration" section with 7 input fields
-3. Get credentials from your new Firebase project:
+3. Get credentials from your Firebase project:
    - Firebase Console → Project Settings → General tab
    - Copy: API Key, Project ID, App ID, Auth Domain, Storage Bucket, Messaging Sender ID, Measurement ID
 4. Update the fields in Settings page
 5. Click "Save All Settings"
 6. App automatically reloads and connects to new Firebase project ✅
 
+## How to Configure Email System (Future)
+
+Currently disabled for deployment. To enable:
+
+1. **Option 1 - Firebase Cloud Function (Recommended):**
+   - Create a Cloud Function that sends emails via Nodemailer or SendGrid
+   - Triggered by Firestore document creation
+   - Solves GitHub deployment limitation
+
+2. **Option 2 - External Service (Quick):**
+   - Connect to Resend or SendGrid
+   - Use API keys in environment variables
+   - Modify `sendOrderEmail()` function to use HTTP API instead of backend
+
+3. **Option 3 - Separate Backend:**
+   - Deploy backend server separately (Railway, Render, Heroku)
+   - Update proxy configuration to point to backend URL
+
 ## User Preferences
 
-Preferred communication style: Simple, everyday language.
+- Communication style: Simple, everyday language, Arabic/English bilingual
+- Design: Mobile-first, clean UI with emoji indicators
+- Maps: Identical functionality for customers and admins
+- File uploads: Prefer Firebase Storage over URL inputs
 
 ## Important Notes
 
-- **No Backend Server:** Application runs entirely on Firebase and client-side
-- **Direct Firestore Calls:** All data operations are in `firebaseOps.ts`
-- **Dynamic Configuration:** Firebase credentials can be changed anytime via Settings page
-- **Firestore-Backed Settings:** All settings (Firebase config, store info) are saved in Firestore
-- **Workflow:** Uses `npm run dev` (Vite dev server) only
-- **Deployment:** Frontend-only, can be deployed to any static host or Replit Publishing
-- **Future Enhancement:** Can add Cloud Functions for complex operations
+- **Frontend-Only on GitHub:** No backend server runs alongside frontend
+- **Firebase-Powered:** All data operations use Firestore
+- **Dynamic Configuration:** Firebase credentials changeable via Settings
+- **Workflow:** Uses `npm run dev` (Vite dev server)
+- **Notifications Server:** Separate PORT 3001 process for push notifications (local development only)
+- **Deployment:** Frontend-only ready for any static host or Replit Publishing
+- **Future Work:** Email system, Cloud Functions integration
 
-## Completed Features (Nov 24, 2025)
+## Known Limitations
 
-✅ Complete migration to Firebase-only architecture  
-✅ Removed all Express API endpoints  
-✅ Removed database (PostgreSQL) completely  
-✅ Dynamic Firebase project switching  
-✅ Settings page with Firebase credential management  
-✅ Store branding and configuration management  
-✅ Zero backend server  
-✅ All CRUD operations via Firestore
+⏳ **Email System Disabled** - Requires backend server or external service
+- Issue: Backend server (PORT 3001) cannot run with frontend on GitHub
+- Workaround: Use Firebase Cloud Functions (not yet implemented)
+- Impact: Order confirmation emails not sent automatically
