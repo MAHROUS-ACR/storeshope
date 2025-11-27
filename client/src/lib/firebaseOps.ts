@@ -130,63 +130,8 @@ export async function getOrderById(id: string) {
   }
 }
 
-export async function sendOrderEmail(order: any, userEmail: string) {
-  try {
-    // Get store settings for email credentials
-    const db = initDb();
-    const storeRef = doc(db, "settings", "store");
-    const storeSnap = await getDoc(storeRef);
-    
-    if (!storeSnap.exists()) {
-      console.log("Store settings not found");
-      return false;
-    }
-
-    const storeData = storeSnap.data();
-    const gmailUser = storeData.gmailUser;
-    const gmailPassword = storeData.gmailPassword;
-    const adminEmail = storeData.adminEmail;
-    
-    if (!gmailUser || !gmailPassword) {
-      console.log("Gmail credentials not configured");
-      return false;
-    }
-
-    // Format order items
-    const itemsList = (order.items || [])
-      .map((item: any) => `<li>${item.title} × ${item.quantity} = L.E ${(item.price * item.quantity).toFixed(2)}</li>`)
-      .join("");
-
-    // Email template
-    const emailHTML = `
-      <h2>Order Confirmation #${order.orderNumber || order.id}</h2>
-      <p><strong>Status:</strong> ${order.status}</p>
-      <p><strong>Total:</strong> L.E ${order.total?.toFixed(2) || 0}</p>
-      <p><strong>Items:</strong></p>
-      <ul>${itemsList}</ul>
-      <p><strong>Shipping Address:</strong> ${order.shippingAddress || "N/A"}</p>
-      <p><strong>Phone:</strong> ${order.shippingPhone || "N/A"}</p>
-    `;
-
-    // Send via backend API
-    const response = await fetch("/api/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        gmailUser,
-        gmailPassword,
-        to: [userEmail, adminEmail],
-        subject: `Order Confirmation #${order.orderNumber || order.id}`,
-        html: emailHTML,
-      }),
-    });
-
-    return response.ok;
-  } catch (error) {
-    console.log("Email send error:", error);
-    return false;
-  }
-}
+// Email sending disabled - requires external service or Firebase Cloud Functions
+// See replit.md for email solution options
 
 export async function saveOrder(order: any) {
 
