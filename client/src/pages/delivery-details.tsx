@@ -87,33 +87,6 @@ export default function DeliveryDetailsPage() {
     }
   };
 
-  // Get route from OSRM
-  const fetchRoute = async (startLat: number, startLng: number, endLat: number, endLng: number) => {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-      
-      const response = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`,
-        { signal: controller.signal }
-      );
-      clearTimeout(timeoutId);
-      
-      const data = await response.json();
-      if (data.routes && data.routes[0]) {
-        const route = data.routes[0];
-        const coords = route.geometry.coordinates.map((coord: [number, number]) => [coord[1], coord[0]]);
-        const distance = route.distance / 1000; // Convert to km
-        const duration = route.duration / 60; // Convert to minutes
-        setRouteDistance(distance);
-        setRouteDuration(duration);
-        return coords;
-      }
-    } catch (error) {
-      console.log("Route error:", error);
-    }
-    return null;
-  };
 
   // Initialize Leaflet map with routing
   useEffect(() => {
@@ -155,7 +128,7 @@ export default function DeliveryDetailsPage() {
       .bindPopup(`<div style="text-align: center; direction: ${language === "ar" ? "rtl" : "ltr"}"><strong>${language === "ar" ? "موقع التسليم" : "Delivery Location"}</strong></div>`)
       .openPopup();
 
-    // Current location marker and route - only for non-received orders
+    // Current location marker - only for non-received orders
     if (currentLat && currentLng && order?.status !== "received") {
       L.marker([currentLat, currentLng], {
         icon: L.icon({
@@ -169,16 +142,16 @@ export default function DeliveryDetailsPage() {
         .addTo(map.current)
         .bindPopup(`<div style="text-align: center; direction: ${language === "ar" ? "rtl" : "ltr"}"><strong>${language === "ar" ? "موقعك الحالي" : "Your Location"}</strong></div>`);
 
-      // Fetch and draw actual route (non-blocking)
-      fetchRoute(currentLat, currentLng, mapLat, mapLng).then((coords) => {
-        if (coords && map.current) {
-          L.polyline(coords, {
-            color: '#2563eb',
-            weight: 4,
-            opacity: 0.8,
-          }).addTo(map.current);
+      // Draw straight line only
+      const line = L.polyline(
+        [[currentLat, currentLng], [mapLat, mapLng]],
+        {
+          color: '#2563eb',
+          weight: 2,
+          opacity: 0.6,
+          dashArray: '5, 5',
         }
-      });
+      ).addTo(map.current);
     }
   }, [mapLat, mapLng, currentLat, currentLng, language, showMap, order?.status]);
 
