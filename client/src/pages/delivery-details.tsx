@@ -109,90 +109,41 @@ export default function DeliveryDetailsPage() {
     };
   }, [isNavigating, mapLat, mapLng]);
 
-  // Create custom motorcycle delivery icon
+  // Create motorcycle delivery icon using emoji/image
   const createDeliveryIcon = (isActive: boolean = false) => {
-    const svgString = isActive ? 
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" width="52" height="44">
-        <defs>
-          <style>
-            @keyframes pulse {
-              0%, 100% { r: 45; opacity: 0.5; }
-              50% { r: 60; opacity: 0.15; }
-            }
-            .pulse-ring { animation: pulse 2s infinite; }
-          </style>
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <!-- Pulse animation ring -->
-        <circle cx="60" cy="50" r="45" fill="none" stroke="#ff6b35" stroke-width="1.5" class="pulse-ring" />
-        <!-- Left wheel -->
-        <circle cx="25" cy="65" r="15" fill="none" stroke="#333" stroke-width="2.5"/>
-        <circle cx="25" cy="65" r="2" fill="#333" />
-        <!-- Right wheel -->
-        <circle cx="95" cy="65" r="15" fill="none" stroke="#333" stroke-width="2.5"/>
-        <circle cx="95" cy="65" r="2" fill="#333" />
-        <!-- Motorcycle frame -->
-        <line x1="25" y1="65" x2="50" y2="45" stroke="#ff6b35" stroke-width="3" stroke-linecap="round"/>
-        <line x1="50" y1="45" x2="95" y2="65" stroke="#ff6b35" stroke-width="3" stroke-linecap="round"/>
-        <line x1="50" y1="45" x2="45" y2="28" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"/>
-        <!-- Seat -->
-        <ellipse cx="55" cy="42" rx="12" ry="6" fill="#ff6b35"/>
-        <!-- Driver head -->
-        <circle cx="52" cy="25" r="6" fill="#ff6b35"/>
-        <!-- Handlebars -->
-        <line x1="45" y1="28" x2="40" y2="18" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="45" y1="28" x2="50" y2="18" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>`
-    :
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" width="44" height="37">
-        <defs>
-          <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <!-- Left wheel -->
-        <circle cx="25" cy="65" r="14" fill="none" stroke="#333" stroke-width="2"/>
-        <circle cx="25" cy="65" r="2" fill="#333" />
-        <!-- Right wheel -->
-        <circle cx="95" cy="65" r="14" fill="none" stroke="#333" stroke-width="2"/>
-        <circle cx="95" cy="65" r="2" fill="#333" />
-        <!-- Motorcycle frame -->
-        <line x1="25" y1="65" x2="50" y2="45" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round"/>
-        <line x1="50" y1="45" x2="95" y2="65" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round"/>
-        <line x1="50" y1="45" x2="45" y2="28" stroke="#ff6b35" stroke-width="1.8" stroke-linecap="round"/>
-        <!-- Seat -->
-        <ellipse cx="55" cy="42" rx="10" ry="5" fill="#ff6b35"/>
-        <!-- Driver head -->
-        <circle cx="52" cy="25" r="5" fill="#ff6b35"/>
-        <!-- Handlebars -->
-        <line x1="45" y1="28" x2="40" y2="18" stroke="#333" stroke-width="1.2" stroke-linecap="round"/>
-        <line x1="45" y1="28" x2="50" y2="18" stroke="#333" stroke-width="1.2" stroke-linecap="round"/>
-      </svg>`;
+    const motorcycleEmoji = "🏍️";
     
-    const div = document.createElement('div');
-    div.innerHTML = svgString;
-    const svg = div.querySelector('svg');
+    const canvas = document.createElement('canvas');
+    canvas.width = isActive ? 60 : 50;
+    canvas.height = isActive ? 60 : 50;
+    const ctx = canvas.getContext('2d');
     
-    if (svg) {
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const blob = new Blob([svgData], { type: 'image/svg+xml' });
-      const url = URL.createObjectURL(blob);
+    if (ctx) {
+      // Background circle
+      ctx.fillStyle = '#ff6b35';
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2.2, 0, Math.PI * 2);
+      ctx.fill();
       
+      // Glow effect
+      ctx.strokeStyle = '#ffb366';
+      ctx.lineWidth = isActive ? 2 : 1.5;
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2.2, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      // Emoji
+      ctx.font = `${isActive ? 38 : 32}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(motorcycleEmoji, canvas.width / 2, canvas.height / 2);
+      
+      const url = canvas.toDataURL('image/png');
       return L.icon({
         iconUrl: url,
-        iconSize: isActive ? [48, 56] : [40, 48],
-        iconAnchor: isActive ? [24, 56] : [20, 48],
-        popupAnchor: isActive ? [0, -56] : [0, -48],
+        iconSize: [canvas.width, canvas.height],
+        iconAnchor: [canvas.width / 2, canvas.height / 2],
+        popupAnchor: [0, -canvas.height / 2],
       });
     }
     
