@@ -6,7 +6,6 @@ import { useCart } from "@/lib/cartContext";
 import { useUser } from "@/lib/userContext";
 import { toast } from "sonner";
 import { getShippingZones, saveOrder } from "@/lib/firebaseOps";
-import { sendNotificationToAdmins } from "@/lib/notificationAPI";
 
 interface Zone {
   id: string;
@@ -178,11 +177,6 @@ export default function CheckoutPage() {
       Object.keys(localStorage)
         .filter(k => k.startsWith("cart"))
         .forEach(k => localStorage.removeItem(k));
-
-      sendNotificationToAdmins(
-        `New Order #${orderObj.orderNumber}`, 
-        `${customerName} - L.E ${grandTotal.toFixed(2)}`
-      ).catch(() => {});
 
       setIsSubmitting(false);
       setTimeout(() => setLocation("/"), 2000);

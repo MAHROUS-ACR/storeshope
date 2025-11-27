@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { getAllDiscounts, getActiveDiscount, calculateDiscountedPrice, type Discount } from "@/lib/discountUtils";
 import { getShippingZones, saveOrder, getOrders } from "@/lib/firebaseOps";
-import { sendNotificationToAdmins } from "@/lib/notificationAPI";
 
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
@@ -211,11 +210,6 @@ export default function CheckoutPage() {
       if (savedOrderId) {
 
         
-        // Send notification in background
-        sendNotificationToAdmins(
-          "New Order",
-          `Order #${orderNumber} placed for L.E ${finalTotal.toFixed(2)}`
-        ).catch(() => {});
 
         toast.success("✅ Order placed!");
         

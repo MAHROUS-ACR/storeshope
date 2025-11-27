@@ -8,7 +8,6 @@ import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
 import { toast } from "sonner";
 import { getOrders, updateOrder } from "@/lib/firebaseOps";
-import { sendNotification } from "@/lib/notificationAPI";
 import { getStatusColor } from "@/lib/statusColors";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 
