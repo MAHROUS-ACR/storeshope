@@ -125,7 +125,8 @@ export default function OrderDetailsPage() {
       .openPopup();
 
     // Add driver location marker if available
-    if (order?.latitude && order?.longitude && map.current) {
+    if (order?.latitude !== undefined && order?.latitude !== null && order?.longitude !== undefined && order?.longitude !== null && map.current) {
+      console.log("Adding driver marker:", order.latitude, order.longitude);
       if (driverMarker.current) {
         driverMarker.current.remove();
       }
@@ -142,22 +143,27 @@ export default function OrderDetailsPage() {
         .bindPopup(`<div style="text-align: center"><strong>🏍️ ${language === "ar" ? "موقع الدليفرى" : "Driver Location"}</strong></div>`);
 
       // Fetch and display route
-      fetch(`https://router.project-osrm.org/route/v1/driving/${order.longitude},${order.latitude};${mapLng},${mapLat}?geometries=geojson`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.routes && data.routes[0] && map.current) {
-            const coords = data.routes[0].geometry.coordinates.map((coord: any) => [coord[1], coord[0]]);
-            if (routePolyline.current) routePolyline.current.remove();
-            routePolyline.current = L.polyline(coords, { color: '#3b82f6', weight: 3, opacity: 0.7 }).addTo(map.current);
-          }
-        })
-        .catch(console.log);
+      if (typeof order.longitude === 'number' && typeof order.latitude === 'number' && typeof mapLng === 'number' && typeof mapLat === 'number') {
+        fetch(`https://router.project-osrm.org/route/v1/driving/${order.longitude},${order.latitude};${mapLng},${mapLat}?geometries=geojson`)
+          .then(res => res.json())
+          .then(data => {
+            console.log("Route data:", data);
+            if (data.routes && data.routes[0] && map.current) {
+              const coords = data.routes[0].geometry.coordinates.map((coord: any) => [coord[1], coord[0]]);
+              if (routePolyline.current) routePolyline.current.remove();
+              routePolyline.current = L.polyline(coords, { color: '#3b82f6', weight: 3, opacity: 0.7 }).addTo(map.current);
+            }
+          })
+          .catch(err => console.log("Route error:", err));
+      }
+    } else {
+      console.log("Driver location not available:", { lat: order?.latitude, lng: order?.longitude });
     }
   }, [mapLat, mapLng, language, order?.latitude, order?.longitude]);
 
   // Update driver marker position when order location changes
   useEffect(() => {
-    if (order?.latitude && order?.longitude && driverMarker.current && map.current) {
+    if (order?.latitude !== undefined && order?.latitude !== null && order?.longitude !== undefined && order?.longitude !== null && driverMarker.current && map.current) {
       driverMarker.current.setLatLng([order.latitude, order.longitude]);
     }
   }, [order?.latitude, order?.longitude]);
