@@ -128,14 +128,14 @@ export default function DeliveryPage() {
 
   return (
     <MobileWrapper>
-      <div className="w-full flex-1 flex flex-col overflow-hidden">
+      <div className="w-full flex-1 flex flex-col overflow-hidden relative">
         {/* Header */}
         <div className="px-5 pb-4 pt-2 border-b border-gray-100 flex-shrink-0">
           <h1 className="text-xl font-bold">🚚 {language === "ar" ? "طلبات التسليم" : "Delivery Orders"}</h1>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-5 py-4">
+        <div className="flex-1 overflow-y-auto px-5 py-4 pb-32">
           {ordersLoading ? (
             <div className="flex items-center justify-center py-8">
               <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -243,7 +243,8 @@ export default function DeliveryPage() {
             </div>
           )}
         </div>
-
+      </div>
+      <div className="absolute bottom-0 left-0 right-0">
         <BottomNav />
       </div>
 
