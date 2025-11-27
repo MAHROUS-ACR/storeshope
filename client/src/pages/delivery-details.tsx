@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { ArrowLeft, MapPin, Phone, User, CreditCard, Truck, FileText, Loader, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, User, CreditCard, Truck, FileText, Loader, ChevronDown, ChevronUp, Navigation } from "lucide-react";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/lib/languageContext";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
@@ -47,10 +47,26 @@ export default function DeliveryDetailsPage() {
   const [routeDistance, setRouteDistance] = useState<number | null>(null);
   const [routeDuration, setRouteDuration] = useState<number | null>(null);
   const [showMap, setShowMap] = useState(true);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [remainingDistance, setRemainingDistance] = useState<number | null>(null);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
+  const currentMarker = useRef<L.Marker | null>(null);
+  const routePolyline = useRef<L.Polyline | null>(null);
 
   const orderId = location.split("/delivery-order/")[1]?.split("?")[0];
+
+  // Calculate distance between two points using Haversine formula
+  const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
+    const R = 6371; // Earth radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
 
   // Watch current location continuously for accuracy
   useEffect(() => {
@@ -58,9 +74,23 @@ export default function DeliveryDetailsPage() {
     if (navigator.geolocation) {
       watchId = navigator.geolocation.watchPosition(
         (position) => {
-          console.log("Got current position:", position.coords.latitude, position.coords.longitude);
-          setCurrentLat(position.coords.latitude);
-          setCurrentLng(position.coords.longitude);
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          console.log("Got current position:", lat, lng);
+          setCurrentLat(lat);
+          setCurrentLng(lng);
+
+          // Update marker and center map if navigating
+          if (isNavigating && map.current && currentMarker.current) {
+            currentMarker.current.setLatLng([lat, lng]);
+            map.current.panTo([lat, lng]);
+            
+            // Calculate remaining distance
+            if (mapLat && mapLng) {
+              const remaining = calculateDistance(lat, lng, mapLat, mapLng);
+              setRemainingDistance(remaining);
+            }
+          }
         },
         (error) => {
           console.log("Geolocation error:", error);
@@ -75,7 +105,7 @@ export default function DeliveryDetailsPage() {
         navigator.geolocation.clearWatch(watchId);
       }
     };
-  }, []);
+  }, [isNavigating, mapLat, mapLng]);
 
   // Geocode address to get lat/lng as fallback
   const geocodeAddress = async (address: string) => {
@@ -141,7 +171,7 @@ export default function DeliveryDetailsPage() {
     // Current location marker - only for non-received orders
     if (currentLat && currentLng && order?.status !== "received") {
       console.log("Adding current location marker:", currentLat, currentLng);
-      L.marker([currentLat, currentLng], {
+      const marker = L.marker([currentLat, currentLng], {
         icon: L.icon({
           iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
           shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -152,6 +182,8 @@ export default function DeliveryDetailsPage() {
       })
         .addTo(map.current)
         .bindPopup(`<div style="text-align: center; direction: ${language === "ar" ? "rtl" : "ltr"}"><strong>${language === "ar" ? "موقعك الحالي" : "Your Location"}</strong></div>`);
+      
+      currentMarker.current = marker;
 
       // Fit bounds to show both markers immediately
       const bounds = L.latLngBounds([[currentLat, currentLng], [mapLat, mapLng]]);
@@ -179,11 +211,13 @@ export default function DeliveryDetailsPage() {
               const coords = bestRoute.geometry.coordinates.map((coord: [number, number]) => [coord[1], coord[0]]);
               
               if (coords && coords.length > 0 && map.current) {
-                L.polyline(coords, {
+                const polyline = L.polyline(coords, {
                   color: '#2563eb',
                   weight: 3,
                   opacity: 0.8,
                 }).addTo(map.current);
+                
+                routePolyline.current = polyline;
                 
                 const distance = (bestRoute.distance || 0) / 1000;
                 const duration = (bestRoute.duration || 0) / 60;
@@ -278,28 +312,40 @@ export default function DeliveryDetailsPage() {
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="px-5 py-1 border-b border-gray-100 flex-shrink-0">
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center justify-between gap-2 mb-1">
             <button onClick={() => setLocation("/delivery")} className="flex items-center gap-2">
               <ArrowLeft size={18} />
               <span className="font-semibold text-sm">{language === "ar" ? "رجوع" : "Back"}</span>
             </button>
-            <button
-              onClick={() => setShowMap(!showMap)}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
-              data-testid="button-toggle-map"
-            >
-              {showMap ? (
-                <>
-                  <ChevronUp size={16} className="text-gray-700" />
-                  <span className="text-xs font-semibold text-gray-700">{language === "ar" ? "كلوز ماب" : "Close Map"}</span>
-                </>
-              ) : (
-                <>
-                  <ChevronDown size={16} className="text-gray-700" />
-                  <span className="text-xs font-semibold text-gray-700">{language === "ar" ? "اوبن ماب" : "Open Map"}</span>
-                </>
+            <div className="flex items-center gap-1">
+              {order?.status !== "received" && (
+                <button
+                  onClick={() => setIsNavigating(!isNavigating)}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${isNavigating ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+                  data-testid="button-navigation"
+                >
+                  <Navigation size={16} />
+                  <span className="text-xs font-semibold">{language === "ar" ? "ملاحة" : "Navigate"}</span>
+                </button>
               )}
-            </button>
+              <button
+                onClick={() => setShowMap(!showMap)}
+                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                data-testid="button-toggle-map"
+              >
+                {showMap ? (
+                  <>
+                    <ChevronUp size={16} className="text-gray-700" />
+                    <span className="text-xs font-semibold text-gray-700">{language === "ar" ? "كلوز ماب" : "Close Map"}</span>
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown size={16} className="text-gray-700" />
+                    <span className="text-xs font-semibold text-gray-700">{language === "ar" ? "اوبن ماب" : "Open Map"}</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
           <h1 className="text-base font-bold">Order #{order.orderNumber || "N/A"}</h1>
           <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
@@ -389,22 +435,30 @@ export default function DeliveryDetailsPage() {
             </div>
           )}
 
-          {/* Route Info */}
-          {routeDistance && routeDuration && (
-            <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
-              <h2 className="font-bold text-base mb-3 text-blue-900">{language === "ar" ? "معلومات المسار" : "Route Info"}</h2>
+          {/* Route Info & Navigation */}
+          {(routeDistance && routeDuration) || isNavigating ? (
+            <div className={`rounded-2xl p-4 border ${isNavigating ? "bg-blue-100 border-blue-300" : "bg-blue-50 border-blue-200"}`}>
+              <h2 className="font-bold text-base mb-3 text-blue-900">{isNavigating ? (language === "ar" ? "الملاحة النشطة" : "Active Navigation") : (language === "ar" ? "معلومات المسار" : "Route Info")}</h2>
               <div className="space-y-2 text-base">
                 <div className="flex justify-between">
-                  <span className="text-blue-700">{language === "ar" ? "المسافة" : "Distance"}</span>
-                  <span className="font-semibold text-blue-900">{routeDistance.toFixed(1)} km</span>
+                  <span className="text-blue-700">{language === "ar" ? isNavigating ? "المسافة المتبقية" : "المسافة" : isNavigating ? "Remaining" : "Distance"}</span>
+                  <span className="font-semibold text-blue-900">{isNavigating && remainingDistance ? remainingDistance.toFixed(1) : routeDistance?.toFixed(1)} km</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-blue-700">{language === "ar" ? "الوقت المتوقع" : "Estimated Time"}</span>
-                  <span className="font-semibold text-blue-900">{Math.ceil(routeDuration)} {language === "ar" ? "دقيقة" : "min"}</span>
-                </div>
+                {!isNavigating && routeDuration && (
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">{language === "ar" ? "الوقت المتوقع" : "Estimated Time"}</span>
+                    <span className="font-semibold text-blue-900">{Math.ceil(routeDuration)} {language === "ar" ? "دقيقة" : "min"}</span>
+                  </div>
+                )}
+                {isNavigating && (
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">{language === "ar" ? "الحالة" : "Status"}</span>
+                    <span className="font-semibold text-green-600">{language === "ar" ? "في الطريق" : "In Transit"}</span>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+          ) : null}
 
           {/* Payment & Shipping Info */}
           <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3">
