@@ -279,6 +279,20 @@ export default function DeliveryDetailsPage() {
           </div>
         )}
 
+        {/* Order Number and Date below Map */}
+        <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-gray-600">{language === "ar" ? "رقم الطلب" : "Order Number"}</p>
+              <p className="text-lg font-bold text-gray-900">#{order.orderNumber || "N/A"}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs font-semibold text-gray-600">{language === "ar" ? "التاريخ" : "Date"}</p>
+              <p className="text-lg font-bold text-gray-900">{new Date(order.createdAt).toLocaleDateString(language === "ar" ? "ar-EG" : "en-US")}</p>
+            </div>
+          </div>
+        </div>
+
         {/* Content */}
         <div className="flex-1 flex flex-col overflow-y-auto px-5 py-4 space-y-4">
 
