@@ -367,6 +367,63 @@ export default function SettingsPage() {
               </div>
             </div>
 
+            {/* Email Settings Section */}
+            <div className="mb-8 pt-8 border-t border-gray-200">
+              <h2 className="text-lg font-bold mb-4">Email Settings</h2>
+              <p className="text-sm text-muted-foreground mb-6">
+                Configure Gmail to send order notifications
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-2" htmlFor="gmailUser">
+                    Gmail Address
+                  </label>
+                  <input
+                    id="gmailUser"
+                    type="email"
+                    value={gmailUser}
+                    onChange={(e) => setGmailUser(e.target.value)}
+                    placeholder="your-email@gmail.com"
+                    className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    data-testid="input-gmail-user"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2" htmlFor="gmailPassword">
+                    Gmail App Password
+                  </label>
+                  <input
+                    id="gmailPassword"
+                    type="password"
+                    value={gmailPassword}
+                    onChange={(e) => setGmailPassword(e.target.value)}
+                    placeholder="xxxx xxxx xxxx xxxx"
+                    className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    data-testid="input-gmail-password"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Use app-specific password, not your regular password</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2" htmlFor="adminEmail">
+                    Admin Email
+                  </label>
+                  <input
+                    id="adminEmail"
+                    type="email"
+                    value={adminEmail}
+                    onChange={(e) => setAdminEmail(e.target.value)}
+                    placeholder="admin@store.com"
+                    className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    data-testid="input-admin-email"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Admin will receive order notifications</p>
+                </div>
+              </div>
+            </div>
+
             {/* Save Button - One Button to Save All */}
             <div className="pt-8 border-t border-gray-200">
               <button
