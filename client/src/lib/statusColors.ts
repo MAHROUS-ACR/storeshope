@@ -3,6 +3,8 @@ export const getStatusColor = (status: string) => {
   switch (status?.toLowerCase()) {
     case "completed":
       return "bg-emerald-600 text-white border-emerald-700";
+    case "received":
+      return "bg-green-600 text-white border-green-700";
     case "confirmed":
       return "bg-blue-600 text-white border-blue-700";
     case "pending":
