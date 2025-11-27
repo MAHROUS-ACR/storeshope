@@ -10,6 +10,12 @@ interface MapSelectorProps {
   initialAddress?: string;
 }
 
+interface Suggestion {
+  display_name: string;
+  lat: string;
+  lon: string;
+}
+
 export function MapSelector({ 
   onLocationSelect, 
   initialLat = 30.0444, 
@@ -24,6 +30,9 @@ export function MapSelector({
   const [selectedLng, setSelectedLng] = useState(initialLng);
   const [address, setAddress] = useState(initialAddress);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -101,12 +110,16 @@ export function MapSelector({
     }
   };
 
-  const forwardGeocode = async (addressText: string) => {
-    if (!addressText.trim()) return;
+  const searchSuggestions = async (searchText: string) => {
+    if (!searchText.trim() || searchText.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
     try {
-      setIsLoadingLocation(true);
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addressText)}&format=json&limit=1`,
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchText)}&format=json&limit=10`,
         {
           headers: {
             "Accept-Language": language === "ar" ? "ar" : "en",
@@ -115,41 +128,52 @@ export function MapSelector({
       );
       const data = await response.json();
       if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        const newLat = parseFloat(lat);
-        const newLng = parseFloat(lon);
-        setSelectedLat(newLat);
-        setSelectedLng(newLng);
-
-        if (map.current) {
-          map.current.setView([newLat, newLng], 13);
-        }
-
-        if (marker.current) {
-          marker.current.setLatLng([newLat, newLng]);
-          marker.current.setPopupContent(
-            `<div style="text-align: ${language === "ar" ? "right" : "left"}; direction: ${language === "ar" ? "rtl" : "ltr"}">
-              <strong>${language === "ar" ? "الموقع المختار" : "Selected Location"}</strong><br/>
-              ${language === "ar" ? "خط العرض:" : "Latitude:"} ${newLat.toFixed(6)}<br/>
-              ${language === "ar" ? "خط الطول:" : "Longitude:"} ${newLng.toFixed(6)}
-            </div>`
-          );
-        }
+        setSuggestions(data);
+        setShowSuggestions(true);
       } else {
-        // Address not found
-        const message = language === "ar" 
-          ? "⚠️ لم نجد هذا العنوان! اضغط على الخريطة أو استخدم موقعك الحالي"
-          : "⚠️ Address not found! Click on the map or use your current location";
-        alert(message);
+        setSuggestions([]);
       }
     } catch (error) {
-      console.log("Forward geocoding error:", error);
-      const errorMsg = language === "ar" 
-        ? "خطأ في البحث. اضغط على الخريطة بدلاً من ذلك"
-        : "Error searching. Try clicking on the map instead";
-      alert(errorMsg);
-    } finally {
-      setIsLoadingLocation(false);
+      console.log("Search error:", error);
+      setSuggestions([]);
+    }
+  };
+
+  const handleAddressInputChange = (text: string) => {
+    setAddress(text);
+    
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+
+    searchTimeout.current = setTimeout(() => {
+      searchSuggestions(text);
+    }, 300);
+  };
+
+  const selectSuggestion = (suggestion: Suggestion) => {
+    const newLat = parseFloat(suggestion.lat);
+    const newLng = parseFloat(suggestion.lon);
+    
+    setAddress(suggestion.display_name);
+    setSelectedLat(newLat);
+    setSelectedLng(newLng);
+    setShowSuggestions(false);
+    setSuggestions([]);
+
+    if (map.current) {
+      map.current.setView([newLat, newLng], 13);
+    }
+
+    if (marker.current) {
+      marker.current.setLatLng([newLat, newLng]);
+      marker.current.setPopupContent(
+        `<div style="text-align: ${language === "ar" ? "right" : "left"}; direction: ${language === "ar" ? "rtl" : "ltr"}">
+          <strong>${language === "ar" ? "الموقع المختار" : "Selected Location"}</strong><br/>
+          ${language === "ar" ? "خط العرض:" : "Latitude:"} ${newLat.toFixed(6)}<br/>
+          ${language === "ar" ? "خط الطول:" : "Longitude:"} ${newLng.toFixed(6)}
+        </div>`
+      );
     }
   };
 
@@ -198,17 +222,33 @@ export function MapSelector({
         style={{ height: "300px", borderRadius: "12px", border: "2px solid #e5e7eb" }}
       />
 
-      <div className="space-y-2">
+      <div className="space-y-2 relative">
         <label className="block text-sm font-semibold text-gray-700">
           {language === "ar" ? "📍 العنوان الكامل" : "📍 Full Address"}
         </label>
         <textarea
           value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          placeholder={language === "ar" ? "اكتب العنوان بالكامل: شارع، حي، مدينة" : "Type full address: Street, District, City"}
+          onChange={(e) => handleAddressInputChange(e.target.value)}
+          placeholder={language === "ar" ? "اكتب العنوان: شارع، حي، مدينة..." : "Type address: Street, District, City..."}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white resize-none text-sm"
           rows={2}
         />
+        
+        {showSuggestions && suggestions.length > 0 && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+            {suggestions.map((suggestion, idx) => (
+              <button
+                key={idx}
+                onClick={() => selectSuggestion(suggestion)}
+                className="w-full text-left px-4 py-2 hover:bg-blue-50 border-b border-gray-200 last:border-b-0 text-sm text-gray-700"
+              >
+                <div className="font-semibold text-gray-900">📍 {suggestion.display_name.split(',')[0]}</div>
+                <div className="text-xs text-gray-600">{suggestion.display_name.substring(suggestion.display_name.indexOf(',') + 1).trim()}</div>
+              </button>
+            ))}
+          </div>
+        )}
+
         <p className="text-xs text-gray-600">
           {language === "ar"
             ? `📍 خط العرض: ${selectedLat.toFixed(6)}, خط الطول: ${selectedLng.toFixed(6)}`
