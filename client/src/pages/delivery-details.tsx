@@ -298,44 +298,44 @@ export default function DeliveryDetailsPage() {
 
           {/* Delivery Info */}
           <div className="bg-white rounded-2xl p-4 border border-gray-200">
-            <h2 className="font-bold text-sm mb-3">{language === "ar" ? "معلومات التسليم" : "Delivery Info"}</h2>
+            <h2 className="font-bold text-base mb-3">{language === "ar" ? "معلومات التسليم" : "Delivery Info"}</h2>
             <div className="space-y-3">
               {address && (
                 <div className="flex gap-2">
-                  <MapPin size={16} className="text-orange-600 flex-shrink-0 mt-0.5" />
+                  <MapPin size={18} className="text-orange-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-600">{language === "ar" ? "العنوان" : "Address"}</p>
-                    <p className="text-sm">{address}</p>
+                    <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "العنوان" : "Address"}</p>
+                    <p className="text-base">{address}</p>
                   </div>
                 </div>
               )}
               
               {order.shippingPhone && (
                 <div className="flex gap-2">
-                  <Phone size={16} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                  <Phone size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-600">{language === "ar" ? "الهاتف" : "Phone"}</p>
-                    <a href={`tel:${order.shippingPhone}`} className="text-sm text-blue-600 hover:underline">{order.shippingPhone}</a>
+                    <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "الهاتف" : "Phone"}</p>
+                    <a href={`tel:${order.shippingPhone}`} className="text-base text-blue-600 hover:underline">{order.shippingPhone}</a>
                   </div>
                 </div>
               )}
 
               {order.customerName && (
                 <div className="flex gap-2">
-                  <User size={16} className="text-green-600 flex-shrink-0 mt-0.5" />
+                  <User size={18} className="text-green-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-600">{language === "ar" ? "الزبون" : "Customer"}</p>
-                    <p className="text-sm">{order.customerName}</p>
+                    <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "الزبون" : "Customer"}</p>
+                    <p className="text-base">{order.customerName}</p>
                   </div>
                 </div>
               )}
 
               {order.recipientName && (
                 <div className="flex gap-2">
-                  <User size={16} className="text-purple-600 flex-shrink-0 mt-0.5" />
+                  <User size={18} className="text-purple-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-semibold text-gray-600">{language === "ar" ? "المستلم" : "Recipient"}</p>
-                    <p className="text-sm">{order.recipientName}</p>
+                    <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "المستلم" : "Recipient"}</p>
+                    <p className="text-base">{order.recipientName}</p>
                   </div>
                 </div>
               )}
@@ -345,10 +345,10 @@ export default function DeliveryDetailsPage() {
           {/* Items */}
           {order.items && order.items.length > 0 && (
             <div className="bg-white rounded-2xl p-4 border border-gray-200">
-              <h2 className="font-bold text-sm mb-3">{language === "ar" ? "المنتجات" : "Items"}</h2>
+              <h2 className="font-bold text-base mb-3">{language === "ar" ? "المنتجات" : "Items"}</h2>
               <div className="space-y-2">
                 {order.items.map((item: any, idx: number) => (
-                  <div key={idx} className="flex justify-between text-sm pb-2 border-b border-gray-100 last:border-0">
+                  <div key={idx} className="flex justify-between text-base pb-2 border-b border-gray-100 last:border-0">
                     <span className="font-semibold">{item.title}</span>
                     <span className="text-gray-600">x{item.quantity}</span>
                     <span className="font-bold">L.E {(item.price * item.quantity).toFixed(2)}</span>
@@ -361,8 +361,8 @@ export default function DeliveryDetailsPage() {
           {/* Route Info */}
           {routeDistance && routeDuration && (
             <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
-              <h2 className="font-bold text-sm mb-3 text-blue-900">{language === "ar" ? "معلومات المسار" : "Route Info"}</h2>
-              <div className="space-y-2 text-sm">
+              <h2 className="font-bold text-base mb-3 text-blue-900">{language === "ar" ? "معلومات المسار" : "Route Info"}</h2>
+              <div className="space-y-2 text-base">
                 <div className="flex justify-between">
                   <span className="text-blue-700">{language === "ar" ? "المسافة" : "Distance"}</span>
                   <span className="font-semibold text-blue-900">{routeDistance.toFixed(1)} km</span>
@@ -379,40 +379,40 @@ export default function DeliveryDetailsPage() {
           <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-3">
             {order.paymentMethod && (
               <div className="flex gap-2">
-                <CreditCard size={16} className="text-indigo-600 flex-shrink-0 mt-0.5" />
+                <CreditCard size={18} className="text-indigo-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-semibold text-gray-600">{language === "ar" ? "طريقة الدفع" : "Payment"}</p>
-                  <p className="text-sm font-semibold">{order.paymentMethod}</p>
+                  <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "طريقة الدفع" : "Payment"}</p>
+                  <p className="text-base font-semibold">{order.paymentMethod}</p>
                 </div>
               </div>
             )}
             
             {order.shippingZone && (
               <div className="flex gap-2">
-                <Truck size={16} className="text-green-600 flex-shrink-0 mt-0.5" />
+                <Truck size={18} className="text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-semibold text-gray-600">{language === "ar" ? "منطقة الشحن" : "Shipping Zone"}</p>
-                  <p className="text-sm font-semibold">{order.shippingZone}</p>
+                  <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "منطقة الشحن" : "Shipping Zone"}</p>
+                  <p className="text-base font-semibold">{order.shippingZone}</p>
                 </div>
               </div>
             )}
 
             {order.notes && (
               <div className="flex gap-2">
-                <FileText size={16} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+                <FileText size={18} className="text-yellow-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-semibold text-gray-600">{language === "ar" ? "ملاحظات" : "Notes"}</p>
-                  <p className="text-sm">{order.notes}</p>
+                  <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "ملاحظات" : "Notes"}</p>
+                  <p className="text-base">{order.notes}</p>
                 </div>
               </div>
             )}
 
             {order.deliveryRemarks && (
               <div className="flex gap-2">
-                <FileText size={16} className="text-red-600 flex-shrink-0 mt-0.5" />
+                <FileText size={18} className="text-red-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs font-semibold text-gray-600">{language === "ar" ? "ملاحظات التسليم" : "Delivery Remarks"}</p>
-                  <p className="text-sm">{order.deliveryRemarks}</p>
+                  <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "ملاحظات التسليم" : "Delivery Remarks"}</p>
+                  <p className="text-base">{order.deliveryRemarks}</p>
                 </div>
               </div>
             )}
@@ -420,8 +420,8 @@ export default function DeliveryDetailsPage() {
 
           {/* Price Breakdown */}
           <div className="bg-white rounded-2xl p-4 border border-gray-200">
-            <h2 className="font-bold text-sm mb-3">{language === "ar" ? "ملخص الأسعار" : "Price Breakdown"}</h2>
-            <div className="space-y-2 text-sm">
+            <h2 className="font-bold text-base mb-3">{language === "ar" ? "ملخص الأسعار" : "Price Breakdown"}</h2>
+            <div className="space-y-2 text-base">
               {order.subtotal !== undefined && (
                 <div className="flex justify-between">
                   <span className="text-gray-700">{language === "ar" ? "السعر الأساسي" : "Subtotal"}</span>
@@ -443,7 +443,7 @@ export default function DeliveryDetailsPage() {
                 </div>
               )}
               
-              <div className="border-t border-gray-200 pt-2 flex justify-between font-bold">
+              <div className="border-t border-gray-200 pt-2 flex justify-between font-bold text-lg">
                 <span>{language === "ar" ? "الإجمالي" : "Total"}</span>
                 <span>L.E {order.total.toFixed(2)}</span>
               </div>
