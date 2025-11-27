@@ -434,46 +434,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const base64 = event.target?.result as string;
-      setStoreLogo(base64);
-      toast.success("Logo uploaded! Click Save to apply changes");
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleSaveStoreSettings = async () => {
-    if (!storeName || !storeAddress || !storePhone || !storeEmail) {
-      toast.error("Please fill in all store fields");
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      const db = getFirestore();
-      const storeConfigRef = doc(db, "settings", "store");
-      await setDoc(storeConfigRef, {
-        name: storeName,
-        address: storeAddress,
-        phone: storePhone,
-        email: storeEmail,
-        logo: storeLogo,
-        updatedAt: new Date(),
-      });
-
-      toast.success("Store settings saved successfully!");
-    } catch (error) {
-
-      toast.error("Failed to save settings");
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   const fetchAllUsers = async () => {
     setUsersLoading(true);
@@ -2196,90 +2156,6 @@ export default function ProfilePage() {
                       ))}
                     </div>
                   )}
-                </div>
-              )}
-
-              {/* Store Settings Section */}
-              <button
-                onClick={() => setShowStoreSettings(!showStoreSettings)}
-                className="w-full flex items-center justify-between p-4 bg-amber-50 rounded-2xl border border-amber-200 hover:border-amber-300 transition-colors mb-6 mt-6"
-                data-testid="button-toggle-store-settings"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-amber-100 text-amber-600">
-                    <Package className="w-6 h-6" />
-                  </div>
-                  <span className="font-semibold text-sm text-amber-900">{t("storeSettings", language)}</span>
-                </div>
-                <ChevronRight className={`w-5 h-5 text-amber-400 transition-transform L.E showStoreSettings ? "rotate-90" : ""}`} />
-              </button>
-
-              {showStoreSettings && (
-                <div className="mb-6 bg-white rounded-2xl p-4 border border-gray-200 space-y-4">
-                  <div>
-                    <label className="text-xs font-semibold mb-1 block">{t("storeLogo", language)}</label>
-                    <div className="flex items-center gap-3 mb-3">
-                      {storeLogo ? (
-                        <img src={storeLogo} alt="Logo" className="w-12 h-12 rounded-lg object-cover border border-gray-200" />
-                      ) : (
-                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 border border-gray-200">
-                          No logo
-                        </div>
-                      )}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleLogoUpload}
-                        className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg cursor-pointer"
-                        data-testid="input-store-logo"
-                      />
-                    </div>
-                  </div>
-
-                  <input
-                    type="text"
-                    placeholder={t("storeName", language)}
-                    value={storeName}
-                    onChange={(e) => setStoreName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    data-testid="input-store-name"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder={t("storeAddressPlaceholder", language)}
-                    value={storeAddress}
-                    onChange={(e) => setStoreAddress(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    data-testid="input-store-address"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder={t("storePhone", language)}
-                    value={storePhone}
-                    onChange={(e) => setStorePhone(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    data-testid="input-store-phone"
-                  />
-
-                  <input
-                    type="email"
-                    placeholder={t("storeEmail", language)}
-                    value={storeEmail}
-                    onChange={(e) => setStoreEmail(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    data-testid="input-store-email"
-                  />
-
-                  <button
-                    onClick={handleSaveStoreSettings}
-                    disabled={isSaving}
-                    className="w-full bg-yellow-600 text-white py-2 rounded-lg font-semibold text-sm hover:bg-yellow-700 disabled:opacity-50"
-                    data-testid="button-save-store-settings"
-                  >
-                    {isSaving ? t("saving", language) : t("saveStoreSettings", language)}
-                  </button>
                 </div>
               )}
 
