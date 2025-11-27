@@ -36,6 +36,10 @@ export interface User {
   username?: string;
   role?: string;
   profileImage?: string;
+  phone?: string;
+  address?: string;
+  zoneId?: string;
+  zoneName?: string;
 }
 
 interface UserContextType {
@@ -43,6 +47,7 @@ interface UserContextType {
   signup: (email: string, password: string, username: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUserProfile: (data: Partial<User>) => Promise<void>;
   isLoggedIn: boolean;
   isLoading: boolean;
 }
@@ -52,6 +57,7 @@ const defaultUserValue: UserContextType = {
   signup: async () => {},
   login: async () => {},
   logout: async () => {},
+  updateUserProfile: async () => {},
   isLoggedIn: false,
   isLoading: true,
 };
@@ -86,14 +92,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
           // User is signed in - set up real-time listener for user data from Firestore
           const userRef = doc(db, "users", firebaseUser.uid);
           unsubscribeUser = onSnapshot(userRef, (userSnap) => {
-            let role = "user"; // default role
-            let username = firebaseUser.email?.split("@")[0] || "user"; // default username
+            let role = "user";
+            let username = firebaseUser.email?.split("@")[0] || "user";
+            let phone = "";
+            let address = "";
+            let zoneId = "";
+            let zoneName = "";
             
             if (userSnap.exists()) {
               const firestoreData = userSnap.data();
               role = firestoreData.role || "user";
               username = firestoreData.username || username;
-              console.log("📍 User data from Firestore - username:", username, "role:", role);
+              phone = firestoreData.phone || "";
+              address = firestoreData.address || "";
+              zoneId = firestoreData.zoneId || "";
+              zoneName = firestoreData.zoneName || "";
             }
             
             const userData: User = {
@@ -101,24 +114,28 @@ export function UserProvider({ children }: { children: ReactNode }) {
               email: firebaseUser.email || "",
               username: username,
               role: role,
+              phone: phone,
+              address: address,
+              zoneId: zoneId,
+              zoneName: zoneName,
             };
-            console.log("📍 Updating user state with role:", userData.role);
             setUser(userData);
             localStorage.setItem("user", JSON.stringify(userData));
             setIsLoading(false);
           }, (error) => {
             console.error("Failed to fetch user data from Firestore:", error);
-            // Fallback to stored user data
             const storedUser = localStorage.getItem("user");
             const storedData = storedUser ? JSON.parse(storedUser) : {};
-            const storedRole = storedData.role || "user";
-            const storedUsername = storedData.username || firebaseUser.email?.split("@")[0];
             
             const userData: User = {
               id: firebaseUser.uid,
               email: firebaseUser.email || "",
-              username: storedUsername,
-              role: storedRole,
+              username: storedData.username || firebaseUser.email?.split("@")[0],
+              role: storedData.role || "user",
+              phone: storedData.phone || "",
+              address: storedData.address || "",
+              zoneId: storedData.zoneId || "",
+              zoneName: storedData.zoneName || "",
             };
             setUser(userData);
             localStorage.setItem("user", JSON.stringify(userData));
@@ -183,6 +200,32 @@ export function UserProvider({ children }: { children: ReactNode }) {
     await signOut(firebaseAuth);
   };
 
+  const updateUserProfile = async (data: Partial<User>) => {
+    if (!user || !firestore) throw new Error("User not signed in or Firestore not configured");
+    
+    try {
+      const userRef = doc(firestore, "users", user.id);
+      const updateData: any = {};
+      
+      if (data.phone !== undefined) updateData.phone = data.phone;
+      if (data.address !== undefined) updateData.address = data.address;
+      if (data.zoneId !== undefined) updateData.zoneId = data.zoneId;
+      if (data.zoneName !== undefined) updateData.zoneName = data.zoneName;
+      if (data.username !== undefined) updateData.username = data.username;
+      
+      await setDoc(userRef, updateData, { merge: true });
+      
+      // Update local state
+      setUser({
+        ...user,
+        ...data,
+      });
+      localStorage.setItem("user", JSON.stringify({ ...user, ...data }));
+    } catch (error) {
+      console.error("Failed to update user profile:", error);
+      throw error;
+    }
+  };
 
   return (
     <UserContext.Provider
@@ -191,6 +234,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         signup,
         login,
         logout,
+        updateUserProfile,
         isLoggedIn: !!user,
         isLoading,
       }}

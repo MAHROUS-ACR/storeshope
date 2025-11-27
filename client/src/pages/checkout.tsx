@@ -17,7 +17,7 @@ interface Zone {
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
   const { items, clearCart } = useCart();
-  const { user, isLoggedIn, isLoading: authLoading } = useUser();
+  const { user, isLoggedIn, isLoading: authLoading, updateUserProfile } = useUser();
 
   // Form states
   const [paymentSelected, setPaymentSelected] = useState("");
@@ -33,6 +33,18 @@ export default function CheckoutPage() {
   
   const [isLoadingZones, setIsLoadingZones] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Initialize form with user data
+  useEffect(() => {
+    if (!authLoading && user) {
+      setCustomerName(user.phone || "");
+      setCustomerPhone(user.phone || "");
+      if (user.zoneId) {
+        const zone = zonesList.find(z => z.id === user.zoneId);
+        if (zone) setZoneSelected(zone);
+      }
+    }
+  }, [user, authLoading, zonesList]);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -62,14 +74,16 @@ export default function CheckoutPage() {
     loadZones();
   }, []);
   
-  // Auto-select first zone when shipping type changes
+  // Auto-select zone when shipping type changes
   useEffect(() => {
     if (shippingSelected === "saved" && zonesList.length > 0) {
-      setZoneSelected(zonesList[0]);
+      // Use saved zone if exists, otherwise first zone
+      const savedZone = user?.zoneId ? zonesList.find(z => z.id === user.zoneId) : null;
+      setZoneSelected(savedZone || zonesList[0]);
     } else if (shippingSelected === "new") {
       setZoneSelected(null);
     }
-  }, [shippingSelected, zonesList]);
+  }, [shippingSelected, zonesList, user?.zoneId]);
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = zoneSelected?.shippingCost || 0;
@@ -86,35 +100,41 @@ export default function CheckoutPage() {
   const handleSubmit = async () => {
     console.log("🔵 handleSubmit START");
     
-    // Validate all fields
+    // Validate
     if (!customerName.trim()) {
-      toast.error("اكتب اسمك - Enter your name");
+      toast.error("اكتب الاسم - Enter name");
       return;
     }
     if (!customerPhone.trim()) {
-      toast.error("اكتب رقم هاتفك - Enter your phone");
+      toast.error("اكتب الهاتف - Enter phone");
       return;
     }
     if (shippingSelected === "new" && !deliveryAddress.trim()) {
-      toast.error("اكتب العنوان - Enter your address");
+      toast.error("اكتب العنوان - Enter address");
       return;
     }
     if (!paymentSelected || !shippingSelected || !zoneSelected) {
-      toast.error("اختر جميع الخيارات - Select all options");
+      toast.error("اختر جميع الخيارات");
       return;
     }
-    if (!items || items.length === 0) {
-      toast.error("السلة فارغة - Cart is empty");
-      return;
-    }
-    if (!user?.id) {
-      toast.error("يجب تسجيل الدخول - You must login");
+    if (!items?.length || !user?.id) {
+      toast.error("خطأ في البيانات");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
+      // Save user profile if using saved address
+      if (shippingSelected === "saved") {
+        await updateUserProfile({
+          phone: customerName,
+          address: user.address || "",
+          zoneId: zoneSelected?.id,
+          zoneName: zoneSelected?.name,
+        });
+      }
+
       const orderId = `ord_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
       
       const orderObj = {
@@ -126,7 +146,9 @@ export default function CheckoutPage() {
         // Customer info
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),
-        deliveryAddress: shippingSelected === "saved" ? zoneSelected?.name : deliveryAddress.trim(),
+        deliveryAddress: shippingSelected === "saved" 
+          ? `${user.address || zoneSelected?.name}` 
+          : deliveryAddress.trim(),
         notes: notes.trim(),
         
         // Order items
@@ -150,35 +172,27 @@ export default function CheckoutPage() {
         shippingZoneId: zoneSelected?.id || "",
       };
 
-      console.log("📝 Order object:", JSON.stringify(orderObj, null, 2));
+      console.log("📝 Order:", JSON.stringify(orderObj, null, 2));
       const savedId = await saveOrder(orderObj);
       
-      if (!savedId) throw new Error("saveOrder returned null");
+      if (!savedId) throw new Error("Failed to save order");
 
-      console.log("✅ Order saved successfully:", savedId);
       toast.success("✅ تم تأكيد الطلب!");
-
-      // Clear cart
       clearCart();
       Object.keys(localStorage)
         .filter(k => k.startsWith("cart"))
         .forEach(k => localStorage.removeItem(k));
 
-      // Send notification
       sendNotificationToAdmins(
         `New Order #${orderObj.orderNumber}`, 
         `${customerName} - L.E ${grandTotal.toFixed(2)}`
       ).catch(() => {});
 
       setIsSubmitting(false);
-      
-      // Go to home
-      setTimeout(() => {
-        setLocation("/");
-      }, 2000);
+      setTimeout(() => setLocation("/"), 2000);
     } catch (error: any) {
-      console.error("❌ Order error:", error?.message || error);
-      toast.error("خطأ في الطلب - " + (error?.message || "Unknown error"));
+      console.error("❌ Error:", error?.message);
+      toast.error("خطأ: " + (error?.message || "Unknown"));
       setIsSubmitting(false);
     }
   };
@@ -188,12 +202,12 @@ export default function CheckoutPage() {
       <MobileWrapper>
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
-            <h2 className="text-xl font-bold mb-4">السلة فارغة - Empty Cart</h2>
+            <h2 className="text-xl font-bold mb-4">السلة فارغة</h2>
             <button
-              onClick={() => setLocation("/cart")}
-              className="bg-black text-white px-6 py-3 rounded-lg font-semibold"
+              onClick={() => setLocation("/")}
+              className="bg-black text-white px-6 py-3 rounded-lg"
             >
-              العودة - Back
+              العودة للتسوق
             </button>
           </div>
         </div>
@@ -208,11 +222,11 @@ export default function CheckoutPage() {
         <div className="bg-white border-b px-5 py-4 flex-shrink-0 sticky top-0">
           <button
             onClick={() => setLocation("/cart")}
-            className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-3 hover:bg-gray-200"
+            className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-3"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-bold">🛒 الدفع - Checkout</h1>
+          <h1 className="text-2xl font-bold">🛒 الدفع</h1>
         </div>
 
         {/* Scrollable content */}
@@ -220,13 +234,11 @@ export default function CheckoutPage() {
           
           {/* Order Summary */}
           <section className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
-            <h2 className="font-bold text-lg mb-3 flex items-center gap-2">
-              📋 ملخص الطلب - Order Summary
-            </h2>
+            <h2 className="font-bold text-lg mb-3">📋 ملخص الطلب</h2>
             <div className="space-y-2 mb-3">
               {items.map((item, idx) => (
                 <div key={idx} className="flex justify-between text-sm bg-gray-50 p-2 rounded">
-                  <span className="font-semibold">{item.quantity}x {item.title}</span>
+                  <span>{item.quantity}x {item.title}</span>
                   <span className="text-green-600 font-semibold">L.E {(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
@@ -247,152 +259,94 @@ export default function CheckoutPage() {
             </div>
           </section>
 
-          {/* Customer Info */}
-          <section className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
-            <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-              <User className="w-5 h-5" /> البيانات - Your Details
-            </h3>
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="الاسم - Full Name"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-              />
-              <div className="flex gap-2">
-                <Phone className="w-5 h-5 text-gray-400 mt-3" />
-                <input
-                  type="tel"
-                  placeholder="الهاتف - Phone (e.g., +201012345678)"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Mail className="w-5 h-5 text-gray-400 mt-3" />
-                <input
-                  type="email"
-                  placeholder="البريد - Email"
-                  value={user?.email || ""}
-                  disabled
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* Payment Method */}
-          <section className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
-            <h3 className="font-bold text-lg mb-3">💳 طريقة الدفع - Payment Method</h3>
-            <div className="space-y-2">
-              <button
-                onClick={() => setPaymentSelected("delivery")}
-                className={`w-full p-3 rounded-lg border-2 font-semibold transition flex items-center gap-3 ${
-                  paymentSelected === "delivery" ? "border-black bg-black text-white" : "border-gray-200 bg-white"
-                }`}
-              >
-                <span className="text-lg">💵</span>
-                الدفع عند الاستلام - Cash on Delivery
-              </button>
-              <button
-                onClick={() => setPaymentSelected("card")}
-                className={`w-full p-3 rounded-lg border-2 font-semibold transition flex items-center gap-3 ${
-                  paymentSelected === "card" ? "border-black bg-black text-white" : "border-gray-200 bg-white"
-                }`}
-              >
-                <span className="text-lg">💳</span>
-                بطاقة ائتمان - Card Payment
-              </button>
-            </div>
-          </section>
-
           {/* Shipping Type */}
           <section className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
-            <h3 className="font-bold text-lg mb-3">📦 الشحن - Shipping</h3>
+            <h3 className="font-bold text-lg mb-3">📦 طريقة التوصيل</h3>
             <div className="space-y-2">
               <button
                 onClick={() => setShippingSelected("saved")}
-                className={`w-full p-3 rounded-lg border-2 font-semibold transition flex items-center gap-3 ${
+                className={`w-full p-3 rounded-lg border-2 font-semibold transition ${
                   shippingSelected === "saved" ? "border-black bg-black text-white" : "border-gray-200 bg-white"
                 }`}
               >
-                <span className="text-lg">📍</span>
-                منطقة محفوظة - Select Zone
+                📍 استخدام بيانات محفوظة
               </button>
               <button
                 onClick={() => setShippingSelected("new")}
-                className={`w-full p-3 rounded-lg border-2 font-semibold transition flex items-center gap-3 ${
+                className={`w-full p-3 rounded-lg border-2 font-semibold transition ${
                   shippingSelected === "new" ? "border-black bg-black text-white" : "border-gray-200 bg-white"
                 }`}
               >
-                <span className="text-lg">✏️</span>
-                عنوان جديد - New Address
+                ✏️ عنوان جديد
               </button>
             </div>
           </section>
 
-          {/* Zone Selection */}
+          {/* Customer Info - Saved Address */}
           {shippingSelected === "saved" && (
-            <section className="bg-yellow-50 rounded-lg p-4 mb-4 border-2 border-yellow-300">
-              <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                <MapPin className="w-5 h-5" /> المنطقة - Delivery Zone
-              </h3>
-              {isLoadingZones ? (
-                <p className="text-center text-gray-600 py-4">⏳ جاري التحميل...</p>
-              ) : zonesList.length === 0 ? (
-                <p className="text-center text-gray-600 py-4">لا توجد مناطق</p>
-              ) : (
-                <div className="space-y-2">
-                  {zonesList.map((z) => (
-                    <button
-                      key={z.id}
-                      onClick={() => setZoneSelected(z)}
-                      className={`w-full p-3 rounded-lg border-2 font-semibold transition ${
-                        zoneSelected?.id === z.id ? "border-black bg-black text-white" : "border-gray-300 bg-white"
-                      }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <span>{z.name}</span>
-                        <span className="font-bold">+ L.E {z.shippingCost.toFixed(2)}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
+            <section className="bg-blue-50 rounded-lg p-4 mb-4 border-2 border-blue-300">
+              <h3 className="font-bold text-lg mb-3">👤 بيانات الطلب</h3>
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="اسمك"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                />
+                <input
+                  type="tel"
+                  placeholder="رقم الهاتف"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                />
+                <input
+                  type="email"
+                  value={user?.email || ""}
+                  disabled
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-600"
+                />
+              </div>
             </section>
           )}
 
-          {/* New Address */}
+          {/* Customer Info - New Address */}
           {shippingSelected === "new" && (
             <section className="bg-blue-50 rounded-lg p-4 mb-4 border-2 border-blue-300">
-              <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                <MapPin className="w-5 h-5" /> عنوان جديد - New Address
-              </h3>
-              <textarea
-                placeholder="اكتب عنوان التوصيل بالكامل - Full delivery address"
-                value={deliveryAddress}
-                onChange={(e) => setDeliveryAddress(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                rows={3}
-              />
-              <p className="text-sm text-gray-600 mt-2">
-                شامل: الشارع، الحي، المدينة - Include street, area, city
-              </p>
+              <h3 className="font-bold text-lg mb-3">📝 بيانات مختلفة</h3>
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="اسم المستقبل"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                />
+                <input
+                  type="tel"
+                  placeholder="رقم هاتف آخر"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                />
+                <textarea
+                  placeholder="العنوان الكامل"
+                  value={deliveryAddress}
+                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none"
+                  rows={3}
+                />
+              </div>
             </section>
           )}
 
-          {/* Zone for new address */}
-          {shippingSelected === "new" && (
+          {/* Zone Selection */}
+          {shippingSelected && (
             <section className="bg-yellow-50 rounded-lg p-4 mb-4 border-2 border-yellow-300">
-              <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                <MapPin className="w-5 h-5" /> اختر المنطقة - Select Zone
-              </h3>
+              <h3 className="font-bold text-lg mb-3">📍 اختر المنطقة</h3>
               {isLoadingZones ? (
-                <p className="text-center text-gray-600 py-4">⏳ جاري التحميل...</p>
-              ) : zonesList.length === 0 ? (
-                <p className="text-center text-gray-600 py-4">لا توجد مناطق</p>
+                <p className="text-center py-4">⏳ جاري التحميل...</p>
               ) : (
                 <div className="space-y-2">
                   {zonesList.map((z) => (
@@ -403,9 +357,9 @@ export default function CheckoutPage() {
                         zoneSelected?.id === z.id ? "border-black bg-black text-white" : "border-gray-300 bg-white"
                       }`}
                     >
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between">
                         <span>{z.name}</span>
-                        <span className="font-bold">+ L.E {z.shippingCost.toFixed(2)}</span>
+                        <span>+ L.E {z.shippingCost}</span>
                       </div>
                     </button>
                   ))}
@@ -414,16 +368,37 @@ export default function CheckoutPage() {
             </section>
           )}
 
-          {/* Additional Notes */}
+          {/* Payment Method */}
           <section className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
-            <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-              <FileText className="w-5 h-5" /> ملاحظات - Notes (Optional)
-            </h3>
+            <h3 className="font-bold text-lg mb-3">💳 طريقة الدفع</h3>
+            <div className="space-y-2">
+              <button
+                onClick={() => setPaymentSelected("delivery")}
+                className={`w-full p-3 rounded-lg border-2 font-semibold ${
+                  paymentSelected === "delivery" ? "border-black bg-black text-white" : "border-gray-200 bg-white"
+                }`}
+              >
+                💵 الدفع عند الاستلام
+              </button>
+              <button
+                onClick={() => setPaymentSelected("card")}
+                className={`w-full p-3 rounded-lg border-2 font-semibold ${
+                  paymentSelected === "card" ? "border-black bg-black text-white" : "border-gray-200 bg-white"
+                }`}
+              >
+                💳 بطاقة ائتمان
+              </button>
+            </div>
+          </section>
+
+          {/* Notes */}
+          <section className="bg-white rounded-lg p-4 mb-4 border border-gray-200">
+            <h3 className="font-bold text-lg mb-3">📌 ملاحظات إضافية</h3>
             <textarea
-              placeholder="أي ملاحظات إضافية... Any additional notes?"
+              placeholder="أي ملاحظات؟"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black resize-none"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none"
               rows={2}
             />
           </section>
@@ -431,17 +406,17 @@ export default function CheckoutPage() {
         </div>
 
         {/* Bottom button */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 max-w-[390px] mx-auto shadow-lg">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 max-w-[390px] mx-auto">
           <button
             onClick={handleSubmit}
             disabled={isSubmitting || !isFormValid}
             className={`w-full py-4 rounded-lg font-bold text-lg transition ${
               isSubmitting || !isFormValid
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-black text-white hover:bg-gray-900 active:scale-95"
+                : "bg-black text-white"
             }`}
           >
-            {isSubmitting ? "⏳ جاري معالجة الطلب..." : `✅ اطلب الآن L.E ${grandTotal.toFixed(2)}`}
+            {isSubmitting ? "⏳ جاري..." : `✅ اطلب - L.E ${grandTotal.toFixed(2)}`}
           </button>
         </div>
       </div>
