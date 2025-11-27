@@ -108,41 +108,40 @@ export default function DeliveryDetailsPage() {
     };
   }, [isNavigating, mapLat, mapLng]);
 
-  // Create custom delivery marker icon
+  // Create custom GPS location marker icon
   const createDeliveryIcon = (isActive: boolean = false) => {
     const svgString = isActive ? 
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140" width="40" height="56">
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40">
         <defs>
           <style>
             @keyframes pulse {
-              0%, 100% { r: 18; opacity: 0.4; }
-              50% { r: 25; opacity: 0.1; }
+              0%, 100% { r: 30; opacity: 0.3; }
+              50% { r: 45; opacity: 0.1; }
             }
             .pulse-ring { animation: pulse 2s infinite; }
+            @keyframes ping {
+              75%, 100% { r: 35; opacity: 0; }
+            }
+            .ping-ring { animation: ping 1.5s infinite; }
           </style>
         </defs>
-        <!-- Pulse ring -->
-        <circle cx="50" cy="50" r="18" fill="none" stroke="#3b82f6" stroke-width="2" class="pulse-ring" />
-        <!-- Main marker -->
-        <path d="M 50 10 C 65 10 75 20 75 35 C 75 50 50 85 50 85 C 50 85 25 50 25 35 C 25 20 35 10 50 10 Z" fill="#3b82f6" stroke="#1e3a8a" stroke-width="2" />
-        <!-- Truck icon inside -->
-        <g transform="translate(50, 35)">
-          <rect x="-12" y="-8" width="24" height="16" fill="white" rx="2" />
-          <rect x="-8" y="6" width="4" height="4" fill="white" />
-          <rect x="4" y="6" width="4" height="4" fill="white" />
-          <circle cx="-6" cy="10" r="1.5" fill="#3b82f6" />
-          <circle cx="6" cy="10" r="1.5" fill="#3b82f6" />
-        </g>
+        <!-- Outer pulse rings -->
+        <circle cx="50" cy="50" r="30" fill="none" stroke="#ef4444" stroke-width="1.5" class="pulse-ring" opacity="0.5" />
+        <circle cx="50" cy="50" r="35" fill="none" stroke="#ef4444" stroke-width="1" class="ping-ring" />
+        <!-- Main dot -->
+        <circle cx="50" cy="50" r="12" fill="#ef4444" stroke="#dc2626" stroke-width="2" />
+        <!-- Inner highlight -->
+        <circle cx="50" cy="50" r="8" fill="#ff6b6b" opacity="0.8" />
       </svg>`
     :
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140" width="32" height="44">
-        <path d="M 50 10 C 65 10 75 20 75 35 C 75 50 50 85 50 85 C 50 85 25 50 25 35 C 25 20 35 10 50 10 Z" fill="#3b82f6" stroke="#1e3a8a" stroke-width="2" />
-        <circle cx="50" cy="35" r="6" fill="white" />
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28">
+        <!-- Outer ring -->
+        <circle cx="50" cy="50" r="35" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.3" />
+        <!-- Main dot -->
+        <circle cx="50" cy="50" r="10" fill="#ef4444" stroke="#dc2626" stroke-width="2" />
+        <!-- Inner highlight -->
+        <circle cx="50" cy="50" r="6" fill="#ff6b6b" opacity="0.8" />
       </svg>`;
-    
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
     
     const div = document.createElement('div');
     div.innerHTML = svgString;
@@ -155,14 +154,14 @@ export default function DeliveryDetailsPage() {
       
       return L.icon({
         iconUrl: url,
-        iconSize: isActive ? [40, 56] : [32, 44],
-        iconAnchor: isActive ? [20, 56] : [16, 44],
-        popupAnchor: isActive ? [0, -56] : [0, -44],
+        iconSize: isActive ? [40, 40] : [28, 28],
+        iconAnchor: isActive ? [20, 20] : [14, 14],
+        popupAnchor: isActive ? [0, -20] : [0, -14],
       });
     }
     
     return L.icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
       iconSize: [25, 41],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
