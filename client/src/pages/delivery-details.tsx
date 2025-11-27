@@ -178,7 +178,7 @@ export default function DeliveryDetailsPage() {
         }
       });
     }
-  }, [mapLat, mapLng, currentLat, currentLng, language]);
+  }, [mapLat, mapLng, currentLat, currentLng, language, showMap]);
 
   // Fetch order
   useEffect(() => {
