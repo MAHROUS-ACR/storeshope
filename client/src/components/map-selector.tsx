@@ -200,28 +200,19 @@ export function MapSelector({
 
       <div className="space-y-2">
         <label className="block text-sm font-semibold text-gray-700">
-          {language === "ar" ? "📍 الموقع على الخريطة" : "📍 Location on Map"}
+          {language === "ar" ? "📍 العنوان الكامل" : "📍 Full Address"}
         </label>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder={language === "ar" ? "اكتب العنوان بالكامل أو ابحث" : "Type full address or search"}
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-          />
-          <button
-            onClick={() => forwardGeocode(address)}
-            disabled={isLoadingLocation || !address.trim()}
-            className="px-4 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 disabled:bg-gray-400 transition whitespace-nowrap"
-          >
-            {language === "ar" ? "🔍 بحث" : "🔍 Search"}
-          </button>
-        </div>
+        <textarea
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          placeholder={language === "ar" ? "اكتب العنوان بالكامل: شارع، حي، مدينة" : "Type full address: Street, District, City"}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white resize-none text-sm"
+          rows={2}
+        />
         <p className="text-xs text-gray-600">
           {language === "ar"
-            ? `خط العرض: ${selectedLat.toFixed(6)}, خط الطول: ${selectedLng.toFixed(6)}`
-            : `Latitude: ${selectedLat.toFixed(6)}, Longitude: ${selectedLng.toFixed(6)}`}
+            ? `📍 خط العرض: ${selectedLat.toFixed(6)}, خط الطول: ${selectedLng.toFixed(6)}`
+            : `📍 Latitude: ${selectedLat.toFixed(6)}, Longitude: ${selectedLng.toFixed(6)}`}
         </p>
       </div>
 
@@ -251,12 +242,12 @@ export function MapSelector({
         <div>
           {language === "ar"
             ? "👆 اضغط على الخريطة لتحديد الموقع أو استخدم زر الموقع الحالي"
-            : "👆 Click on the map to select location or use current location button"}
+            : "👆 Click on the map to select location or use your current location"}
         </div>
-        <div className="text-orange-600 font-semibold">
+        <div className="text-blue-600 font-semibold text-[11px]">
           {language === "ar"
-            ? "💡 إذا لم يعمل البحث، اضغط مباشرة على الخريطة"
-            : "💡 If search doesn't work, click directly on the map"}
+            ? "📝 اكتب العنوان الكامل في الحقل أعلاه"
+            : "📝 Type your full address in the field above"}
         </div>
       </p>
     </div>
