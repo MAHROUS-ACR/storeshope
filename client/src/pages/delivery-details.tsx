@@ -109,15 +109,15 @@ export default function DeliveryDetailsPage() {
     };
   }, [isNavigating, mapLat, mapLng]);
 
-  // Create custom delivery marker icon
+  // Create custom motorcycle delivery icon
   const createDeliveryIcon = (isActive: boolean = false) => {
     const svgString = isActive ? 
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="52" height="52">
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" width="52" height="44">
         <defs>
           <style>
             @keyframes pulse {
-              0%, 100% { r: 35; opacity: 0.5; }
-              50% { r: 48; opacity: 0.15; }
+              0%, 100% { r: 45; opacity: 0.5; }
+              50% { r: 60; opacity: 0.15; }
             }
             .pulse-ring { animation: pulse 2s infinite; }
           </style>
@@ -130,20 +130,27 @@ export default function DeliveryDetailsPage() {
           </filter>
         </defs>
         <!-- Pulse animation ring -->
-        <circle cx="50" cy="50" r="35" fill="none" stroke="#ff6b35" stroke-width="1.5" class="pulse-ring" />
-        <!-- Main circle background -->
-        <circle cx="50" cy="50" r="32" fill="#ff6b35" filter="url(#glow)" />
-        <!-- Package/box shape -->
-        <rect x="32" y="30" width="36" height="40" rx="3" fill="#fff" opacity="0.95" />
-        <!-- Package highlight -->
-        <rect x="32" y="30" width="36" height="12" rx="3" fill="#ffb366" opacity="0.6" />
-        <!-- Package detail line -->
-        <line x1="32" y1="42" x2="68" y2="42" stroke="#ff6b35" stroke-width="1" opacity="0.5" />
-        <!-- Checkmark inside -->
-        <path d="M 42 50 L 48 58 L 58 42" stroke="#ff6b35" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="60" cy="50" r="45" fill="none" stroke="#ff6b35" stroke-width="1.5" class="pulse-ring" />
+        <!-- Left wheel -->
+        <circle cx="25" cy="65" r="15" fill="none" stroke="#333" stroke-width="2.5"/>
+        <circle cx="25" cy="65" r="2" fill="#333" />
+        <!-- Right wheel -->
+        <circle cx="95" cy="65" r="15" fill="none" stroke="#333" stroke-width="2.5"/>
+        <circle cx="95" cy="65" r="2" fill="#333" />
+        <!-- Motorcycle frame -->
+        <line x1="25" y1="65" x2="50" y2="45" stroke="#ff6b35" stroke-width="3" stroke-linecap="round"/>
+        <line x1="50" y1="45" x2="95" y2="65" stroke="#ff6b35" stroke-width="3" stroke-linecap="round"/>
+        <line x1="50" y1="45" x2="45" y2="28" stroke="#ff6b35" stroke-width="2" stroke-linecap="round"/>
+        <!-- Seat -->
+        <ellipse cx="55" cy="42" rx="12" ry="6" fill="#ff6b35"/>
+        <!-- Driver head -->
+        <circle cx="52" cy="25" r="6" fill="#ff6b35"/>
+        <!-- Handlebars -->
+        <line x1="45" y1="28" x2="40" y2="18" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="45" y1="28" x2="50" y2="18" stroke="#333" stroke-width="1.5" stroke-linecap="round"/>
       </svg>`
     :
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="44" height="44">
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" width="44" height="37">
         <defs>
           <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
@@ -153,16 +160,23 @@ export default function DeliveryDetailsPage() {
             </feMerge>
           </filter>
         </defs>
-        <!-- Main circle background -->
-        <circle cx="50" cy="50" r="30" fill="#ff6b35" filter="url(#glow2)" />
-        <!-- Package/box shape -->
-        <rect x="32" y="30" width="36" height="40" rx="2.5" fill="#fff" opacity="0.9" />
-        <!-- Package highlight -->
-        <rect x="32" y="30" width="36" height="12" rx="2.5" fill="#ffb366" opacity="0.5" />
-        <!-- Package detail line -->
-        <line x1="32" y1="42" x2="68" y2="42" stroke="#ff6b35" stroke-width="0.8" opacity="0.4" />
-        <!-- Checkmark inside -->
-        <path d="M 42 50 L 48 58 L 58 42" stroke="#ff6b35" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+        <!-- Left wheel -->
+        <circle cx="25" cy="65" r="14" fill="none" stroke="#333" stroke-width="2"/>
+        <circle cx="25" cy="65" r="2" fill="#333" />
+        <!-- Right wheel -->
+        <circle cx="95" cy="65" r="14" fill="none" stroke="#333" stroke-width="2"/>
+        <circle cx="95" cy="65" r="2" fill="#333" />
+        <!-- Motorcycle frame -->
+        <line x1="25" y1="65" x2="50" y2="45" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="50" y1="45" x2="95" y2="65" stroke="#ff6b35" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="50" y1="45" x2="45" y2="28" stroke="#ff6b35" stroke-width="1.8" stroke-linecap="round"/>
+        <!-- Seat -->
+        <ellipse cx="55" cy="42" rx="10" ry="5" fill="#ff6b35"/>
+        <!-- Driver head -->
+        <circle cx="52" cy="25" r="5" fill="#ff6b35"/>
+        <!-- Handlebars -->
+        <line x1="45" y1="28" x2="40" y2="18" stroke="#333" stroke-width="1.2" stroke-linecap="round"/>
+        <line x1="45" y1="28" x2="50" y2="18" stroke="#333" stroke-width="1.2" stroke-linecap="round"/>
       </svg>`;
     
     const div = document.createElement('div');
