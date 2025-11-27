@@ -46,26 +46,6 @@ export default function DeliveryDetailsPage() {
 
   const orderId = location.split("/delivery-order/")[1]?.split("?")[0];
 
-  // Geocode address to get lat/lng
-  const geocodeAddress = async (address: string) => {
-    if (!address.trim()) return;
-    setMapLoading(true);
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`
-      );
-      const results = await response.json();
-      if (results.length > 0) {
-        setMapLat(parseFloat(results[0].lat));
-        setMapLng(parseFloat(results[0].lon));
-      }
-    } catch (error) {
-      console.log("Geocoding error:", error);
-    } finally {
-      setMapLoading(false);
-    }
-  };
-
   // Initialize Leaflet map
   useEffect(() => {
     if (!mapContainer.current || !mapLat || !mapLng) return;
@@ -100,15 +80,10 @@ export default function DeliveryDetailsPage() {
           const data = orderSnap.data() as DeliveryOrderDetails;
           setOrder(data);
           
-          // Try to get coordinates from address
+          // Use latitude and longitude directly
           if (data.latitude && data.longitude) {
             setMapLat(data.latitude);
             setMapLng(data.longitude);
-          } else {
-            const addr = data.shippingAddress || (data as any).deliveryAddress || data.shippingZone || "";
-            if (addr) {
-              geocodeAddress(addr);
-            }
           }
         }
       } catch (error) {

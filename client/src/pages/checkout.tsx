@@ -171,6 +171,10 @@ export default function CheckoutPage() {
 
       const orderId = `ord_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
       
+      // Get coordinates (use selected location coords if available)
+      let finalLat = locationCoords?.lat;
+      let finalLng = locationCoords?.lng;
+
       const orderObj = {
         id: orderId,
         orderNumber: Math.floor(Date.now() / 1000),
@@ -183,8 +187,8 @@ export default function CheckoutPage() {
           ? `${user.address || zoneSelected?.name}` 
           : deliveryAddress.trim(),
         shippingPhone: customerPhone.trim(),
-        locationLat: locationCoords?.lat,
-        locationLng: locationCoords?.lng,
+        latitude: finalLat,
+        longitude: finalLng,
         notes: notes.trim(),
         
         items: items.map(item => ({
