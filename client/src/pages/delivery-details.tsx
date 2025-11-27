@@ -356,6 +356,16 @@ export default function DeliveryDetailsPage() {
     }
   }, [isNavigating, currentLat, currentLng, mapLat, mapLng]);
 
+  // Keep marker updated when location changes during navigation
+  useEffect(() => {
+    if (isNavigating && map.current && currentMarker.current && currentLat && currentLng) {
+      // Update marker position to latest location
+      currentMarker.current.setLatLng([currentLat, currentLng]);
+      // Make sure marker stays visible by keeping map centered on it
+      map.current.panTo([currentLat, currentLng]);
+    }
+  }, [currentLat, currentLng, isNavigating]);
+
   // Fetch order
   useEffect(() => {
     const fetchOrder = async () => {
