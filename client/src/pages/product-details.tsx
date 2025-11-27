@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useRoute } from "wouter";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { ArrowLeft, ShoppingCart, Check, X } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Check, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart } from "@/lib/cartContext";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
@@ -23,6 +23,7 @@ export default function ProductDetailsPage() {
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [discounts, setDiscounts] = useState<Discount[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const loadProductAndDiscounts = async () => {
@@ -134,6 +135,13 @@ export default function ProductDetailsPage() {
                       (product.sizes && product.sizes.length > 0) || 
                       (product.units && product.units.length > 0);
   
+  // Support both single image (image) and multiple images (images array)
+  const images = (product.images && Array.isArray(product.images) && product.images.length > 0) 
+    ? product.images 
+    : (product.image ? [product.image] : []);
+  const currentImage = images[currentImageIndex] || "";
+  const hasMultipleImages = images.length > 1;
+  
   // Get discount info
   const activeDiscount = getActiveDiscount(String(product?.id), discounts);
   const discountedPrice = activeDiscount ? calculateDiscountedPrice(product.price, activeDiscount.discountPercentage) : product?.price;
@@ -156,13 +164,59 @@ export default function ProductDetailsPage() {
         {/* Content */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
           <div className="w-full px-5 py-4">
-            {/* Product Image */}
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-4">
+            {/* Product Image Gallery */}
+            <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 mb-4 group">
               <img 
-                src={product.image || ""} 
-                alt={productTitle}
+                src={currentImage} 
+                alt={`${productTitle} - ${currentImageIndex + 1}`}
                 className="w-full h-full object-cover"
+                data-testid="img-product-main"
               />
+              
+              {/* Previous Image Button */}
+              {hasMultipleImages && (
+                <button
+                  onClick={() => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  data-testid="button-prev-image"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              )}
+              
+              {/* Next Image Button */}
+              {hasMultipleImages && (
+                <button
+                  onClick={() => setCurrentImageIndex((prev) => (prev + 1) % images.length)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  data-testid="button-next-image"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              )}
+              
+              {/* Image Counter */}
+              {hasMultipleImages && (
+                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                  {currentImageIndex + 1} / {images.length}
+                </div>
+              )}
+              
+              {/* Image Dots */}
+              {hasMultipleImages && (
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                  {images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImageIndex(idx)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        idx === currentImageIndex ? "bg-white w-6" : "bg-white/50 hover:bg-white/75"
+                      }`}
+                      data-testid={`button-image-dot-${idx}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Availability Status */}
