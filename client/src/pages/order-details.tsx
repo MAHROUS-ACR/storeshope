@@ -37,6 +37,10 @@ interface Order {
   shippingAddress?: string;
   shippingPhone?: string;
   shippingZone?: string;
+  customerName?: string;
+  customerPhone?: string;
+  deliveryAddress?: string;
+  notes?: string;
 }
 
 export default function OrderDetailsPage() {
@@ -303,21 +307,27 @@ export default function OrderDetailsPage() {
                 </div>
               </div>
 
-              {/* Shipping Details */}
-              {(order.shippingAddress || order.shippingPhone || order.shippingZone) && (
+              {/* Customer & Delivery Details */}
+              {(order.customerName || order.customerPhone || order.deliveryAddress || order.shippingAddress || order.shippingPhone || order.shippingZone) && (
                 <div className="bg-white rounded-2xl border border-gray-100 p-4">
-                  <h3 className="font-semibold text-sm mb-3">{t("deliveryInfo", language)}</h3>
+                  <h3 className="font-semibold text-sm mb-3">👤 {language === "ar" ? "بيانات التوصيل" : "Delivery Information"}</h3>
                   <div className="space-y-3">
-                    {order.shippingAddress && (
+                    {(order.customerName || order.shippingAddress) && (
                       <div>
-                        <p className="text-xs text-muted-foreground">{t("address", language)}</p>
-                        <p className="text-sm font-medium">{order.shippingAddress}</p>
+                        <p className="text-xs text-muted-foreground">{language === "ar" ? "الاسم" : "Name"}</p>
+                        <p className="text-sm font-medium">{order.customerName || order.shippingAddress || "N/A"}</p>
                       </div>
                     )}
-                    {order.shippingPhone && (
+                    {(order.customerPhone || order.shippingPhone) && (
                       <div>
                         <p className="text-xs text-muted-foreground">{t("phone", language)}</p>
-                        <p className="text-sm font-medium">{order.shippingPhone}</p>
+                        <p className="text-sm font-medium">{order.customerPhone || order.shippingPhone || "N/A"}</p>
+                      </div>
+                    )}
+                    {(order.deliveryAddress || order.shippingAddress) && (
+                      <div>
+                        <p className="text-xs text-muted-foreground">{t("address", language)}</p>
+                        <p className="text-sm font-medium">{order.deliveryAddress || order.shippingAddress || "N/A"}</p>
                       </div>
                     )}
                     {order.shippingZone && (
@@ -326,7 +336,21 @@ export default function OrderDetailsPage() {
                         <p className="text-sm font-medium">{order.shippingZone}</p>
                       </div>
                     )}
+                    {order.shippingCost !== undefined && order.shippingCost > 0 && (
+                      <div>
+                        <p className="text-xs text-muted-foreground">{t("shippingCost", language)}</p>
+                        <p className="text-sm font-medium">L.E {order.shippingCost.toFixed(2)}</p>
+                      </div>
+                    )}
                   </div>
+                </div>
+              )}
+
+              {/* Order Notes */}
+              {order.notes && (
+                <div className="bg-white rounded-2xl border border-gray-100 p-4">
+                  <h3 className="font-semibold text-sm mb-3">📝 {language === "ar" ? "ملاحظات" : "Notes"}</h3>
+                  <p className="text-sm text-gray-900">{order.notes}</p>
                 </div>
               )}
 
