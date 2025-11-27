@@ -5,7 +5,7 @@ import { useUser } from "@/lib/userContext";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
-import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, onSnapshot } from "firebase/firestore";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
 
@@ -33,22 +33,29 @@ export default function DeliveryPage() {
     }
   }, [isLoading, user, setLocation]);
 
-  const fetchMyOrders = async () => {
+  const setupOrdersListener = () => {
     if (!user?.id) return;
     setOrdersLoading(true);
     try {
       const db = getFirestore();
       const ordersRef = collection(db, "orders");
       const q = query(ordersRef, where("deliveryUserId", "==", user.id));
-      const snapshot = await getDocs(q);
-      const ordersList = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as DeliveryOrder[];
-      setOrders(ordersList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+      
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const ordersList = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as DeliveryOrder[];
+        setOrders(ordersList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+        setOrdersLoading(false);
+      }, (error) => {
+        toast.error("Failed to load orders");
+        setOrdersLoading(false);
+      });
+      
+      return unsubscribe;
     } catch (error) {
       toast.error("Failed to load orders");
-    } finally {
       setOrdersLoading(false);
     }
   };
@@ -59,17 +66,19 @@ export default function DeliveryPage() {
       const orderRef = doc(db, "orders", orderId);
       await updateDoc(orderRef, { status: newStatus });
       toast.success(language === "ar" ? "تم تحديث الحالة بنجاح" : "Status updated successfully");
-      fetchMyOrders();
     } catch (error) {
       toast.error(language === "ar" ? "فشل تحديث الحالة" : "Failed to update status");
     }
   };
 
   useEffect(() => {
-    if (user?.role === "delivery") {
-      fetchMyOrders();
+    if (user?.role === "delivery" && user?.id) {
+      const unsubscribe = setupOrdersListener();
+      return () => {
+        if (unsubscribe) unsubscribe();
+      };
     }
-  }, [user?.id]);
+  }, [user?.id, user?.role]);
 
   if (isLoading) {
     return (
