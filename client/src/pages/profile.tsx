@@ -2057,7 +2057,7 @@ export default function ProfilePage() {
                           <button
                             onClick={() => {
                               setEditingItemId(null);
-                              setNewItemForm({ title: "", description: "", price: "", category: "", image: "", units: [], sizes: [], colors: [], available: true });
+                              setNewItemForm({ title: "", description: "", price: "", category: "", image: "", images: [], units: [], sizes: [], colors: [], available: true });
                               setUnitInput("");
                               setSizeInput("");
                               setColorInput("");
@@ -2136,6 +2136,7 @@ export default function ProfilePage() {
                                   price: item.price.toString(),
                                   category: item.category,
                                   image: item.image || "",
+                                  images: item.images || [],
                                   units: item.units || [],
                                   sizes: item.sizes || [],
                                   colors: item.colors || [],
