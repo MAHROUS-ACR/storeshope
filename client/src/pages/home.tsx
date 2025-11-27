@@ -140,6 +140,10 @@ export default function Home() {
     return matchesCategory && matchesSearch;
   });
 
+  const handleProductClick = useCallback((id: any) => {
+    setLocation(`/product/${id}`);
+  }, [setLocation]);
+
   return (
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden bg-white">
@@ -252,7 +256,7 @@ export default function Home() {
                       product={product} 
                       index={index}
                       discounts={discounts}
-                      onProductClick={useCallback((id) => setLocation(`/product/${id}`), [setLocation])}
+                      onProductClick={handleProductClick}
                     />
                   ))}
                 </div>
