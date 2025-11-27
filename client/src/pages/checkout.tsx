@@ -70,12 +70,17 @@ export default function CheckoutPage() {
 
   const handleSubmit = async () => {
     console.log("🔵 handleSubmit START");
-    console.log("  isFormValid:", isFormValid);
-    console.log("  items:", items?.length);
-    console.log("  user?.id:", user?.id);
+    console.log("  paymentSelected:", paymentSelected);
+    console.log("  shippingSelected:", shippingSelected);
+    console.log("  zoneSelected:", zoneSelected);
+    console.log("  items.length:", items?.length);
+    console.log("  user.id:", user?.id);
+    console.log("  subtotal:", subtotal);
+    console.log("  shipping:", shipping);
+    console.log("  grandTotal:", grandTotal);
     
-    if (!isFormValid) {
-      console.warn("⚠️ Form not valid");
+    if (!paymentSelected || !shippingSelected || !zoneSelected) {
+      console.warn("⚠️ Form not valid - missing selection");
       toast.error("اختر جميع الخيارات - Select all options");
       return;
     }
@@ -96,22 +101,29 @@ export default function CheckoutPage() {
 
     try {
       const orderId = `ord_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+      
+      // Build order with null checks
       const orderObj = {
         id: orderId,
         orderNumber: Math.floor(Date.now() / 1000),
         userId: user.id,
-        items: [...items],
-        subtotal,
-        shippingCost: shipping,
-        total: grandTotal,
+        items: items.map(item => ({
+          id: item.id || "",
+          title: item.title || "",
+          price: Number(item.price) || 0,
+          quantity: Number(item.quantity) || 1,
+        })),
+        subtotal: Number(subtotal) || 0,
+        shippingCost: Number(shipping) || 0,
+        total: Number(grandTotal) || 0,
         status: "pending",
-        paymentMethod: paymentSelected,
-        shippingType: shippingSelected,
-        shippingZone: zoneSelected?.name,
-        createdAt: new Date().toISOString(),
+        paymentMethod: paymentSelected || "",
+        shippingType: shippingSelected || "",
+        shippingZone: zoneSelected?.name || "",
+        shippingZoneId: zoneSelected?.id || "",
       };
 
-      console.log("📝 Submitting order:", orderObj);
+      console.log("📝 Order object before save:", JSON.stringify(orderObj, null, 2));
       const savedId = await saveOrder(orderObj);
       console.log("✅ SaveOrder returned:", savedId);
       

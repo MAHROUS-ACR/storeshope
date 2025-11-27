@@ -134,7 +134,7 @@ export async function saveOrder(order: any) {
   console.log("🔵 saveOrder START - Order ID:", order?.id);
   
   try {
-    // Validate
+    // Validate required fields
     if (!order?.userId || !order?.id || !order?.items?.length) {
       throw new Error("Missing userId, id, or items");
     }
@@ -143,17 +143,38 @@ export async function saveOrder(order: any) {
     const db = initDb();
     console.log("✅ DB ready");
 
-    // Prepare and save
-    const orderData = {
-      ...order,
-      createdAt: new Date().toISOString(),
-    };
+    // Clean order data - remove undefined fields
+    const cleanOrder: any = {};
+    Object.keys(order).forEach(key => {
+      const value = order[key];
+      if (value !== undefined && value !== null && value !== "") {
+        cleanOrder[key] = value;
+      }
+    });
 
-    await setDoc(doc(db, "orders", order.id), orderData);
+    // Set defaults for required string fields
+    if (!cleanOrder.status) cleanOrder.status = "pending";
+    if (!cleanOrder.paymentMethod) cleanOrder.paymentMethod = "";
+    if (!cleanOrder.shippingType) cleanOrder.shippingType = "";
+    if (!cleanOrder.shippingZone) cleanOrder.shippingZone = "";
+    
+    // Ensure numbers are valid
+    cleanOrder.subtotal = Number(cleanOrder.subtotal) || 0;
+    cleanOrder.shippingCost = Number(cleanOrder.shippingCost) || 0;
+    cleanOrder.total = Number(cleanOrder.total) || 0;
+    cleanOrder.orderNumber = Number(cleanOrder.orderNumber) || 0;
+
+    // Add timestamp
+    cleanOrder.createdAt = new Date().toISOString();
+
+    console.log("📦 Clean order data:", JSON.stringify(cleanOrder, null, 2));
+
+    await setDoc(doc(db, "orders", order.id), cleanOrder);
     console.log("✅ saveOrder SUCCESS - Order saved:", order.id);
     return order.id;
   } catch (error: any) {
     console.error("❌ saveOrder FAILED:", error?.message || error);
+    console.error("❌ Full error:", error);
     return null;
   }
 }

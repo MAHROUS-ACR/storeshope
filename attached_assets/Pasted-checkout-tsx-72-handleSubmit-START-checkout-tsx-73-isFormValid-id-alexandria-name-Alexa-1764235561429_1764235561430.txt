@@ -1,0 +1,158 @@
+checkout.tsx:72 🔵 handleSubmit START
+checkout.tsx:73   isFormValid: {id: 'alexandria', name: 'Alexandria', shippingCost: 50}
+checkout.tsx:74   items: 1
+checkout.tsx:75   user?.id: 96QdijrOpVWz1dN9rkttjAbIGYK2
+checkout.tsx:114 📝 Submitting order: {id: 'ord_1764235437767_346qu38', orderNumber: 1764235437, userId: '96QdijrOpVWz1dN9rkttjAbIGYK2', items: Array(1), subtotal: 120, …}
+firebaseOps.ts:134 🔵 saveOrder START - Order ID: ord_1764235437767_346qu38
+firebaseOps.ts:144 ✅ DB ready
+firebaseOps.ts:156 ❌ saveOrder FAILED: Function setDoc() called with invalid data. Unsupported field value: undefined (found in document orders/ord_1764235437767_346qu38)
+saveOrder @ firebaseOps.ts:156
+handleSubmit @ checkout.tsx:115
+executeDispatch @ react-dom_client.js?v=c2f7c7d7:13622
+runWithFiberInDEV @ react-dom_client.js?v=c2f7c7d7:997
+processDispatchQueue @ react-dom_client.js?v=c2f7c7d7:13658
+(anonymous) @ react-dom_client.js?v=c2f7c7d7:14071
+batchedUpdates$1 @ react-dom_client.js?v=c2f7c7d7:2626
+dispatchEventForPluginEventSystem @ react-dom_client.js?v=c2f7c7d7:13763
+dispatchEvent @ react-dom_client.js?v=c2f7c7d7:16784
+dispatchDiscreteEvent @ react-dom_client.js?v=c2f7c7d7:16765
+<button>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c2f7c7d7:247
+CheckoutPage @ checkout.tsx:283
+react_stack_bottom_frame @ react-dom_client.js?v=c2f7c7d7:18509
+renderWithHooks @ react-dom_client.js?v=c2f7c7d7:5654
+updateFunctionComponent @ react-dom_client.js?v=c2f7c7d7:7475
+beginWork @ react-dom_client.js?v=c2f7c7d7:8525
+runWithFiberInDEV @ react-dom_client.js?v=c2f7c7d7:997
+performUnitOfWork @ react-dom_client.js?v=c2f7c7d7:12561
+workLoopSync @ react-dom_client.js?v=c2f7c7d7:12424
+renderRootSync @ react-dom_client.js?v=c2f7c7d7:12408
+performWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:11766
+performSyncWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:13517
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=c2f7c7d7:13414
+processRootScheduleInMicrotask @ react-dom_client.js?v=c2f7c7d7:13437
+(anonymous) @ react-dom_client.js?v=c2f7c7d7:13531
+<CheckoutPage>
+exports.createElement @ chunk-KMU3Z7QX.js?v=c2f7c7d7:793
+h_route @ wouter.js?v=c2f7c7d7:255
+Route @ wouter.js?v=c2f7c7d7:274
+react_stack_bottom_frame @ react-dom_client.js?v=c2f7c7d7:18509
+renderWithHooks @ react-dom_client.js?v=c2f7c7d7:5654
+updateFunctionComponent @ react-dom_client.js?v=c2f7c7d7:7475
+beginWork @ react-dom_client.js?v=c2f7c7d7:8525
+runWithFiberInDEV @ react-dom_client.js?v=c2f7c7d7:997
+performUnitOfWork @ react-dom_client.js?v=c2f7c7d7:12561
+workLoopSync @ react-dom_client.js?v=c2f7c7d7:12424
+renderRootSync @ react-dom_client.js?v=c2f7c7d7:12408
+performWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:11766
+performSyncWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:13517
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=c2f7c7d7:13414
+processRootScheduleInMicrotask @ react-dom_client.js?v=c2f7c7d7:13437
+(anonymous) @ react-dom_client.js?v=c2f7c7d7:13531
+<Route>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c2f7c7d7:247
+AppRouter @ App.tsx:31
+react_stack_bottom_frame @ react-dom_client.js?v=c2f7c7d7:18509
+renderWithHooks @ react-dom_client.js?v=c2f7c7d7:5654
+updateFunctionComponent @ react-dom_client.js?v=c2f7c7d7:7475
+beginWork @ react-dom_client.js?v=c2f7c7d7:8525
+runWithFiberInDEV @ react-dom_client.js?v=c2f7c7d7:997
+performUnitOfWork @ react-dom_client.js?v=c2f7c7d7:12561
+workLoopSync @ react-dom_client.js?v=c2f7c7d7:12424
+renderRootSync @ react-dom_client.js?v=c2f7c7d7:12408
+performWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=c2f7c7d7:13505
+performWorkUntilDeadline @ react-dom_client.js?v=c2f7c7d7:36
+<AppRouter>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c2f7c7d7:247
+App @ App.tsx:53
+react_stack_bottom_frame @ react-dom_client.js?v=c2f7c7d7:18509
+renderWithHooks @ react-dom_client.js?v=c2f7c7d7:5654
+updateFunctionComponent @ react-dom_client.js?v=c2f7c7d7:7475
+beginWork @ react-dom_client.js?v=c2f7c7d7:8525
+runWithFiberInDEV @ react-dom_client.js?v=c2f7c7d7:997
+performUnitOfWork @ react-dom_client.js?v=c2f7c7d7:12561
+workLoopSync @ react-dom_client.js?v=c2f7c7d7:12424
+renderRootSync @ react-dom_client.js?v=c2f7c7d7:12408
+performWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=c2f7c7d7:13505
+performWorkUntilDeadline @ react-dom_client.js?v=c2f7c7d7:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c2f7c7d7:247
+(anonymous) @ main.tsx:43
+checkout.tsx:116 ✅ SaveOrder returned: null
+checkout.tsx:139 ❌ Order error: saveOrder returned null
+handleSubmit @ checkout.tsx:139
+await in handleSubmit
+executeDispatch @ react-dom_client.js?v=c2f7c7d7:13622
+runWithFiberInDEV @ react-dom_client.js?v=c2f7c7d7:997
+processDispatchQueue @ react-dom_client.js?v=c2f7c7d7:13658
+(anonymous) @ react-dom_client.js?v=c2f7c7d7:14071
+batchedUpdates$1 @ react-dom_client.js?v=c2f7c7d7:2626
+dispatchEventForPluginEventSystem @ react-dom_client.js?v=c2f7c7d7:13763
+dispatchEvent @ react-dom_client.js?v=c2f7c7d7:16784
+dispatchDiscreteEvent @ react-dom_client.js?v=c2f7c7d7:16765
+<button>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c2f7c7d7:247
+CheckoutPage @ checkout.tsx:283
+react_stack_bottom_frame @ react-dom_client.js?v=c2f7c7d7:18509
+renderWithHooks @ react-dom_client.js?v=c2f7c7d7:5654
+updateFunctionComponent @ react-dom_client.js?v=c2f7c7d7:7475
+beginWork @ react-dom_client.js?v=c2f7c7d7:8525
+runWithFiberInDEV @ react-dom_client.js?v=c2f7c7d7:997
+performUnitOfWork @ react-dom_client.js?v=c2f7c7d7:12561
+workLoopSync @ react-dom_client.js?v=c2f7c7d7:12424
+renderRootSync @ react-dom_client.js?v=c2f7c7d7:12408
+performWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:11766
+performSyncWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:13517
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=c2f7c7d7:13414
+processRootScheduleInMicrotask @ react-dom_client.js?v=c2f7c7d7:13437
+(anonymous) @ react-dom_client.js?v=c2f7c7d7:13531
+<CheckoutPage>
+exports.createElement @ chunk-KMU3Z7QX.js?v=c2f7c7d7:793
+h_route @ wouter.js?v=c2f7c7d7:255
+Route @ wouter.js?v=c2f7c7d7:274
+react_stack_bottom_frame @ react-dom_client.js?v=c2f7c7d7:18509
+renderWithHooks @ react-dom_client.js?v=c2f7c7d7:5654
+updateFunctionComponent @ react-dom_client.js?v=c2f7c7d7:7475
+beginWork @ react-dom_client.js?v=c2f7c7d7:8525
+runWithFiberInDEV @ react-dom_client.js?v=c2f7c7d7:997
+performUnitOfWork @ react-dom_client.js?v=c2f7c7d7:12561
+workLoopSync @ react-dom_client.js?v=c2f7c7d7:12424
+renderRootSync @ react-dom_client.js?v=c2f7c7d7:12408
+performWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:11766
+performSyncWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:13517
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=c2f7c7d7:13414
+processRootScheduleInMicrotask @ react-dom_client.js?v=c2f7c7d7:13437
+(anonymous) @ react-dom_client.js?v=c2f7c7d7:13531
+<Route>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c2f7c7d7:247
+AppRouter @ App.tsx:31
+react_stack_bottom_frame @ react-dom_client.js?v=c2f7c7d7:18509
+renderWithHooks @ react-dom_client.js?v=c2f7c7d7:5654
+updateFunctionComponent @ react-dom_client.js?v=c2f7c7d7:7475
+beginWork @ react-dom_client.js?v=c2f7c7d7:8525
+runWithFiberInDEV @ react-dom_client.js?v=c2f7c7d7:997
+performUnitOfWork @ react-dom_client.js?v=c2f7c7d7:12561
+workLoopSync @ react-dom_client.js?v=c2f7c7d7:12424
+renderRootSync @ react-dom_client.js?v=c2f7c7d7:12408
+performWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=c2f7c7d7:13505
+performWorkUntilDeadline @ react-dom_client.js?v=c2f7c7d7:36
+<AppRouter>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c2f7c7d7:247
+App @ App.tsx:53
+react_stack_bottom_frame @ react-dom_client.js?v=c2f7c7d7:18509
+renderWithHooks @ react-dom_client.js?v=c2f7c7d7:5654
+updateFunctionComponent @ react-dom_client.js?v=c2f7c7d7:7475
+beginWork @ react-dom_client.js?v=c2f7c7d7:8525
+runWithFiberInDEV @ react-dom_client.js?v=c2f7c7d7:997
+performUnitOfWork @ react-dom_client.js?v=c2f7c7d7:12561
+workLoopSync @ react-dom_client.js?v=c2f7c7d7:12424
+renderRootSync @ react-dom_client.js?v=c2f7c7d7:12408
+performWorkOnRoot @ react-dom_client.js?v=c2f7c7d7:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=c2f7c7d7:13505
+performWorkUntilDeadline @ react-dom_client.js?v=c2f7c7d7:36
+<App>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c2f7c7d7:247
+(anonymous) @ main.tsx:43
