@@ -142,6 +142,10 @@ export default function DeliveryDetailsPage() {
         .addTo(map.current)
         .bindPopup(`<div style="text-align: center; direction: ${language === "ar" ? "rtl" : "ltr"}"><strong>${language === "ar" ? "موقعك الحالي" : "Your Location"}</strong></div>`);
 
+      // Fit bounds to show both markers immediately
+      const bounds = L.latLngBounds([[currentLat, currentLng], [mapLat, mapLng]]);
+      map.current.fitBounds(bounds, { padding: [80, 80] });
+
       // Fetch route from OSRM
       const fetchRouteAsync = async () => {
         try {
