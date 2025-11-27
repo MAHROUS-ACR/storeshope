@@ -17,6 +17,7 @@ interface DeliveryOrder {
   status: string;
   createdAt: string;
   deliveryUsername?: string;
+  recipientName?: string;
 }
 
 export default function DeliveryPage() {
@@ -26,6 +27,9 @@ export default function DeliveryPage() {
   const [orders, setOrders] = useState<DeliveryOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string | null>("shipped");
+  const [showRecipientModal, setShowRecipientModal] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [recipientName, setRecipientName] = useState("");
 
   useEffect(() => {
     if (!isLoading && (!user || user.role !== "delivery")) {
@@ -60,14 +64,37 @@ export default function DeliveryPage() {
     }
   };
 
-  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+  const updateOrderStatus = async (orderId: string, newStatus: string, recName?: string) => {
     try {
       const db = getFirestore();
       const orderRef = doc(db, "orders", orderId);
-      await updateDoc(orderRef, { status: newStatus });
+      const updateData: any = { status: newStatus };
+      if (recName) {
+        updateData.recipientName = recName;
+      }
+      await updateDoc(orderRef, updateData);
       toast.success(language === "ar" ? "تم تحديث الحالة بنجاح" : "Status updated successfully");
+      setShowRecipientModal(false);
+      setSelectedOrderId(null);
+      setRecipientName("");
     } catch (error) {
       toast.error(language === "ar" ? "فشل تحديث الحالة" : "Failed to update status");
+    }
+  };
+
+  const handleMarkAsReceived = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setShowRecipientModal(true);
+    setRecipientName("");
+  };
+
+  const handleConfirmDelivery = () => {
+    if (!recipientName.trim()) {
+      toast.error(language === "ar" ? "الرجاء إدخال اسم المستلم" : "Please enter recipient name");
+      return;
+    }
+    if (selectedOrderId) {
+      updateOrderStatus(selectedOrderId, "received", recipientName);
     }
   };
 
@@ -169,25 +196,33 @@ export default function DeliveryPage() {
                       <div>
                         <p className="text-sm font-bold text-gray-900">Order #{order.orderNumber || "N/A"}</p>
                         <p className="text-xs text-gray-500 mt-0.5">{new Date(order.createdAt).toLocaleDateString()}</p>
+                        {order.deliveryUsername && (
+                          <p className="text-xs text-orange-600 font-semibold mt-1">🚚 {order.deliveryUsername}</p>
+                        )}
                       </div>
-                      <span
-                        className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                          order.status === "received"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-blue-100 text-blue-700"
-                        }`}
-                      >
-                        {order.status === "received"
-                          ? language === "ar" ? "✅ تم الاستقبال" : "✅ Received"
-                          : language === "ar" ? "🚚 تم الشحن" : "🚚 Shipped"}
-                      </span>
+                      <div className="flex flex-col items-end gap-1">
+                        <span
+                          className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                            order.status === "received"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-blue-100 text-blue-700"
+                          }`}
+                        >
+                          {order.status === "received"
+                            ? language === "ar" ? "✅ تم الاستقبال" : "✅ Received"
+                            : language === "ar" ? "🚚 تم الشحن" : "🚚 Shipped"}
+                        </span>
+                        {order.recipientName && (
+                          <p className="text-xs text-gray-600">{order.recipientName}</p>
+                        )}
+                      </div>
                     </div>
                     <p className="text-sm font-bold text-orange-600 mb-3">L.E {order.total.toFixed(2)}</p>
                     
                     {/* Action Button */}
                     {order.status === "shipped" && (
                       <button
-                        onClick={() => updateOrderStatus(order.id, "received")}
+                        onClick={() => handleMarkAsReceived(order.id)}
                         className="w-full py-2 px-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
                         data-testid={`button-mark-received-${order.id}`}
                       >
@@ -203,6 +238,48 @@ export default function DeliveryPage() {
 
         <BottomNav />
       </div>
+
+      {/* Recipient Name Modal */}
+      {showRecipientModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-5">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <h2 className="text-lg font-bold mb-4">{language === "ar" ? "إدخال اسم المستلم" : "Enter Recipient Name"}</h2>
+            <input
+              type="text"
+              value={recipientName}
+              onChange={(e) => setRecipientName(e.target.value)}
+              placeholder={language === "ar" ? "اسم المستلم" : "Recipient name"}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-green-500"
+              data-testid="input-recipient-name"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleConfirmDelivery();
+                }
+              }}
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowRecipientModal(false);
+                  setSelectedOrderId(null);
+                  setRecipientName("");
+                }}
+                className="flex-1 py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors"
+                data-testid="button-cancel-recipient"
+              >
+                {language === "ar" ? "إلغاء" : "Cancel"}
+              </button>
+              <button
+                onClick={handleConfirmDelivery}
+                className="flex-1 py-2 px-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors"
+                data-testid="button-confirm-delivery"
+              >
+                {language === "ar" ? "تأكيد التسليم" : "Confirm Delivery"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </MobileWrapper>
   );
 }
