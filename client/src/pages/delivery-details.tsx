@@ -90,9 +90,15 @@ export default function DeliveryDetailsPage() {
   // Get route from OSRM
   const fetchRoute = async (startLat: number, startLng: number, endLat: number, endLng: number) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
       const response = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`
+        `https://router.project-osrm.org/route/v1/driving/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`,
+        { signal: controller.signal }
       );
+      clearTimeout(timeoutId);
+      
       const data = await response.json();
       if (data.routes && data.routes[0]) {
         const route = data.routes[0];
@@ -163,18 +169,14 @@ export default function DeliveryDetailsPage() {
         .addTo(map.current)
         .bindPopup(`<div style="text-align: center; direction: ${language === "ar" ? "rtl" : "ltr"}"><strong>${language === "ar" ? "موقعك الحالي" : "Your Location"}</strong></div>`);
 
-      // Fetch and draw actual route
+      // Fetch and draw actual route (non-blocking)
       fetchRoute(currentLat, currentLng, mapLat, mapLng).then((coords) => {
         if (coords && map.current) {
-          const line = L.polyline(coords, {
+          L.polyline(coords, {
             color: '#2563eb',
             weight: 4,
             opacity: 0.8,
           }).addTo(map.current);
-
-          // Fit map bounds to show route
-          const bounds = L.latLngBounds(coords);
-          map.current.fitBounds(bounds, { padding: [50, 50] });
         }
       });
     }
