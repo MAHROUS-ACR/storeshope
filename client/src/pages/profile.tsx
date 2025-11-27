@@ -13,6 +13,7 @@ import { getFirestore, doc, updateDoc, getDoc, collection, setDoc, getDocs, addD
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { getProducts, getOrders } from "@/lib/firebaseOps";
 import { getStatusColor } from "@/lib/statusColors";
+import { MapSelector } from "@/components/map-selector";
 
 const getMenuItems = (language: any) => [
   { icon: Package, label: t("myOrders", language), path: "/orders", buttonBg: "bg-purple-50", borderColor: "border-purple-200 hover:border-purple-300", iconColor: "text-purple-600 bg-purple-100", textColor: "text-purple-900" },
@@ -132,6 +133,8 @@ export default function ProfilePage() {
   const [userPhone, setUserPhone] = useState("");
   const [userZone, setUserZone] = useState("");
   const [showUserProfile, setShowUserProfile] = useState(false);
+  const [showMapSelector, setShowMapSelector] = useState(false);
+  const [userLocationCoords, setUserLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
   
   // Firebase Config States
   const [projectId, setProjectId] = useState("");
@@ -636,6 +639,8 @@ export default function ProfilePage() {
         address: userAddress,
         phone: userPhone,
         zone: userZone,
+        locationLat: userLocationCoords?.lat,
+        locationLng: userLocationCoords?.lng,
       });
       
       toast.success("Profile updated successfully!");
@@ -660,6 +665,9 @@ export default function ProfilePage() {
         setUserAddress(data.address || "");
         setUserPhone(data.phone || "");
         setUserZone(data.zone || "");
+        if (data.locationLat && data.locationLng) {
+          setUserLocationCoords({ lat: data.locationLat, lng: data.locationLng });
+        }
       }
     } catch (error) {
 
@@ -867,6 +875,32 @@ export default function ProfilePage() {
                 {showUserProfile && (
                   <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-4 mb-4">
                     <div>
+                      <button
+                        type="button"
+                        onClick={() => setShowMapSelector(!showMapSelector)}
+                        className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition text-sm mb-3"
+                      >
+                        {showMapSelector ? (language === "ar" ? "❌ إغلاق الخريطة" : "❌ Close Map") : (language === "ar" ? "🗺️ اختر من الخريطة" : "🗺️ Choose from Map")}
+                      </button>
+                      
+                      {showMapSelector && (
+                        <div className="mb-3 border-2 border-indigo-300 rounded-lg p-3 bg-indigo-50">
+                          <MapSelector
+                            onLocationSelect={(address, lat, lng) => {
+                              setUserAddress(address);
+                              setUserLocationCoords({ lat, lng });
+                              setShowMapSelector(false);
+                              toast.success(language === "ar" ? "✅ تم تحديد الموقع" : "✅ Location set");
+                            }}
+                            initialAddress={userAddress}
+                            initialLat={userLocationCoords?.lat}
+                            initialLng={userLocationCoords?.lng}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
                       <label className="text-xs font-semibold mb-1 block">{t("mainAddress", language)} *</label>
                       <input
                         type="text"
@@ -876,6 +910,11 @@ export default function ProfilePage() {
                         className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"
                         data-testid="input-user-address"
                       />
+                      {userLocationCoords && (
+                        <p className="text-xs text-gray-600 mt-1">
+                          📍 {language === "ar" ? `خط العرض: ${userLocationCoords.lat.toFixed(6)}, خط الطول: ${userLocationCoords.lng.toFixed(6)}` : `Lat: ${userLocationCoords.lat.toFixed(6)}, Lng: ${userLocationCoords.lng.toFixed(6)}`}
+                        </p>
+                      )}
                     </div>
 
                     <div>
