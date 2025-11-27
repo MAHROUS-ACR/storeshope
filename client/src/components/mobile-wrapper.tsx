@@ -9,7 +9,7 @@ interface MobileWrapperProps {
 export function MobileWrapper({ children, className }: MobileWrapperProps) {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-neutral-100 p-2 font-sans">
-      <div className="relative w-full max-w-[600px] h-[844px] bg-background rounded-[3rem] shadow-2xl border-8 border-neutral-900 overflow-hidden flex flex-col">
+      <div className="relative w-full max-w-[600px] h-[844px] bg-background rounded-[3rem] shadow-2xl overflow-hidden flex flex-col">
         {/* Notch / Status Bar Area */}
         <div className="absolute top-0 left-0 right-0 h-12 z-50 pointer-events-none flex justify-between items-center px-5 pt-2">
           <span className="text-xs font-medium">9:41</span>
