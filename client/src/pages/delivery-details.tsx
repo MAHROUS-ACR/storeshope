@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { ArrowLeft, MapPin, Phone, User, CreditCard, Truck, FileText, Loader } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, User, CreditCard, Truck, FileText, Loader, ChevronDown, ChevronUp } from "lucide-react";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/lib/languageContext";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
@@ -46,6 +46,7 @@ export default function DeliveryDetailsPage() {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [routeDistance, setRouteDistance] = useState<number | null>(null);
   const [routeDuration, setRouteDuration] = useState<number | null>(null);
+  const [showMap, setShowMap] = useState(true);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
 
@@ -256,27 +257,50 @@ export default function DeliveryDetailsPage() {
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="px-5 py-1 border-b border-gray-100 flex-shrink-0">
-          <button onClick={() => setLocation("/delivery")} className="flex items-center gap-2 mb-0.5">
-            <ArrowLeft size={18} />
-            <span className="font-semibold text-sm">{language === "ar" ? "رجوع" : "Back"}</span>
-          </button>
+          <div className="flex items-center justify-between mb-1">
+            <button onClick={() => setLocation("/delivery")} className="flex items-center gap-2">
+              <ArrowLeft size={18} />
+              <span className="font-semibold text-sm">{language === "ar" ? "رجوع" : "Back"}</span>
+            </button>
+            <button
+              onClick={() => setShowMap(!showMap)}
+              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+              data-testid="button-toggle-map"
+            >
+              {showMap ? (
+                <>
+                  <ChevronUp size={16} className="text-gray-700" />
+                  <span className="text-xs font-semibold text-gray-700">{language === "ar" ? "إغلاق" : "Close"}</span>
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={16} className="text-gray-700" />
+                  <span className="text-xs font-semibold text-gray-700">{language === "ar" ? "فتح" : "Open"}</span>
+                </>
+              )}
+            </button>
+          </div>
           <h1 className="text-base font-bold">Order #{order.orderNumber || "N/A"}</h1>
           <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
         </div>
 
         {/* Map - Full Width at Top */}
-        {mapLoading ? (
-          <div className="w-full bg-blue-50 border-b border-blue-200 flex items-center justify-center gap-2 py-3">
-            <Loader size={18} className="animate-spin text-blue-600" />
-            <span className="text-blue-600 font-semibold text-sm">{language === "ar" ? "جاري تحميل الخريطة..." : "Loading map..."}</span>
-          </div>
-        ) : mapLat && mapLng ? (
-          <div className="w-full bg-blue-100 border-b border-blue-300 overflow-hidden h-80" ref={mapContainer}></div>
-        ) : (
-          <div className="w-full bg-gray-200 border-b border-gray-300 py-12 flex items-center justify-center gap-2">
-            <MapPin size={20} className="text-gray-600" />
-            <span className="text-gray-600 font-semibold">{language === "ar" ? "لا توجد معلومات موقع" : "No location info"}</span>
-          </div>
+        {showMap && (
+          <>
+            {mapLoading ? (
+              <div className="w-full bg-blue-50 border-b border-blue-200 flex items-center justify-center gap-2 py-3">
+                <Loader size={18} className="animate-spin text-blue-600" />
+                <span className="text-blue-600 font-semibold text-sm">{language === "ar" ? "جاري تحميل الخريطة..." : "Loading map..."}</span>
+              </div>
+            ) : mapLat && mapLng ? (
+              <div className="w-full bg-blue-100 border-b border-blue-300 overflow-hidden h-80" ref={mapContainer}></div>
+            ) : (
+              <div className="w-full bg-gray-200 border-b border-gray-300 py-12 flex items-center justify-center gap-2">
+                <MapPin size={20} className="text-gray-600" />
+                <span className="text-gray-600 font-semibold">{language === "ar" ? "لا توجد معلومات موقع" : "No location info"}</span>
+              </div>
+            )}
+          </>
         )}
 
         {/* Content */}
