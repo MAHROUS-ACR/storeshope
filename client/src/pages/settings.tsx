@@ -339,6 +339,31 @@ export default function SettingsPage() {
                 </div>
 
                 <div>
+                  <label className="block text-sm font-semibold mb-2" htmlFor="storeLogo">
+                    Store Logo URL
+                  </label>
+                  <input
+                    id="storeLogo"
+                    type="text"
+                    value={storeLogo}
+                    onChange={(e) => setStoreLogo(e.target.value)}
+                    placeholder="https://example.com/logo.png"
+                    className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    data-testid="input-store-logo"
+                  />
+                  {storeLogo && (
+                    <div className="mt-3 flex items-center gap-3">
+                      <img 
+                        src={storeLogo} 
+                        alt="Logo Preview" 
+                        className="w-12 h-12 rounded-xl object-cover border border-gray-200"
+                      />
+                      <span className="text-xs text-muted-foreground">Preview</span>
+                    </div>
+                  )}
+                </div>
+
+                <div>
                   <label className="block text-sm font-semibold mb-2" htmlFor="storeAddress">
                     Address
                   </label>
