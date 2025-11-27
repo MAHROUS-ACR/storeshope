@@ -504,26 +504,28 @@ export default function SettingsPage() {
                     className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-resend-api-key"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">Get from <a href="https://resend.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">resend.com</a></p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Get from <a href="https://resend.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">resend.com/api-keys</a>
+                  </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-semibold mb-2" htmlFor="resendFromEmail">
-                    From Email (Verified Sender)
+                    From Email (Must be verified in Resend)
                   </label>
                   <input
                     id="resendFromEmail"
                     type="email"
                     value={resendFromEmail}
                     onChange={(e) => setResendFromEmail(e.target.value)}
-                    placeholder="onboarding@resend.dev"
+                    placeholder="Acme <onboarding@resend.dev>"
                     className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     data-testid="input-resend-from-email"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    For testing, use: <code className="bg-gray-100 px-2 py-1 rounded">onboarding@resend.dev</code>
+                    ✅ Testing: <code className="bg-green-100 px-2 py-1 rounded">Acme &lt;onboarding@resend.dev&gt;</code>
                     <br />
-                    For production, add your own domain in Resend settings
+                    📋 To use your own email: Go to <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">resend.com/domains</a> and add your domain
                   </p>
                 </div>
 
