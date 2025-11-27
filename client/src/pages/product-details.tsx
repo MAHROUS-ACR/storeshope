@@ -48,7 +48,7 @@ export default function ProductDetailsPage() {
           setLocation("/");
         }
       } catch (error) {
-        console.error("Error loading product:", error);
+
         toast.error("Failed to load product");
         setLocation("/");
       } finally {
@@ -70,7 +70,7 @@ export default function ProductDetailsPage() {
     }
 
     setIsAdding(true);
-    console.log("Adding to cart from product details:", { productId: product.id, quantity });
+
     try {
       for (let i = 0; i < quantity; i++) {
         const itemData = {
@@ -84,14 +84,14 @@ export default function ProductDetailsPage() {
           selectedSize: selectedSize || undefined,
           selectedUnit: selectedUnit || undefined,
         };
-        console.log("Adding item:", itemData);
+
         addItem(itemData);
       }
-      console.log("All items added successfully");
+
       toast.success(t("addedToCart", language));
       setTimeout(() => setLocation("/cart"), 1000);
     } catch (error) {
-      console.error("Error adding to cart:", error);
+
       toast.error(t("failedToAddCart", language));
     } finally {
       setIsAdding(false);

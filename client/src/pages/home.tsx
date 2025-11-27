@@ -74,7 +74,7 @@ export default function Home() {
         setStoreName("Flux Wallet");
       }
     } catch (error) {
-      console.error("Failed to load store settings:", error);
+
       setStoreName("Flux Wallet");
     }
   };
@@ -93,7 +93,7 @@ export default function Home() {
         setError("");
       }
     } catch (err) {
-      console.error("Error fetching from Firebase:", err);
+
       setProducts(fallbackProducts);
       setError("");
     } finally {
@@ -107,7 +107,7 @@ export default function Home() {
       const data = await getAllDiscounts();
       setDiscounts(data || []);
     } catch (error) {
-      console.error("Error loading discounts:", error);
+
       setDiscounts([]);
     }
   };

@@ -42,7 +42,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setItems(JSON.parse(saved));
       }
     } catch (error) {
-      console.error("Failed to load cart from localStorage:", error);
+
     }
   }, []);
 
@@ -50,27 +50,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem("cart", JSON.stringify(items));
     } catch (error) {
-      console.error("Failed to save cart to localStorage:", error);
+
     }
   }, [items]);
 
   const addItem = (newItem: CartItem) => {
-    console.log("CartContext addItem called with:", newItem);
+
     setItems(prev => {
-      console.log("Current items before adding:", prev);
+
       // Check if item with same uniqueId already exists
       const existing = prev.find(item => item._uniqueId === newItem._uniqueId);
       if (existing) {
-        console.log("Item exists, updating quantity");
+
         return prev.map(item =>
           item._uniqueId === newItem._uniqueId
             ? { ...item, quantity: item.quantity + newItem.quantity }
             : item
         );
       }
-      console.log("New item, adding to cart");
+
       const newItems = [...prev, newItem];
-      console.log("Updated items:", newItems);
+
       return newItems;
     });
   };

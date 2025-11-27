@@ -192,7 +192,7 @@ export default function ProfilePage() {
       setUserOrdersCount(completedOrders.length);
       setUserOrdersTotal(completedOrders.reduce((sum: number, o: AdminOrder) => sum + o.total, 0));
     } catch (error) {
-      console.error("Error fetching user orders:", error);
+
     }
   };
 
@@ -204,7 +204,7 @@ export default function ProfilePage() {
       const data = await getOrders(undefined);
       setOrders((data as AdminOrder[]) || []);
     } catch (error) {
-      console.error("Error fetching orders:", error);
+
       toast.error("Failed to load orders");
     } finally {
       setOrdersLoading(false);
@@ -230,7 +230,7 @@ export default function ProfilePage() {
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      console.error("Error updating profile image:", error);
+
       toast.error("Failed to update profile image");
     }
   };
@@ -287,7 +287,7 @@ export default function ProfilePage() {
         const firebaseConfigSnap = await getDoc(firebaseConfigRef);
         if (firebaseConfigSnap.exists()) {
           const config = firebaseConfigSnap.data();
-          console.log("Loaded Firebase config from Firestore:", config);
+
           setProjectId(config.projectId || "");
           setPrivateKey(config.privateKey || "");
           setClientEmail(config.clientEmail || "");
@@ -300,7 +300,7 @@ export default function ProfilePage() {
           setFirebaseMeasurementId(config.firebaseMeasurementId || "");
         }
       } catch (error) {
-        console.error("Failed to load Firebase config from Firestore:", error);
+
       }
 
       // Also load from localStorage as fallback
@@ -329,7 +329,7 @@ export default function ProfilePage() {
         const storeConfigSnap = await getDoc(storeConfigRef);
         if (storeConfigSnap.exists()) {
           const data = storeConfigSnap.data();
-          console.log("Loaded store settings from Firestore:", data);
+
           
           setStoreName(data.name || "");
           setStoreAddress(data.address || "");
@@ -338,7 +338,7 @@ export default function ProfilePage() {
           setStoreLogo(data.logo || "");
         }
       } catch (error) {
-        console.error("Failed to load store settings:", error);
+
       }
     };
 
@@ -452,7 +452,7 @@ export default function ProfilePage() {
 
       toast.success("Store settings saved successfully!");
     } catch (error) {
-      console.error("Save error:", error);
+
       toast.error("Failed to save settings");
     } finally {
       setIsSaving(false);
@@ -484,7 +484,7 @@ export default function ProfilePage() {
       setNotificationMessage("");
       setNotificationMessageAr("");
     } catch (error) {
-      console.error("Error sending notification:", error);
+
       toast.error(language === "ar" ? "فشل الإرسال" : "Failed to send");
     } finally {
       setSendingNotification(false);
@@ -500,7 +500,7 @@ export default function ProfilePage() {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setUsers(data || []);
     } catch (error) {
-      console.error("Error fetching users:", error);
+
       toast.error("Failed to load users");
     } finally {
       setUsersLoading(false);
@@ -515,7 +515,7 @@ export default function ProfilePage() {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setCategories(data || []);
     } catch (error) {
-      console.error("Error fetching categories:", error);
+
     }
   };
 
@@ -524,7 +524,7 @@ export default function ProfilePage() {
       const data = await getProducts();
       setItems(data || []);
     } catch (error) {
-      console.error("Error fetching products:", error);
+
     }
   };
 
@@ -536,7 +536,7 @@ export default function ProfilePage() {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setShippingZones(data || []);
     } catch (error) {
-      console.error("Error fetching shipping zones:", error);
+
     }
   };
 
@@ -570,7 +570,7 @@ export default function ProfilePage() {
       setEditingZoneId(null);
       fetchShippingZones();
     } catch (error) {
-      console.error("Error saving shipping zone:", error);
+
       toast.error("Failed to save shipping zone");
     }
   };
@@ -583,7 +583,7 @@ export default function ProfilePage() {
       toast.success("Shipping zone deleted!");
       fetchShippingZones();
     } catch (error) {
-      console.error("Error deleting shipping zone:", error);
+
       toast.error("Failed to delete shipping zone");
     }
   };
@@ -600,7 +600,7 @@ export default function ProfilePage() {
       })) as any[];
       setDiscounts(discountsData || []);
     } catch (error) {
-      console.error("Error fetching discounts:", error);
+
       toast.error("Failed to fetch discounts");
     }
   };
@@ -643,7 +643,7 @@ export default function ProfilePage() {
       setEditingDiscountId(null);
       fetchDiscounts();
     } catch (error) {
-      console.error("Error saving discount:", error);
+
       toast.error("Failed to save discount");
     }
   };
@@ -656,7 +656,7 @@ export default function ProfilePage() {
       toast.success("Discount deleted!");
       fetchDiscounts();
     } catch (error) {
-      console.error("Error deleting discount:", error);
+
       toast.error("Failed to delete discount");
     }
   };
@@ -680,7 +680,7 @@ export default function ProfilePage() {
       toast.success("Profile updated successfully!");
       setShowUserProfile(false);
     } catch (error) {
-      console.error("Error updating profile:", error);
+
       toast.error("Failed to update profile");
     } finally {
       setIsSaving(false);
@@ -701,7 +701,7 @@ export default function ProfilePage() {
         setUserZone(data.zone || "");
       }
     } catch (error) {
-      console.error("Error loading user profile:", error);
+
     }
   };
 
@@ -715,7 +715,7 @@ export default function ProfilePage() {
       setNewStatus("");
       fetchAllOrders();
     } catch (error) {
-      console.error("Error updating order:", error);
+
       toast.error("Failed to update order");
     }
   };
@@ -730,7 +730,7 @@ export default function ProfilePage() {
       setNewUserRole("");
       fetchAllUsers();
     } catch (error) {
-      console.error("Error updating user role:", error);
+
       toast.error("Failed to update user role");
     }
   };

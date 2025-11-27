@@ -89,7 +89,7 @@ export default function OrdersPage() {
       
       // Set up real-time listener
       unsubscribe = onSnapshot(ordersQuery, (snapshot) => {
-        console.log("📡 Real-time listener: received", snapshot.docs.length, "orders");
+
         const firebaseOrders = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
@@ -102,23 +102,23 @@ export default function OrdersPage() {
         }
         setIsLoading(false);
       }, (error) => {
-        console.error("Error fetching orders from listener:", error);
+
         setOrders([]);
         setIsLoading(false);
       });
       
       // Add polling as backup - refresh every 2 seconds when coming from checkout
       if (refetchTrigger > 0) {
-        console.log("🔄 Starting polling for new orders");
+
         pollInterval = setInterval(async () => {
           try {
             const firebaseOrders = await getOrders(user.id);
-            console.log("🔄 Polling: got", firebaseOrders?.length || 0, "orders");
+
             if (firebaseOrders && firebaseOrders.length > 0) {
               setOrders(firebaseOrders as Order[]);
             }
           } catch (error) {
-            console.error("Polling error:", error);
+
           }
         }, 1000);
       }
@@ -128,7 +128,7 @@ export default function OrdersPage() {
         if (pollInterval) clearInterval(pollInterval);
       };
     } catch (error) {
-      console.error("Error setting up orders listener:", error);
+
       setOrders([]);
       setIsLoading(false);
     }

@@ -9,7 +9,7 @@ export async function initializeNotifications(firebaseConfig: any) {
   try {
     // Ensure firebase config has all required fields for messaging
     if (firebaseConfig && !firebaseConfig.messagingSenderId) {
-      console.warn('⚠️ messagingSenderId missing from config - notifications may not work');
+
     }
     
     // Initialize Firebase messaging only if not already done
@@ -18,19 +18,19 @@ export async function initializeNotifications(firebaseConfig: any) {
         const app = initializeApp(firebaseConfig);
         messaging = getMessaging(app);
         appInitialized = true;
-        console.log('✅ Firebase Messaging initialized');
+
       } catch (error: any) {
         if (error.code === 'app/duplicate-app') {
           // App already initialized, get messaging from default app
           try {
             messaging = getMessaging();
             appInitialized = true;
-            console.log('✅ Firebase Messaging retrieved from existing app');
+
           } catch (e) {
-            console.warn('⚠️ Could not initialize messaging:', e);
+
           }
         } else {
-          console.error('❌ Firebase initialization error:', error);
+
           throw error;
         }
       }
@@ -45,7 +45,7 @@ export async function initializeNotifications(firebaseConfig: any) {
         const registration = await navigator.serviceWorker.register(swPath, {
           scope: scope
         });
-        console.log('✅ Service Worker registered at:', swPath);
+
 
         // Wait a bit for Service Worker to activate, then send Firebase config
         setTimeout(() => {
@@ -55,7 +55,7 @@ export async function initializeNotifications(firebaseConfig: any) {
               config: firebaseConfig
             });
           } else if (registration.installing) {
-            console.log('⚠️ Service Worker still installing, waiting...');
+
             registration.installing.addEventListener('statechange', function() {
               if (this.state === 'activated' && registration.active) {
                 registration.active.postMessage({
@@ -67,28 +67,28 @@ export async function initializeNotifications(firebaseConfig: any) {
           }
         }, 100);
       } catch (error) {
-        console.log('⚠️ Service Worker registration skipped:', error);
+
       }
     }
   } catch (error) {
-    console.error('❌ Error in notifications setup:', error);
+
   }
 }
 
 export async function requestNotificationPermission(): Promise<string | null> {
   try {
     if (!('Notification' in window)) {
-      console.log('⚠️ Browser does not support notifications');
+
       return null;
     }
 
     if (Notification.permission === 'granted') {
-      console.log('✅ Notification permission already granted');
+
       return await getFCMToken();
     }
 
     if (Notification.permission === 'denied') {
-      console.log('⚠️ Notification permission denied');
+
       return null;
     }
 
@@ -96,14 +96,14 @@ export async function requestNotificationPermission(): Promise<string | null> {
     const permission = await Notification.requestPermission();
     
     if (permission === 'granted') {
-      console.log('✅ Notification permission granted');
+
       return await getFCMToken();
     }
 
-    console.log('⚠️ Notification permission not granted');
+
     return null;
   } catch (error) {
-    console.error('❌ Error requesting notification permission:', error);
+
     return null;
   }
 }
@@ -111,7 +111,7 @@ export async function requestNotificationPermission(): Promise<string | null> {
 export async function getFCMToken(): Promise<string | null> {
   try {
     if (!messaging) {
-      console.warn('⚠️ Messaging not initialized');
+
       return null;
     }
 
@@ -121,19 +121,19 @@ export async function getFCMToken(): Promise<string | null> {
     const options: any = {};
     if (vapidKey) {
       options.vapidKey = vapidKey;
-      console.log('📍 Using VAPID key from environment');
+
     } else {
-      console.log('📍 Attempting to get token without explicit VAPID key');
+
     }
 
     const token = await getToken(messaging, options);
 
     if (token) {
-      console.log('✅ FCM Token received:', token.substring(0, 20) + '...');
+
       return token;
     }
 
-    console.log('⚠️ Unable to get FCM token - no token returned');
+
     return null;
   } catch (error: any) {
     console.error('❌ Error getting FCM token:', {
@@ -170,24 +170,24 @@ export function playNotificationSound() {
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 0.5);
       } catch (e) {
-        console.log('Web Audio API not available');
+
       }
     }
   } catch (error) {
-    console.log('⚠️ Could not play notification sound:', error);
+
   }
 }
 
 export function setupOnMessageListener(callback: (payload: any) => void) {
   try {
     if (!messaging) {
-      console.warn('⚠️ Messaging not initialized');
+
       return;
     }
 
     // Handle foreground messages
     onMessage(messaging, (payload) => {
-      console.log('📬 Foreground message received:', payload);
+
       
       // Play notification sound
       playNotificationSound();
@@ -206,8 +206,8 @@ export function setupOnMessageListener(callback: (payload: any) => void) {
       callback(payload);
     });
 
-    console.log('✅ Message listener setup complete');
+
   } catch (error) {
-    console.error('❌ Error setting up message listener:', error);
+
   }
 }

@@ -61,7 +61,7 @@ export default function DiscountsPage() {
       const productsData = await getProducts();
       setProducts(productsData || []);
     } catch (error) {
-      console.error("Error fetching data:", error);
+
       toast.error("Failed to load data");
     } finally {
       setIsLoading(false);
@@ -108,7 +108,7 @@ export default function DiscountsPage() {
       setEditingId(null);
       fetchData();
     } catch (error) {
-      console.error("Error:", error);
+
       toast.error("Error saving discount");
     } finally {
       setIsAdding(false);
@@ -125,7 +125,7 @@ export default function DiscountsPage() {
       toast.success("Discount deleted");
       fetchData();
     } catch (error) {
-      console.error("Error:", error);
+
       toast.error("Error deleting discount");
     }
   };

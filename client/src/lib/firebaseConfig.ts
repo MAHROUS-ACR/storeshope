@@ -14,7 +14,7 @@ export function saveFirebaseConfig(config: FirebaseClientConfig): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
   } catch (error) {
-    console.error("Failed to save Firebase config:", error);
+
     throw error;
   }
 }
@@ -50,7 +50,7 @@ export function getFirebaseConfig(): FirebaseClientConfig | null {
     
     return null;
   } catch (error) {
-    console.error("Failed to get Firebase config:", error);
+
     return null;
   }
 }
@@ -59,6 +59,6 @@ export function clearFirebaseConfig(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch (error) {
-    console.error("Failed to clear Firebase config:", error);
+
   }
 }

@@ -28,7 +28,7 @@ export async function sendNotification(payload: SendNotificationPayload) {
 
     return await response.json();
   } catch (error) {
-    console.error("Error sending notification:", error);
+
     return { success: false, error: String(error) };
   }
 }
@@ -53,7 +53,7 @@ export async function sendNotificationToAdmins(
 
     return await response.json();
   } catch (error) {
-    console.error("Error sending notification to admins:", error);
+
     return { success: false, error: String(error) };
   }
 }

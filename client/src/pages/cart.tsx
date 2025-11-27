@@ -21,7 +21,7 @@ export default function CartPage() {
         const data = await getAllDiscounts();
         setDiscounts(data || []);
       } catch (error) {
-        console.error("Error loading discounts:", error);
+
       }
     };
     fetchDiscounts();

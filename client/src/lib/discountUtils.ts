@@ -24,7 +24,7 @@ export async function getProductDiscount(productId: string): Promise<Discount | 
       } as Discount;
     }
   } catch (error) {
-    console.error("Error fetching discount:", error);
+
   }
   return null;
 }
@@ -39,7 +39,7 @@ export async function getAllDiscounts(): Promise<Discount[]> {
       ...doc.data()
     })) as Discount[];
   } catch (error) {
-    console.error("Error fetching all discounts:", error);
+
   }
   return [];
 }

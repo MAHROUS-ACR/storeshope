@@ -52,9 +52,9 @@ export function NotificationCenter() {
       }
       
       setNotifications(data || []);
-      console.log(`✅ Fetched ${data?.length || 0} notifications`);
+
     } catch (error) {
-      console.error("❌ Error fetching notifications:", error);
+
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ export function NotificationCenter() {
         prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
       );
     } catch (error) {
-      console.error("❌ Error marking notification as read:", error);
+
     }
   };
 
@@ -109,7 +109,7 @@ export function NotificationCenter() {
       
       setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
     } catch (error) {
-      console.error("❌ Error deleting notification:", error);
+
     }
   };
 
@@ -126,9 +126,9 @@ export function NotificationCenter() {
       
       setNotifications([]);
       setIsOpen(false);
-      console.log("✅ All notifications deleted");
+
     } catch (error) {
-      console.error("❌ Error clearing notifications:", error);
+
     }
   };
 

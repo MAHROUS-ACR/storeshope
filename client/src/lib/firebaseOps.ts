@@ -52,7 +52,7 @@ export async function getProducts() {
       ...doc.data(),
     }));
   } catch (error: any) {
-    console.error("❌ Error fetching products:", error?.message || error);
+
     return [];
   }
 }
@@ -64,7 +64,7 @@ export async function getProductById(id: string) {
     const snapshot = await getDoc(productRef);
     return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
   } catch (error) {
-    console.error("Error fetching product:", error);
+
     return null;
   }
 }
@@ -76,7 +76,7 @@ export async function saveProduct(product: any) {
     await setDoc(productRef, product);
     return true;
   } catch (error) {
-    console.error("Error saving product:", error);
+
     return false;
   }
 }
@@ -87,7 +87,7 @@ export async function deleteProduct(id: string) {
     await deleteDoc(doc(db, "products", id));
     return true;
   } catch (error) {
-    console.error("Error deleting product:", error);
+
     return false;
   }
 }
@@ -113,7 +113,7 @@ export async function getOrders(userId?: string) {
       }));
     }
   } catch (error) {
-    console.error("Error fetching orders:", error);
+
     return [];
   }
 }
@@ -125,13 +125,13 @@ export async function getOrderById(id: string) {
     const snapshot = await getDoc(orderRef);
     return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
   } catch (error) {
-    console.error("Error fetching order:", error);
+
     return null;
   }
 }
 
 export async function saveOrder(order: any) {
-  console.log("🔵 saveOrder START - Order ID:", order?.id);
+
   
   try {
     // Validate required fields
@@ -141,7 +141,7 @@ export async function saveOrder(order: any) {
 
     // Get fresh DB connection
     const db = initDb();
-    console.log("✅ DB ready");
+
 
     // Clean order data - remove undefined fields
     const cleanOrder: any = {};
@@ -167,14 +167,14 @@ export async function saveOrder(order: any) {
     // Add timestamp
     cleanOrder.createdAt = new Date().toISOString();
 
-    console.log("📦 Clean order data:", JSON.stringify(cleanOrder, null, 2));
+
 
     await setDoc(doc(db, "orders", order.id), cleanOrder);
-    console.log("✅ saveOrder SUCCESS - Order saved:", order.id);
+
     return order.id;
   } catch (error: any) {
-    console.error("❌ saveOrder FAILED:", error?.message || error);
-    console.error("❌ Full error:", error);
+
+
     return null;
   }
 }
@@ -188,16 +188,16 @@ export async function updateOrder(id: string, updates: any) {
     const existingDoc = await getDoc(orderRef);
     
     if (!existingDoc.exists()) {
-      console.error("❌ updateOrder FAILED - Document not found with ID:", id);
+
       return false;
     }
     
     // Document exists, now update it safely
     await updateDoc(orderRef, updates);
-    console.log("✅ updateOrder SUCCESS - Document updated");
+
     return true;
   } catch (error: any) {
-    console.error("❌ updateOrder ERROR:", error?.message);
+
     return false;
   }
 }
@@ -210,7 +210,7 @@ export async function getStoreSettings() {
     const snapshot = await getDoc(storeRef);
     return snapshot.exists() ? snapshot.data() : null;
   } catch (error) {
-    console.error("Error fetching store settings:", error);
+
     return null;
   }
 }
@@ -225,7 +225,7 @@ export async function saveStoreSettings(settings: any) {
     });
     return true;
   } catch (error) {
-    console.error("Error saving store settings:", error);
+
     return false;
   }
 }
@@ -233,7 +233,7 @@ export async function saveStoreSettings(settings: any) {
 // ============= SHIPPING ZONES =============
 export async function getShippingZones() {
   try {
-    console.log("📍 getShippingZones START");
+
     const db = initDb();
     const zonesRef = collection(db, "shippingZones");
     const snapshot = await getDocs(zonesRef);
@@ -241,10 +241,10 @@ export async function getShippingZones() {
       id: doc.id,
       ...doc.data(),
     }));
-    console.log("📍 getShippingZones SUCCESS - Found:", zones.length, "zones");
+
     return zones;
   } catch (error: any) {
-    console.error("❌ Error fetching shipping zones:", error?.message || error);
+
     return [];
   }
 }
@@ -263,7 +263,7 @@ export async function saveShippingZone(zone: any) {
     }
     return zone.id;
   } catch (error) {
-    console.error("Error saving shipping zone:", error);
+
     return null;
   }
 }
@@ -274,7 +274,7 @@ export async function deleteShippingZone(id: string) {
     await deleteDoc(doc(db, "shippingZones", id));
     return true;
   } catch (error) {
-    console.error("Error deleting shipping zone:", error);
+
     return false;
   }
 }
@@ -296,7 +296,7 @@ export async function getNotifications(userId: string, isAdmin: boolean) {
       ...doc.data(),
     }));
   } catch (error) {
-    console.error("Error fetching notifications:", error);
+
     return [];
   }
 }
@@ -308,7 +308,7 @@ export async function markNotificationAsRead(id: string) {
     await updateDoc(notifRef, { read: true });
     return true;
   } catch (error) {
-    console.error("Error marking notification as read:", error);
+
     return false;
   }
 }
@@ -319,7 +319,7 @@ export async function deleteNotification(id: string) {
     await deleteDoc(doc(db, "notifications", id));
     return true;
   } catch (error) {
-    console.error("Error deleting notification:", error);
+
     return false;
   }
 }
@@ -335,7 +335,7 @@ export async function getDiscounts() {
       ...doc.data(),
     }));
   } catch (error) {
-    console.error("Error fetching discounts:", error);
+
     return [];
   }
 }
@@ -357,7 +357,7 @@ export async function saveDiscount(discount: any) {
     }
     return discount.id;
   } catch (error) {
-    console.error("Error saving discount:", error);
+
     return null;
   }
 }
@@ -368,7 +368,7 @@ export async function deleteDiscount(id: string) {
     await deleteDoc(doc(db, "discounts", id));
     return true;
   } catch (error) {
-    console.error("Error deleting discount:", error);
+
     return false;
   }
 }
@@ -384,7 +384,7 @@ export async function getUsers() {
       ...doc.data(),
     }));
   } catch (error) {
-    console.error("Error fetching users:", error);
+
     return [];
   }
 }
@@ -396,7 +396,7 @@ export async function getUserById(id: string) {
     const snapshot = await getDoc(userRef);
     return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
   } catch (error) {
-    console.error("Error fetching user:", error);
+
     return null;
   }
 }
@@ -408,7 +408,7 @@ export async function updateUser(id: string, updates: any) {
     await updateDoc(userRef, updates);
     return true;
   } catch (error) {
-    console.error("Error updating user:", error);
+
     return false;
   }
 }
@@ -424,7 +424,7 @@ export async function getCategories() {
       ...doc.data(),
     }));
   } catch (error) {
-    console.error("Error fetching categories:", error);
+
     return [];
   }
 }
@@ -443,7 +443,7 @@ export async function saveCategory(category: any) {
     }
     return category.id;
   } catch (error) {
-    console.error("Error saving category:", error);
+
     return null;
   }
 }
@@ -454,7 +454,7 @@ export async function deleteCategory(id: string) {
     await deleteDoc(doc(db, "categories", id));
     return true;
   } catch (error) {
-    console.error("Error deleting category:", error);
+
     return false;
   }
 }
@@ -483,7 +483,7 @@ export async function saveFCMToken(userId: string, token: string) {
     }
     return true;
   } catch (error) {
-    console.error("Error saving FCM token:", error);
+
     return false;
   }
 }

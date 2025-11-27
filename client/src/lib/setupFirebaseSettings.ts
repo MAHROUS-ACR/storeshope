@@ -25,10 +25,10 @@ export async function setupFirebaseSettingsFromEnv() {
     const firebaseConfigRef = doc(db, "settings", "firebase");
     await setDoc(firebaseConfigRef, firebaseSettings, { merge: true });
     
-    console.log("✅ Firebase settings synced to Firestore from environment variables");
+
     return true;
   } catch (error) {
-    console.error("❌ Error setting up Firebase settings:", error);
+
     return false;
   }
 }

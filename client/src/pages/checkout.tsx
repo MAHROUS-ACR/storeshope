@@ -67,7 +67,7 @@ export default function CheckoutPage() {
         }));
         setZonesList(mappedZones);
       } catch (err) {
-        console.error("Failed to load zones:", err);
+
       } finally {
         setIsLoadingZones(false);
       }
@@ -100,7 +100,7 @@ export default function CheckoutPage() {
     (shippingSelected === "saved" || deliveryAddress.trim());
 
   const handleSubmit = async () => {
-    console.log("🔵 handleSubmit START");
+
     
     if (!customerName.trim()) {
       toast.error("اكتب الاسم - Enter name");
@@ -168,7 +168,7 @@ export default function CheckoutPage() {
         shippingZoneId: zoneSelected?.id || "",
       };
 
-      console.log("📝 Order:", JSON.stringify(orderObj, null, 2));
+
       const savedId = await saveOrder(orderObj);
       
       if (!savedId) throw new Error("Failed to save order");
@@ -187,7 +187,7 @@ export default function CheckoutPage() {
       setIsSubmitting(false);
       setTimeout(() => setLocation("/"), 2000);
     } catch (error: any) {
-      console.error("❌ Error:", error?.message);
+
       toast.error("خطأ: " + (error?.message || "Unknown"));
       setIsSubmitting(false);
     }

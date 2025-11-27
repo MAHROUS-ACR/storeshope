@@ -41,13 +41,13 @@ export default function CheckoutPage() {
 
   // Reset state when entering checkout page
   useEffect(() => {
-    console.log("🛒 Checkout page loaded - resetting form state");
+
     setIsProcessing(false);
     // DON'T reset payment/shipping here - user may have already selected
   }, []);
 
   useEffect(() => {
-    console.log("🛒 Checkout - Auth state:", { isLoggedIn, authLoading });
+
     if (!authLoading && !isLoggedIn) {
       setLocation("/login");
     }
@@ -61,7 +61,7 @@ export default function CheckoutPage() {
         const zones = await getShippingZones();
         setShippingZones(zones || []);
       } catch (error) {
-        console.error("Error loading data:", error);
+
       }
     };
     loadData();
@@ -86,7 +86,7 @@ export default function CheckoutPage() {
             }));
           }
         } catch (error) {
-          console.error("Error loading user profile:", error);
+
         }
       }
     };
@@ -104,16 +104,16 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
-    console.log("🟢🟢🟢🟢🟢 PLACE ORDER BUTTON CLICKED! 🟢🟢🟢🟢🟢");
-    console.log("Timestamp:", new Date().toISOString());
-    console.log("Items in cart:", items.length);
-    console.log("isProcessing:", isProcessing);
-    console.log("paymentMethod:", paymentMethod);
-    console.log("shippingType:", shippingType);
-    console.log("selectedZone:", selectedZone);
+
+
+
+
+
+
+
     
     if (isProcessing) {
-      console.warn("⚠️ Already processing an order!");
+
       return;
     }
     
@@ -171,7 +171,7 @@ export default function CheckoutPage() {
         const maxOrderNum = Math.max(...existingOrders.map((o: any) => o.orderNumber || 0), 0);
         orderNumber = maxOrderNum + 1;
       } catch (error) {
-        console.warn("Could not fetch existing orders for numbering, using timestamp:", error);
+
         // Fallback: use timestamp-based number if Firebase fails
         orderNumber = Math.floor(Date.now() / 1000);
       }
@@ -204,12 +204,12 @@ export default function CheckoutPage() {
         userId: user?.id,
       };
 
-      console.log("📤 SAVING ORDER:", { id: orderData.id, userId: orderData.userId, items: items.length });
+
       const savedOrderId = await saveOrder(orderData);
-      console.log("🔵 saveOrder returned:", savedOrderId);
+
 
       if (savedOrderId) {
-        console.log("✅ ORDER SAVED - ID:", savedOrderId);
+
         
         // Send notification in background
         sendNotificationToAdmins(
@@ -236,16 +236,16 @@ export default function CheckoutPage() {
         
         // Go back to cart (not orders) so user can add more items
         setTimeout(() => {
-          console.log("🔵 Redirecting to cart for next order");
+
           setLocation("/cart");
         }, 800);
       } else {
-        console.error("❌ Failed to save order");
+
         setIsProcessing(false);
         toast.error("Failed to save order - try again");
       }
     } catch (error) {
-      console.error("❌ ERROR IN PLACE ORDER:", error);
+
       setIsProcessing(false);
       toast.error("Failed to place order");
     }
@@ -366,16 +366,16 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        console.log("📌 Saved address selected, zones:", shippingZones);
+
                         setShippingType("saved");
                         // Always use first zone as default if available
                         if (shippingZones.length > 0) {
                           const zoneName = shippingZones[0].name;
-                          console.log("✅ Setting zone to:", zoneName);
+
                           setSelectedZone(zoneName);
                           setShippingCost(shippingZones[0].shippingCost);
                         } else {
-                          console.warn("⚠️ No shipping zones available");
+
                           toast.error("No shipping zones available");
                         }
                       }}
@@ -389,12 +389,12 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      console.log("📝 New address selected, zones:", shippingZones);
+
                       setShippingType("new");
                       // Auto-set first zone
                       if (shippingZones.length > 0) {
                         const zoneName = shippingZones[0].name;
-                        console.log("✅ Setting zone to:", zoneName);
+
                         setSelectedZone(zoneName);
                         setShippingCost(shippingZones[0].shippingCost);
                       }
@@ -450,7 +450,7 @@ export default function CheckoutPage() {
                     value={newAddress}
                     onChange={(e) => {
                       setNewAddress(e.target.value);
-                      console.log("📍 New address:", e.target.value);
+
                     }}
                     className="w-full p-2 border border-gray-200 rounded-lg text-sm"
                     data-testid="input-new-address"
@@ -461,7 +461,7 @@ export default function CheckoutPage() {
                     value={newPhone}
                     onChange={(e) => {
                       setNewPhone(e.target.value);
-                      console.log("📱 New phone:", e.target.value);
+
                     }}
                     className="w-full p-2 border border-gray-200 rounded-lg text-sm"
                     data-testid="input-new-phone"
@@ -469,11 +469,11 @@ export default function CheckoutPage() {
                   <select
                     value={selectedZone}
                     onChange={(e) => {
-                      console.log("🎯 Zone selected:", e.target.value);
+
                       setSelectedZone(e.target.value);
                       const zone = shippingZones.find(z => z.name === e.target.value);
                       if (zone) {
-                        console.log("💰 Shipping cost:", zone.shippingCost);
+
                         setShippingCost(zone.shippingCost);
                       }
                     }}
@@ -577,11 +577,11 @@ export default function CheckoutPage() {
                   e.preventDefault();
                   e.stopPropagation();
                   const isDisabled = isProcessing || !paymentMethod || !shippingType || !selectedZone;
-                  console.log("🔴 BUTTON CLICK:", { isDisabled, isProcessing, paymentMethod, shippingType, selectedZone, itemsCount: items.length });
+
                   
                   if (isDisabled) {
                     const reason = isProcessing ? "already processing" : !paymentMethod ? "no payment" : !shippingType ? "no shipping" : "no zone";
-                    console.warn("⛔ BUTTON DISABLED:", reason);
+
                     toast.error("Please fill all fields: " + reason);
                     return;
                   }

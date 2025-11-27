@@ -43,7 +43,7 @@ export default function LoginPage() {
       // Wait for user data to be set before redirecting
       setTimeout(() => setLocation("/"), 1000);
     } catch (error: any) {
-      console.error("Auth error:", error);
+
       if (error.code === "auth/email-already-in-use") {
         toast.error("Email already exists");
       } else if (error.code === "auth/weak-password") {

@@ -26,7 +26,7 @@ try {
   firebaseApp = initializeApp(firebaseConfig);
 } catch (error: any) {
   if (!error.message?.includes('duplicate-app')) {
-    console.error('Firebase initialization error:', error);
+
   }
 }
 
@@ -123,7 +123,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
             localStorage.setItem("user", JSON.stringify(userData));
             setIsLoading(false);
           }, (error) => {
-            console.error("Failed to fetch user data from Firestore:", error);
+
             const storedUser = localStorage.getItem("user");
             const storedData = storedUser ? JSON.parse(storedUser) : {};
             
@@ -156,7 +156,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
       };
     } catch (error) {
-      console.error("Failed to initialize Firebase auth:", error);
+
       setIsLoading(false);
     }
   }, []);
@@ -178,11 +178,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
         createdAt: new Date(),
       });
     } catch (error) {
-      console.error("Failed to create user document in Firestore:", error);
+
     }
 
     // User data is automatically set via onAuthStateChanged
-    console.log("User created with Firebase Auth:", firebaseUser.uid);
+
   };
 
   const login = async (email: string, password: string) => {
@@ -192,7 +192,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
     
     // User data is automatically set via onAuthStateChanged
-    console.log("User signed in with Firebase Auth:", userCredential.user.uid);
+
   };
 
   const logout = async () => {
@@ -222,7 +222,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       });
       localStorage.setItem("user", JSON.stringify({ ...user, ...data }));
     } catch (error) {
-      console.error("Failed to update user profile:", error);
+
       throw error;
     }
   };

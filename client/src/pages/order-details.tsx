@@ -82,14 +82,14 @@ export default function OrderDetailsPage() {
     if (!authLoading && !isLoggedIn) {
       setLocation("/login");
     }
-    console.log("📊 ORDER PAGE - User:", user?.email, "Role:", user?.role, "Is Admin:", user?.role === 'admin');
+
   }, [isLoggedIn, authLoading, setLocation, user]);
 
   useEffect(() => {
     setIsLoading(true);
     const fetchOrder = async () => {
       try {
-        console.log("📍 Fetching order - URL ID:", orderId);
+
         // Fetch from Firebase only
         const orders = await getOrders(user?.role === 'admin' ? undefined : user?.id);
         let foundOrder = null;
@@ -97,21 +97,21 @@ export default function OrderDetailsPage() {
         // Try to find by URL ID first
         if (orderId) {
           foundOrder = orders?.find((o: any) => o.id === orderId);
-          console.log("🔍 Found order by URL ID:", foundOrder?.id);
+
         }
         
         // If not found, use the first order
         if (!foundOrder && orders && orders.length > 0) {
           foundOrder = orders[0];
-          console.log("📌 Using first order:", foundOrder.id);
+
         }
         
         if (foundOrder) {
-          console.log("✅ Setting order:", foundOrder.id);
+
           setOrder(foundOrder as Order);
         }
       } catch (error) {
-        console.error("Error loading order:", error);
+
       } finally {
         setIsLoading(false);
       }
@@ -134,15 +134,15 @@ export default function OrderDetailsPage() {
         if (userDocSnapshot.exists()) {
           const userData = userDocSnapshot.data();
           setOrderUser(userData);
-          console.log("✅ User data loaded:", userData);
+
           if (userData.profileImage) {
             setUserProfileImage(userData.profileImage);
           }
         } else {
-          console.warn("⚠️ User not found in Firestore with ID:", order.userId);
+
         }
       } catch (error) {
-        console.error("❌ Error fetching order user:", error);
+
       } finally {
         setUserLoading(false);
       }
@@ -167,7 +167,7 @@ export default function OrderDetailsPage() {
           const totalValue = completedOrdersList.reduce((sum: number, o: any) => sum + (o.total || 0), 0);
           setCompletedOrdersValue(totalValue);
         } catch (e) {
-          console.error("Error calculating statistics:", e);
+
         }
       };
       calculateStats();
@@ -180,9 +180,9 @@ export default function OrderDetailsPage() {
     
     setIsProcessing(true);
     try {
-      console.log("🔵 HANDLER: order.id =", order.id);
-      console.log("🔵 HANDLER: new status =", status);
-      console.log("🔵 HANDLER: order object =", order);
+
+
+
       
       // Update the same document with new status
       const success = await updateOrder(order.id, { 
@@ -191,7 +191,7 @@ export default function OrderDetailsPage() {
       });
       
       if (success) {
-        console.log("✅ Status updated successfully");
+
         toast.success("Status updated!");
         
         // Update current view with new status
@@ -199,11 +199,11 @@ export default function OrderDetailsPage() {
         setEditingStatus(false);
         setNewStatus("pending");
       } else {
-        console.error("🔴 updateOrder returned false - check Firestore");
+
         toast.error("Failed to update order");
       }
     } catch (error: any) {
-      console.error("❌ Error updating status:", error);
+
       toast.error("Error: " + error?.message);
     } finally {
       setIsProcessing(false);

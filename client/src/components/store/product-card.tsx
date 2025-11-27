@@ -61,7 +61,7 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
 
   const addItemToCart = () => {
     setIsAdding(true);
-    console.log("Adding item to cart:", { productId: product.id, productTitle });
+
     try {
       const itemData = {
         id: String(product.id),
@@ -74,16 +74,16 @@ export function ProductCard({ product, index, discounts = [], onProductClick }: 
         selectedSize: selectedSize || undefined,
         selectedUnit: selectedUnit || undefined,
       };
-      console.log("Item data:", itemData);
+
       addItem(itemData);
-      console.log("Item added successfully");
+
       toast.success(t("addedToCart", language));
       setShowVariantModal(false);
       setSelectedColor("");
       setSelectedSize("");
       setSelectedUnit("");
     } catch (error) {
-      console.error("Error adding to cart:", error);
+
       toast.error(t("failedToAddCart", language));
     } finally {
       setIsAdding(false);

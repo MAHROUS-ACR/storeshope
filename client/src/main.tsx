@@ -22,19 +22,19 @@ async function setupApp() {
 
     // Setup message listener
     setupOnMessageListener((payload) => {
-      console.log("Notification received in foreground:", payload);
+
     });
 
     // Request permission after a short delay to not block app startup
     setTimeout(() => {
       import("./lib/notificationUtils").then(({ requestNotificationPermission }) => {
         requestNotificationPermission().catch(err => {
-          console.log("Notification permission setup deferred");
+
         });
       });
     }, 2000);
   } catch (error) {
-    console.log("Notification setup deferred:", error);
+
   }
 }
 

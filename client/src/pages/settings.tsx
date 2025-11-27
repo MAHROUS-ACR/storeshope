@@ -64,7 +64,7 @@ export default function SettingsPage() {
           setStoreEmail(storeData.email || "");
         }
       } catch (error) {
-        console.error("Failed to load config:", error);
+
       }
     };
 
@@ -118,7 +118,7 @@ export default function SettingsPage() {
       });
 
       toast.success("All settings saved successfully!");
-      console.log("✅ All settings saved to Firestore and localStorage");
+
       
       // If Firebase config changed, reload app to apply new config
       const currentApiKey = import.meta.env.VITE_FIREBASE_API_KEY;
@@ -129,7 +129,7 @@ export default function SettingsPage() {
         }, 1500);
       }
     } catch (error: any) {
-      console.error("Error saving settings:", error);
+
       toast.error(`Error: L.E error.message || "Failed to save settings"}`);
     } finally {
       setIsLoading(false);
