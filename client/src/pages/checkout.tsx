@@ -39,6 +39,7 @@ export default function CheckoutPage() {
     if (!authLoading && user) {
       setCustomerName(user.username || user.email?.split("@")[0] || "");
       setCustomerPhone(user.phone || "");
+      setDeliveryAddress(user.address || "");
       if (user.zoneId) {
         const zone = zonesList.find(z => z.id === user.zoneId);
         if (zone) setZoneSelected(zone);
@@ -126,7 +127,7 @@ export default function CheckoutPage() {
       if (shippingSelected === "saved") {
         await updateUserProfile({
           phone: customerPhone,
-          address: user.address || "",
+          address: deliveryAddress,
           zoneId: zoneSelected?.id,
           zoneName: zoneSelected?.name,
         });
@@ -323,6 +324,16 @@ export default function CheckoutPage() {
                   />
                 </div>
                 <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">العنوان المحفوظ</label>
+                  <textarea
+                    placeholder="عنوانك المحفوظ"
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none"
+                    rows={2}
+                  />
+                </div>
+                <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">البريد الإلكتروني</label>
                   <input
                     type="email"
@@ -429,6 +440,52 @@ export default function CheckoutPage() {
               </button>
             </div>
           </section>
+
+          {/* Card Payment Details */}
+          {paymentSelected === "card" && (
+            <section className="bg-purple-50 rounded-xl p-5 mb-5 border-2 border-purple-200">
+              <h3 className="font-bold text-lg text-gray-900 mb-4">💳 بيانات البطاقة</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">اسم حامل البطاقة</label>
+                  <input
+                    type="text"
+                    placeholder="اسمك كما يظهر على البطاقة"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">رقم البطاقة</label>
+                  <input
+                    type="text"
+                    placeholder="1234 5678 9012 3456"
+                    maxLength={19}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">انتهاء الصلاحية</label>
+                    <input
+                      type="text"
+                      placeholder="MM/YY"
+                      maxLength={5}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">CVV</label>
+                    <input
+                      type="text"
+                      placeholder="123"
+                      maxLength={4}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* Notes */}
           <section className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
