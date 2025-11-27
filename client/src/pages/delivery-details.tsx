@@ -83,6 +83,7 @@ export default function DeliveryDetailsPage() {
           // Update marker and center map if navigating
           if (isNavigating && map.current && currentMarker.current) {
             currentMarker.current.setLatLng([lat, lng]);
+            currentMarker.current.setIcon(createDeliveryIcon(true));
             map.current.panTo([lat, lng]);
             
             // Calculate remaining distance
@@ -106,6 +107,67 @@ export default function DeliveryDetailsPage() {
       }
     };
   }, [isNavigating, mapLat, mapLng]);
+
+  // Create custom delivery marker icon
+  const createDeliveryIcon = (isActive: boolean = false) => {
+    const svgString = isActive ? 
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140" width="40" height="56">
+        <defs>
+          <style>
+            @keyframes pulse {
+              0%, 100% { r: 18; opacity: 0.4; }
+              50% { r: 25; opacity: 0.1; }
+            }
+            .pulse-ring { animation: pulse 2s infinite; }
+          </style>
+        </defs>
+        <!-- Pulse ring -->
+        <circle cx="50" cy="50" r="18" fill="none" stroke="#3b82f6" stroke-width="2" class="pulse-ring" />
+        <!-- Main marker -->
+        <path d="M 50 10 C 65 10 75 20 75 35 C 75 50 50 85 50 85 C 50 85 25 50 25 35 C 25 20 35 10 50 10 Z" fill="#3b82f6" stroke="#1e3a8a" stroke-width="2" />
+        <!-- Truck icon inside -->
+        <g transform="translate(50, 35)">
+          <rect x="-12" y="-8" width="24" height="16" fill="white" rx="2" />
+          <rect x="-8" y="6" width="4" height="4" fill="white" />
+          <rect x="4" y="6" width="4" height="4" fill="white" />
+          <circle cx="-6" cy="10" r="1.5" fill="#3b82f6" />
+          <circle cx="6" cy="10" r="1.5" fill="#3b82f6" />
+        </g>
+      </svg>`
+    :
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140" width="32" height="44">
+        <path d="M 50 10 C 65 10 75 20 75 35 C 75 50 50 85 50 85 C 50 85 25 50 25 35 C 25 20 35 10 50 10 Z" fill="#3b82f6" stroke="#1e3a8a" stroke-width="2" />
+        <circle cx="50" cy="35" r="6" fill="white" />
+      </svg>`;
+    
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    const div = document.createElement('div');
+    div.innerHTML = svgString;
+    const svg = div.querySelector('svg');
+    
+    if (svg) {
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const blob = new Blob([svgData], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      
+      return L.icon({
+        iconUrl: url,
+        iconSize: isActive ? [40, 56] : [32, 44],
+        iconAnchor: isActive ? [20, 56] : [16, 44],
+        popupAnchor: isActive ? [0, -56] : [0, -44],
+      });
+    }
+    
+    return L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+    });
+  };
 
   // Geocode address to get lat/lng as fallback
   const geocodeAddress = async (address: string) => {
@@ -172,13 +234,7 @@ export default function DeliveryDetailsPage() {
     if (currentLat && currentLng && order?.status !== "received") {
       console.log("Adding current location marker:", currentLat, currentLng);
       const marker = L.marker([currentLat, currentLng], {
-        icon: L.icon({
-          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-        })
+        icon: createDeliveryIcon(isNavigating)
       })
         .addTo(map.current)
         .bindPopup(`<div style="text-align: center; direction: ${language === "ar" ? "rtl" : "ltr"}"><strong>${language === "ar" ? "موقعك الحالي" : "Your Location"}</strong></div>`);
