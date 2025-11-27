@@ -75,6 +75,7 @@ export default function ProfilePage() {
     price: "", 
     category: "",
     image: "",
+    images: [] as string[],
     units: [] as string[],
     sizes: [] as string[],
     colors: [] as string[],
@@ -105,6 +106,34 @@ export default function ProfilePage() {
       toast.success("Image uploaded!");
     };
     reader.readAsDataURL(file);
+  };
+
+  // Handle multiple product images upload
+  const handleAddProductImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        setNewItemForm(prev => ({ 
+          ...prev, 
+          images: [...prev.images, base64] 
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+    toast.success(`${files.length} image(s) added!`);
+  };
+
+  // Remove image from gallery
+  const removeProductImage = (index: number) => {
+    setNewItemForm(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
   
   // Store Settings States
@@ -1754,7 +1783,7 @@ export default function ProfilePage() {
                   <div className="bg-white rounded-2xl p-4 border border-gray-200 mb-4">
                     <h3 className="text-sm font-bold mb-3">{editingItemId ? t("editProduct", language) : t("addNewProduct", language)}</h3>
                     <div className="space-y-3">
-                      {/* Product Image */}
+                      {/* Product Main Image */}
                       <div>
                         <label className="text-xs font-semibold mb-2 block">{t("productImage", language)}</label>
                         <div className="flex items-center gap-3 mb-2">
@@ -1773,6 +1802,37 @@ export default function ProfilePage() {
                             data-testid="input-item-image"
                           />
                         </div>
+                      </div>
+
+                      {/* Additional Images Gallery */}
+                      <div>
+                        <label className="text-xs font-semibold mb-2 block">{language === "ar" ? "صور إضافية" : "Additional Images"}</label>
+                        <div className="mb-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleAddProductImage}
+                            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg cursor-pointer"
+                            data-testid="input-additional-images"
+                          />
+                        </div>
+                        {newItemForm.images.length > 0 && (
+                          <div className="grid grid-cols-4 gap-2">
+                            {newItemForm.images.map((img, idx) => (
+                              <div key={idx} className="relative group">
+                                <img src={img} alt={`Product ${idx + 1}`} className="w-full aspect-square rounded-lg object-cover border border-gray-200" />
+                                <button
+                                  onClick={() => removeProductImage(idx)}
+                                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                  data-testid={`button-remove-image-${idx}`}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <input
                         type="text"
@@ -1956,6 +2016,7 @@ export default function ProfilePage() {
                                   price: parseFloat(newItemForm.price),
                                   category: newItemForm.category,
                                   image: newItemForm.image || null,
+                                  images: newItemForm.images.length > 0 ? newItemForm.images : null,
                                   units: newItemForm.units.length > 0 ? newItemForm.units : null,
                                   sizes: newItemForm.sizes.length > 0 ? newItemForm.sizes : null,
                                   colors: newItemForm.colors.length > 0 ? newItemForm.colors : null,
@@ -1974,7 +2035,7 @@ export default function ProfilePage() {
                                   setItems([...items, { id: docRef.id, ...productData }]);
                                   toast.success("Product added!");
                                 }
-                                setNewItemForm({ title: "", description: "", price: "", category: "", image: "", units: [], sizes: [], colors: [], available: true });
+                                setNewItemForm({ title: "", description: "", price: "", category: "", image: "", images: [], units: [], sizes: [], colors: [], available: true });
                                 setUnitInput("");
                                 setSizeInput("");
                                 setColorInput("");
@@ -2100,7 +2161,7 @@ export default function ProfilePage() {
                                   setItems(items.filter(i => i.id !== item.id));
                                   if (editingItemId === item.id) {
                                     setEditingItemId(null);
-                                    setNewItemForm({ title: "", description: "", price: "", category: "", image: "", units: [], sizes: [], colors: [], available: true });
+                                    setNewItemForm({ title: "", description: "", price: "", category: "", image: "", images: [], units: [], sizes: [], colors: [], available: true });
                                     setUnitInput("");
                                     setSizeInput("");
                                     setColorInput("");
