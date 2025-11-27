@@ -315,7 +315,12 @@ export default function CheckoutPage() {
                     placeholder={shippingSelected === "saved" ? "اسمك الكامل" : "اسم المستقبل"}
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                    disabled={shippingSelected === "saved"}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      shippingSelected === "saved" 
+                        ? "bg-gray-100 border-gray-300 text-gray-600 cursor-not-allowed" 
+                        : "bg-white border-gray-300"
+                    }`}
                   />
                 </div>
                 <div>
@@ -325,7 +330,12 @@ export default function CheckoutPage() {
                     placeholder="+201012345678"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                    disabled={shippingSelected === "saved"}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      shippingSelected === "saved" 
+                        ? "bg-gray-100 border-gray-300 text-gray-600 cursor-not-allowed" 
+                        : "bg-white border-gray-300"
+                    }`}
                   />
                 </div>
                 {shippingSelected === "new" && (
@@ -346,8 +356,8 @@ export default function CheckoutPage() {
                     <textarea
                       placeholder="عنوانك المحفوظ"
                       value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white"
+                      disabled
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed resize-none"
                       rows={2}
                     />
                   </div>
