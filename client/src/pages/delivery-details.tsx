@@ -79,7 +79,9 @@ export default function DeliveryDetailsPage() {
     );
   }
 
-  const mapsLink = order.latitude && order.longitude 
+  const mapsLink = order.shippingAddress 
+    ? `https://maps.google.com/?q=${encodeURIComponent(order.shippingAddress)}`
+    : order.latitude && order.longitude 
     ? `https://maps.google.com/?q=${order.latitude},${order.longitude}`
     : null;
 
