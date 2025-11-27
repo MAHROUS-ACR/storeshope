@@ -108,34 +108,86 @@ export default function DeliveryDetailsPage() {
     };
   }, [isNavigating, mapLat, mapLng]);
 
-  // Create custom delivery driver marker icon
+  // Create custom 3D delivery driver marker icon
   const createDeliveryIcon = (isActive: boolean = false) => {
     const svgString = isActive ? 
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="44" height="44">
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="48" height="56">
         <defs>
+          <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#ff9f1c;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#e67e22;stop-opacity:1" />
+          </linearGradient>
+          <linearGradient id="boxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#d84315;stop-opacity:1" />
+          </linearGradient>
+          <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.4"/>
+          </filter>
           <style>
             @keyframes pulse {
-              0%, 100% { r: 28; opacity: 0.4; }
-              50% { r: 40; opacity: 0.1; }
+              0%, 100% { r: 32; opacity: 0.4; }
+              50% { r: 44; opacity: 0.1; }
             }
             .pulse-ring { animation: pulse 2s infinite; }
           </style>
         </defs>
         <!-- Pulse ring -->
-        <circle cx="50" cy="50" r="28" fill="none" stroke="#f97316" stroke-width="1.5" class="pulse-ring" />
-        <!-- Background circle -->
-        <circle cx="50" cy="50" r="22" fill="#f97316" stroke="#ea580c" stroke-width="2" />
-        <!-- Delivery person icon -->
-        <circle cx="50" cy="32" r="7" fill="white" />
-        <path d="M 50 40 L 43 48 M 50 40 L 57 48 M 43 48 L 40 60 M 57 48 L 60 60" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+        <circle cx="50" cy="50" r="32" fill="none" stroke="#ff9f1c" stroke-width="1.5" class="pulse-ring" />
+        <!-- Background circle with gradient -->
+        <circle cx="50" cy="50" r="25" fill="url(#bodyGrad)" stroke="#d84315" stroke-width="2" filter="url(#shadow)" />
+        <!-- Head -->
+        <circle cx="50" cy="28" r="8" fill="#d4a574" filter="url(#shadow)" />
+        <!-- Hat shadow -->
+        <ellipse cx="50" cy="20" rx="10" ry="5" fill="#ff9f1c" opacity="0.6" />
+        <!-- Body -->
+        <ellipse cx="50" cy="45" rx="9" ry="12" fill="url(#bodyGrad)" />
+        <!-- Delivery Box -->
+        <rect x="38" y="32" width="14" height="16" fill="url(#boxGrad)" stroke="#8b0000" stroke-width="1" filter="url(#shadow)" />
+        <!-- Box Top Detail -->
+        <line x1="38" y1="36" x2="52" y2="36" stroke="#ff8c42" stroke-width="1" opacity="0.7" />
+        <!-- Box Handle -->
+        <path d="M 42 32 Q 42 24 58 24 Q 58 32" stroke="#a0522d" stroke-width="1.5" fill="none" />
+        <!-- Arms -->
+        <path d="M 42 42 L 32 50" stroke="#d4a574" stroke-width="3" stroke-linecap="round" />
+        <path d="M 58 42 L 68 50" stroke="#d4a574" stroke-width="3" stroke-linecap="round" />
+        <!-- Legs -->
+        <line x1="46" y1="60" x2="44" y2="75" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
+        <line x1="54" y1="60" x2="56" y2="75" stroke="#2c3e50" stroke-width="3" stroke-linecap="round" />
       </svg>`
     :
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="36" height="36">
-        <!-- Background circle -->
-        <circle cx="50" cy="50" r="20" fill="#f97316" stroke="#ea580c" stroke-width="2" />
-        <!-- Delivery person icon -->
-        <circle cx="50" cy="34" r="6" fill="white" />
-        <path d="M 50 41 L 44 48 M 50 41 L 56 48 M 44 48 L 42 58 M 56 48 L 58 58" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="40" height="48">
+        <defs>
+          <linearGradient id="bodyGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#ff9f1c;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#e67e22;stop-opacity:1" />
+          </linearGradient>
+          <linearGradient id="boxGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#d84315;stop-opacity:1" />
+          </linearGradient>
+          <filter id="shadow2" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.3"/>
+          </filter>
+        </defs>
+        <!-- Head -->
+        <circle cx="50" cy="28" r="7" fill="#d4a574" filter="url(#shadow2)" />
+        <!-- Hat -->
+        <ellipse cx="50" cy="21" rx="9" ry="4" fill="#ff9f1c" opacity="0.7" />
+        <!-- Body -->
+        <ellipse cx="50" cy="45" rx="8" ry="11" fill="url(#bodyGrad2)" />
+        <!-- Delivery Box -->
+        <rect x="39" y="33" width="12" height="14" fill="url(#boxGrad2)" stroke="#8b0000" stroke-width="0.8" filter="url(#shadow2)" />
+        <!-- Box Top Detail -->
+        <line x1="39" y1="37" x2="51" y2="37" stroke="#ff8c42" stroke-width="0.8" opacity="0.7" />
+        <!-- Box Handle -->
+        <path d="M 43 33 Q 43 26 57 26 Q 57 33" stroke="#a0522d" stroke-width="1" fill="none" />
+        <!-- Arms -->
+        <path d="M 43 42 L 34 49" stroke="#d4a574" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M 57 42 L 66 49" stroke="#d4a574" stroke-width="2.5" stroke-linecap="round" />
+        <!-- Legs -->
+        <line x1="46" y1="59" x2="44" y2="72" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round" />
+        <line x1="54" y1="59" x2="56" y2="72" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round" />
       </svg>`;
     
     const div = document.createElement('div');
@@ -149,9 +201,9 @@ export default function DeliveryDetailsPage() {
       
       return L.icon({
         iconUrl: url,
-        iconSize: isActive ? [44, 44] : [36, 36],
-        iconAnchor: isActive ? [22, 22] : [18, 18],
-        popupAnchor: isActive ? [0, -22] : [0, -18],
+        iconSize: isActive ? [48, 56] : [40, 48],
+        iconAnchor: isActive ? [24, 56] : [20, 48],
+        popupAnchor: isActive ? [0, -56] : [0, -48],
       });
     }
     
