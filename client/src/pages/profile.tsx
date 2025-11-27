@@ -700,7 +700,9 @@ export default function ProfilePage() {
       const updateData: any = { status };
       
       if (status === "shipped" && selectedDeliveryUserId) {
+        const selectedDelivery = deliveryUsers.find(d => d.id === selectedDeliveryUserId);
         updateData.deliveryUserId = selectedDeliveryUserId;
+        updateData.deliveryUsername = selectedDelivery?.username || selectedDelivery?.email || "";
       }
       
       await updateDoc(orderRef, updateData);
@@ -1205,31 +1207,36 @@ export default function ProfilePage() {
                               </button>
                               <div className="flex flex-col items-end gap-2">
                                 <p className="font-bold text-sm">L.E {order.total.toFixed(2)}</p>
-                                <div className="flex gap-1.5">
-                                  <span
-                                    className={`text-xs font-semibold px-3 py-0.5 rounded-full ${
-                                      order.status === "completed"
-                                        ? "bg-green-100 text-green-700"
-                                        : order.status === "cancelled"
-                                        ? "bg-red-100 text-red-700"
-                                        : order.status === "shipped"
-                                        ? "bg-blue-100 text-blue-700"
-                                        : "bg-amber-100 text-amber-700"
-                                    }`}
-                                    data-testid={`status-badge-${order.id}`}
-                                  >
-                                    {order.status || "pending"}
-                                  </span>
-                                  <button
-                                    onClick={() => {
-                                      setEditingOrderId(order.id);
-                                      setNewStatus(order.status);
-                                    }}
-                                    className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-semibold hover:bg-blue-200 transition"
-                                    data-testid={`button-edit-order-${order.id}`}
-                                  >
-                                    {language === "ar" ? "✎ تعديل" : "✎ Edit"}
-                                  </button>
+                                <div className="space-y-1 text-right">
+                                  <div className="flex gap-1.5 justify-end">
+                                    <span
+                                      className={`text-xs font-semibold px-3 py-0.5 rounded-full ${
+                                        order.status === "completed"
+                                          ? "bg-green-100 text-green-700"
+                                          : order.status === "cancelled"
+                                          ? "bg-red-100 text-red-700"
+                                          : order.status === "shipped"
+                                          ? "bg-blue-100 text-blue-700"
+                                          : "bg-amber-100 text-amber-700"
+                                      }`}
+                                      data-testid={`status-badge-${order.id}`}
+                                    >
+                                      {order.status || "pending"}
+                                    </span>
+                                    <button
+                                      onClick={() => {
+                                        setEditingOrderId(order.id);
+                                        setNewStatus(order.status);
+                                      }}
+                                      className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-semibold hover:bg-blue-200 transition"
+                                      data-testid={`button-edit-order-${order.id}`}
+                                    >
+                                      {language === "ar" ? "✎ تعديل" : "✎ Edit"}
+                                    </button>
+                                  </div>
+                                  {order.status === "shipped" && order.deliveryUsername && (
+                                    <p className="text-xs text-orange-600 font-semibold">🚚 {order.deliveryUsername}</p>
+                                  )}
                                 </div>
                               </div>
                             </div>
