@@ -377,30 +377,34 @@ export default function CheckoutPage() {
 
               {/* Zone Selection Inside */}
               <div className="border-t-2 border-blue-200 pt-6">
-                <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                   <span className="text-lg">🚚</span> منطقة التوصيل
-                </h4>
+                </label>
                 {isLoadingZones ? (
                   <p className="text-center py-4 text-gray-600">⏳ جاري تحميل المناطق...</p>
                 ) : zonesList.length === 0 ? (
                   <p className="text-center py-4 text-gray-600">لا توجد مناطق متاحة</p>
                 ) : (
-                  <div className="grid gap-2">
+                  <select
+                    value={zoneSelected?.id || ""}
+                    onChange={(e) => {
+                      const zone = zonesList.find(z => z.id === e.target.value);
+                      if (zone) setZoneSelected(zone);
+                    }}
+                    disabled={shippingSelected === "saved"}
+                    className={`w-full px-4 py-3 border-2 rounded-lg font-semibold transition ${
+                      shippingSelected === "saved"
+                        ? "bg-gray-100 border-gray-300 text-gray-600 cursor-not-allowed"
+                        : "bg-white border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    }`}
+                  >
+                    <option value="">-- اختر منطقة التوصيل --</option>
                     {zonesList.map((z) => (
-                      <button
-                        key={z.id}
-                        onClick={() => setZoneSelected(z)}
-                        className={`w-full p-3 rounded-lg border-2 font-semibold transition flex justify-between items-center ${
-                          zoneSelected?.id === z.id
-                            ? "border-black bg-black text-white shadow-lg"
-                            : "border-gray-300 bg-white text-gray-900 hover:border-gray-400 hover:bg-gray-50"
-                        }`}
-                      >
-                        <span className="text-sm">{z.name}</span>
-                        <span className="text-base font-bold">+ L.E {z.shippingCost}</span>
-                      </button>
+                      <option key={z.id} value={z.id}>
+                        {z.name} - L.E {z.shippingCost}
+                      </option>
                     ))}
-                  </div>
+                  </select>
                 )}
               </div>
             </section>
