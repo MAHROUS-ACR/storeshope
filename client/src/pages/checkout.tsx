@@ -8,6 +8,7 @@ import { useLanguage } from "@/lib/languageContext";
 import { toast } from "sonner";
 import { getShippingZones, saveOrder, getDiscounts } from "@/lib/firebaseOps";
 import { getActiveDiscount, calculateDiscountedPrice, getDiscountAmount } from "@/lib/discountUtils";
+import { MapSelector } from "@/components/map-selector";
 
 interface Discount {
   id: string;
@@ -44,6 +45,8 @@ export default function CheckoutPage() {
   const [isLoadingZones, setIsLoadingZones] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [discounts, setDiscounts] = useState<Discount[]>([]);
+  const [showMapSelector, setShowMapSelector] = useState(false);
+  const [locationCoords, setLocationCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   // Initialize form with user data
   useEffect(() => {
@@ -177,6 +180,8 @@ export default function CheckoutPage() {
         deliveryAddress: shippingSelected === "saved" 
           ? `${user.address || zoneSelected?.name}` 
           : deliveryAddress.trim(),
+        locationLat: locationCoords?.lat,
+        locationLng: locationCoords?.lng,
         notes: notes.trim(),
         
         items: items.map(item => ({
@@ -395,9 +400,35 @@ export default function CheckoutPage() {
                 </div>
                 {shippingSelected === "new" && (
                   <div>
+                    <div className="mb-4">
+                      <button
+                        type="button"
+                        onClick={() => setShowMapSelector(!showMapSelector)}
+                        className="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition"
+                      >
+                        {showMapSelector ? (language === "ar" ? "❌ إغلاق الخريطة" : "❌ Close Map") : (language === "ar" ? "🗺️ اختر من الخريطة" : "🗺️ Choose from Map")}
+                      </button>
+                    </div>
+                    
+                    {showMapSelector && (
+                      <div className="mb-4 border-2 border-indigo-300 rounded-lg p-4 bg-indigo-50">
+                        <MapSelector
+                          onLocationSelect={(address, lat, lng) => {
+                            setDeliveryAddress(address);
+                            setLocationCoords({ lat, lng });
+                            setShowMapSelector(false);
+                            toast.success(language === "ar" ? "✅ تم تحديد الموقع" : "✅ Location set");
+                          }}
+                          initialAddress={deliveryAddress}
+                          initialLat={locationCoords?.lat}
+                          initialLng={locationCoords?.lng}
+                        />
+                      </div>
+                    )}
+                    
                     <label className="block text-sm font-semibold text-gray-700 mb-2">📍 {language === "ar" ? "العنوان الكامل" : "Full Address"}</label>
                     <textarea
-                      placeholder={language === "ar" ? "الشارع، الحي، المدينة" : "Street, District, City"}
+                      placeholder={language === "ar" ? "الشارع، الحي، المدينة أو اختر من الخريطة" : "Street, District, City or choose from map"}
                       value={deliveryAddress}
                       onChange={(e) => setDeliveryAddress(e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white"
