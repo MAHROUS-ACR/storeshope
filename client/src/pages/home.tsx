@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
 import { Search, ShoppingCart, AlertCircle, Globe } from "lucide-react";
@@ -112,9 +112,9 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // Run in parallel for faster loading
+    // Load data only on component mount, not on location changes
     Promise.all([fetchProductsData(), fetchStoreSettings()]);
-  }, [location]);
+  }, []);
 
   // Fetch discounts after Firebase is initialized (with a small delay to ensure Firebase is ready)
   useEffect(() => {
@@ -122,7 +122,7 @@ export default function Home() {
       fetchDiscounts();
     }, 500); // Small delay to ensure Firebase client is initialized
     return () => clearTimeout(timer);
-  }, [location]);
+  }, []);
 
   // Extract unique categories from products
   const categories = ["All", ...Array.from(new Set(products
@@ -252,7 +252,7 @@ export default function Home() {
                       product={product} 
                       index={index}
                       discounts={discounts}
-                      onProductClick={(id) => setLocation(`/product/${id}`)}
+                      onProductClick={useCallback((id) => setLocation(`/product/${id}`), [setLocation])}
                     />
                   ))}
                 </div>
