@@ -1,5 +1,4 @@
-import { getFirestore, collection, query, where, onSnapshot, addDoc, deleteDoc, doc, orderBy, limit } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getFirestore, collection, query, where, onSnapshot, addDoc, deleteDoc, doc, orderBy, limit, getDocs, updateDoc } from "firebase/firestore";
 
 export interface Notification {
   id: string;
@@ -8,7 +7,7 @@ export interface Notification {
   title: string;
   message: string;
   type: "order_status" | "delivery" | "promo" | "info";
-  status: "pending" | "shipped" | "in_transit" | "received";
+  status?: "pending" | "shipped" | "in_transit" | "received";
   read: boolean;
   createdAt: number;
   expiresAt?: number;
@@ -22,7 +21,6 @@ export const setupNotificationListener = (
 ) => {
   const firestore = getFirestore();
 
-  // Unsubscribe from previous listener if exists
   if (notificationUnsubscribe) {
     notificationUnsubscribe();
   }
@@ -43,7 +41,6 @@ export const setupNotificationListener = (
           ...change.doc.data(),
         } as Notification;
 
-        // Check if notification has expired
         if (notification.expiresAt && notification.expiresAt < Date.now()) {
           deleteNotification(notification.id);
           return;
@@ -150,12 +147,9 @@ export const createOrderStatusNotification = async (
       status,
       read: false,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
+      expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
     });
   } catch (error) {
     console.error("Error creating notification:", error);
   }
 };
-
-// Import getDocs for the count function
-import { getDocs, updateDoc } from "firebase/firestore";
