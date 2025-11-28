@@ -7,7 +7,7 @@ import { useUser } from "@/lib/userContext";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
 import { toast } from "sonner";
-import { getOrders, updateOrder } from "@/lib/firebaseOps";
+import { getOrders, updateOrder, sendOrderEmailWithBrevo } from "@/lib/firebaseOps";
 import { getStatusColor } from "@/lib/statusColors";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import L from "leaflet";
@@ -333,10 +333,6 @@ export default function OrderDetailsPage() {
     
     setIsProcessing(true);
     try {
-
-
-
-      
       // Update the same document with new status
       const success = await updateOrder(order.id, { 
         status,
@@ -344,20 +340,26 @@ export default function OrderDetailsPage() {
       });
       
       if (success) {
+        // Send status update email to customer
+        const userEmail = orderUser?.email || order?.userEmail || order?.customerEmail;
+        if (userEmail && order) {
+          const updatedOrder = { ...order, status };
+          await sendOrderEmailWithBrevo(updatedOrder, userEmail).catch(() => {
+            // Silent fail for email - order was still updated
+          });
+        }
 
-        toast.success("Status updated!");
+        toast.success(language === "ar" ? "تم تحديث الحالة!" : "Status updated!");
         
         // Update current view with new status
         setOrder(prev => prev ? { ...prev, status } : null);
         setEditingStatus(false);
         setNewStatus("pending");
       } else {
-
-        toast.error("Failed to update order");
+        toast.error(language === "ar" ? "فشل تحديث الطلب" : "Failed to update order");
       }
     } catch (error: any) {
-
-      toast.error("Error: " + error?.message);
+      toast.error(language === "ar" ? "خطأ: " + error?.message : "Error: " + error?.message);
     } finally {
       setIsProcessing(false);
     }
