@@ -160,12 +160,12 @@ export default function OrderDetailsPage() {
       .bindPopup(`<div style="text-align: center"><strong>${language === "ar" ? "موقع التسليم" : "Delivery Location"}</strong></div>`)
       .openPopup();
 
-    // Add driver location marker if available - use driverLat/driverLng
-    const driverLat = order?.driverLat || order?.latitude;
-    const driverLng = order?.driverLng || order?.longitude;
+    // Add driver location marker if available - ONLY use driverLat/driverLng (not fallback to delivery location)
+    const driverLat = order?.driverLat;
+    const driverLng = order?.driverLng;
     
     if (driverLat !== undefined && driverLat !== null && driverLng !== undefined && driverLng !== null && map.current) {
-      console.log("Adding driver marker:", driverLat, driverLng);
+      console.log("✅ Adding driver marker:", driverLat, driverLng);
       if (driverMarker.current) {
         driverMarker.current.remove();
       }
@@ -190,18 +190,18 @@ export default function OrderDetailsPage() {
           .catch(err => console.log("Route error:", err));
       }
     } else {
-      console.log("Driver location not available:", { lat: driverLat, lng: driverLng });
+      console.log("❌ Driver location not available - no marker shown");
     }
   }, [mapLat, mapLng, language, order?.driverLat, order?.driverLng, order?.latitude, order?.longitude]);
 
   // Update driver marker position when order location changes
   useEffect(() => {
-    const driverLat = order?.driverLat || order?.latitude;
-    const driverLng = order?.driverLng || order?.longitude;
+    const driverLat = order?.driverLat;
+    const driverLng = order?.driverLng;
     if (driverLat !== undefined && driverLat !== null && driverLng !== undefined && driverLng !== null && driverMarker.current && map.current) {
       driverMarker.current.setLatLng([driverLat, driverLng]);
     }
-  }, [order?.driverLat, order?.driverLng, order?.latitude, order?.longitude]);
+  }, [order?.driverLat, order?.driverLng]);
 
   // Geocode address when order is loaded - use deliveryLat/deliveryLng if available
   useEffect(() => {
