@@ -103,7 +103,6 @@ export function MapSelector({
         : data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
       setAddress(addressText);
     } catch (error) {
-      console.log("Geocoding error:", error);
       setAddress(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
     } finally {
       setIsLoadingLocation(false);
@@ -134,7 +133,6 @@ export function MapSelector({
         setSuggestions([]);
       }
     } catch (error) {
-      console.log("Search error:", error);
       setSuggestions([]);
     }
   };
@@ -208,7 +206,6 @@ export function MapSelector({
           reverseGeocode(latitude, longitude);
         },
         (error) => {
-          console.log("Geolocation error:", error);
           setIsLoadingLocation(false);
         }
       );

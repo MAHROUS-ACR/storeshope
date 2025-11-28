@@ -84,7 +84,6 @@ export default function DeliveryDetailsPage() {
         (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          console.log("Got current position:", lat, lng);
           setCurrentLat(lat);
           setCurrentLng(lng);
 
@@ -101,7 +100,6 @@ export default function DeliveryDetailsPage() {
           }
         },
         (error) => {
-          console.log("Geolocation error:", error);
           setLocationError(language === "ar" ? "لا يمكن الوصول للموقع الحالي" : "Cannot access current location");
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -131,9 +129,8 @@ export default function DeliveryDetailsPage() {
           latitude: currentLat,
           longitude: currentLng,
         });
-        console.log("Driver location saved to Firebase:", currentLat, currentLng);
       } catch (error) {
-        console.log("Error saving location:", error);
+        // Silently handle location save errors
       }
     };
 
@@ -187,7 +184,7 @@ export default function DeliveryDetailsPage() {
         setDeliveryLng(parseFloat(results[0].lon));
       }
     } catch (error) {
-      console.log("Geocoding error:", error);
+      // Silently handle geocoding errors
     } finally {
       setMapLoading(false);
     }
@@ -242,7 +239,6 @@ export default function DeliveryDetailsPage() {
     
     // Only add marker if it doesn't exist yet
     if (!currentMarker.current) {
-      console.log("Adding current location marker:", currentLat, currentLng);
       const marker = L.marker([currentLat, currentLng], {
         icon: createDeliveryIcon(isNavigating)
       })
@@ -289,7 +285,7 @@ export default function DeliveryDetailsPage() {
             }
           }
         } catch (error) {
-          console.log("Route fetch error:", error);
+          // Silently handle route fetch errors
         }
       };
       

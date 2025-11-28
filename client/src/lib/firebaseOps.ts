@@ -139,7 +139,6 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
     const storeSnap = await getDoc(storeRef);
     
     if (!storeSnap.exists()) {
-      console.warn("⚠️ Store settings not found - email not sent");
       return false;
     }
 
@@ -150,15 +149,8 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
     const adminEmail = storeData?.adminEmail;
     
     if (!brevoApiKey || !brevoFromEmail) {
-      console.warn("⚠️ Brevo credentials not configured - email not sent");
-      console.warn("📝 Go to Settings and add: Brevo API Key + From Email");
       return false;
     }
-
-    console.log("📧 Sending email via Brevo...", {
-      from: brevoFromEmail,
-      to: [userEmail, adminEmail],
-    });
 
     // Format order items as table rows
     const itemsRows = (order.items || [])
@@ -384,36 +376,22 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
       },
       body: JSON.stringify(brevoPayload),
     }).catch(err => {
-      console.warn("Direct Brevo call failed, details:", err);
       return null;
     });
 
     // If CORS blocked, try alternative endpoint or skip silently
     if (!response) {
-      console.log("ℹ️ Email delivery queued (check Brevo dashboard for status)");
       return true; // Consider as success since we can't verify from client
     }
 
     const result = await response.json();
     
     if (response.ok) {
-      console.log("✅ Email sent successfully via Brevo!", {
-        messageId: result.messageId,
-        to: [userEmail, adminEmail],
-      });
       return true;
     } else {
-      console.error("❌ Brevo API Error:", {
-        status: response.status,
-        statusText: response.statusText,
-        error: result,
-        details: result.message || result.error,
-      });
-      
       return false;
     }
   } catch (error: any) {
-    console.error("❌ Email error:", error?.message || error);
     return false;
   }
 }
@@ -422,16 +400,8 @@ export async function saveOrder(order: any) {
   try {
     // Validate required fields
     if (!order?.userId || !order?.id || !order?.items?.length) {
-      console.error("❌ saveOrder validation failed:", { userId: order?.userId, id: order?.id, itemsLength: order?.items?.length });
       throw new Error("Missing userId, id, or items");
     }
-
-    console.log("📦 Saving order with coordinates:", { 
-      deliveryLat: order.deliveryLat, 
-      deliveryLng: order.deliveryLng,
-      driverLat: order.driverLat,
-      driverLng: order.driverLng
-    });
 
     // Get fresh DB connection
     const db = initDb();
@@ -469,27 +439,18 @@ export async function saveOrder(order: any) {
     // Add timestamp
     cleanOrder.createdAt = new Date().toISOString();
 
-    console.log("💾 Saving to Firebase with data:", { 
-      id: cleanOrder.id,
-      userId: cleanOrder.userId,
-      deliveryLat: cleanOrder.deliveryLat,
-      deliveryLng: cleanOrder.deliveryLng
-    });
-
     await setDoc(doc(db, "orders", order.id), cleanOrder);
-    console.log("✅ Order saved successfully:", order.id);
 
     // Send order confirmation email via Brevo (non-blocking)
     const emailAddress = order.userEmail || order.customerEmail || order.email;
     if (emailAddress) {
       await sendOrderEmailWithBrevo(cleanOrder, emailAddress).catch((err: any) => {
-        console.log("⚠️ Email sending failed (non-blocking):", err?.message);
+        // Silently handle email sending errors
       });
     }
 
     return order.id;
   } catch (error: any) {
-    console.error("❌ saveOrder error:", error?.message || error);
     return null;
   }
 }

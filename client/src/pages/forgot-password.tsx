@@ -52,7 +52,6 @@ export default function ForgotPasswordPage() {
       
       setTimeout(() => setLocation("/login"), 3000);
     } catch (error: any) {
-      console.error("Password reset error:", error);
       if (error.code === "auth/user-not-found") {
         toast.error(t("emailNotFound", language));
       } else if (error.code === "auth/invalid-email") {
@@ -61,7 +60,6 @@ export default function ForgotPasswordPage() {
         toast.error(language === "ar" ? "البريد غير مفعل في إعدادات Firebase" : "Email not configured in Firebase settings");
       } else {
         toast.error(error.message || (language === "ar" ? "خطأ في الإرسال" : "Failed to send reset email"));
-        console.error("Full error:", error);
       }
     } finally {
       setIsLoading(false);
