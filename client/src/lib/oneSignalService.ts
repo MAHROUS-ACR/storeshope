@@ -33,12 +33,17 @@ export const setUserId = async (userId: string) => {
   try {
     if (!userId) return;
     const OneSignal = await getOneSignal();
-    if (!OneSignal) return;
+    if (!OneSignal) {
+      console.warn("OneSignal not available for registration");
+      return;
+    }
 
     // Register user ID in OneSignal
+    console.log("🔐 Registering user in OneSignal:", userId);
     await OneSignal.login(userId);
+    console.log("✅ User registered successfully in OneSignal");
   } catch (error) {
-    // Silently handle
+    console.error("❌ Error registering user in OneSignal:", error);
   }
 };
 
