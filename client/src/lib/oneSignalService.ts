@@ -41,6 +41,9 @@ export const requestPushPermission = async () => {
     console.log("📲 Requesting push notification permission...");
     const permission = await OneSignal.Notifications.requestPermission();
     console.log("📱 Permission result:", permission);
+    
+    // Wait a moment for subscription to complete
+    await new Promise(r => setTimeout(r, 500));
   } catch (error) {
     console.error("❌ Error requesting permission:", error);
   }
@@ -55,7 +58,7 @@ export const setUserId = async (userId: string) => {
       return;
     }
 
-    // Register user ID in OneSignal (permission already requested in login)
+    // Register user ID in OneSignal
     console.log("🔐 Registering user in OneSignal:", userId);
     await OneSignal.login(userId);
     console.log("✅ User registered successfully in OneSignal");
@@ -63,6 +66,11 @@ export const setUserId = async (userId: string) => {
     // Check subscription status
     const isSubscribed = OneSignal.User.PushSubscription.isSubscribed;
     console.log("🔔 User subscribed to push:", isSubscribed);
+    
+    if (!isSubscribed) {
+      console.log("⚠️ User not subscribed yet, attempting to prompt again...");
+      await OneSignal.Notifications.requestPermission();
+    }
   } catch (error) {
     console.error("❌ Error registering user in OneSignal:", error);
   }
