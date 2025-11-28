@@ -181,9 +181,9 @@ export default function LoginPage() {
                   {t("loading", language)}
                 </div>
               ) : isSignup ? (
-                t("signup", language)
+                t("add", language)
               ) : (
-                t("login", language)
+                t("checkout", language)
               )}
             </button>
           </form>
@@ -200,7 +200,7 @@ export default function LoginPage() {
 
           <div className="mt-8 text-center">
             <p className="text-gray-600 text-sm" data-testid="text-toggle-prompt">
-              {isSignup ? t("haveAccount", language) : t("noAccount", language)}
+              {isSignup ? t("email", language) : t("email", language)}
             </p>
             <button
               onClick={() => {
@@ -212,7 +212,7 @@ export default function LoginPage() {
               className="text-primary font-medium hover:underline mt-2"
               data-testid="button-toggle-form"
             >
-              {isSignup ? t("login", language) : t("signup", language)}
+              {isSignup ? t("back", language) : t("checkout", language)}
             </button>
           </div>
         </div>
