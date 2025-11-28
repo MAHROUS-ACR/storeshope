@@ -53,6 +53,12 @@ export default function LoginPage() {
         }
         await signup(email, password, username);
         toast.success(t("accountCreated", language));
+        setFormLoading(false);
+        // Clear form after successful signup
+        setEmail("");
+        setPassword("");
+        setUsername("");
+        return;
       } else {
         if (!email.trim() || !password.trim()) {
           toast.error(t("fillAllFields", language));
@@ -66,9 +72,9 @@ export default function LoginPage() {
           await setUserId(authUser.id);
         }
         toast.success(t("welcomeBack", language));
+        // Wait for user data to be set before redirecting
+        setTimeout(() => setLocation("/"), 800);
       }
-      // Wait for user data to be set before redirecting
-      setTimeout(() => setLocation("/"), 800);
     } catch (error: any) {
       if (error.code === "auth/email-already-in-use") {
         toast.error(t("emailExists", language));
