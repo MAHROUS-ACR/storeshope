@@ -174,6 +174,13 @@ export default function ProfilePage() {
   const [firebaseStorageBucket, setFirebaseStorageBucket] = useState("");
   const [firebaseMessagingSenderId, setFirebaseMessagingSenderId] = useState("");
   const [firebaseMeasurementId, setFirebaseMeasurementId] = useState("");
+  
+  // Brevo Email Config States
+  const [brevoApiKey, setBrevoApiKey] = useState("");
+  const [brevoFromEmail, setBrevoFromEmail] = useState("");
+  const [brevoFromName, setBrevoFromName] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
+  
   const [isSaving, setIsSaving] = useState(false);
 
   // Filter orders by date range (excluding cancelled)
@@ -359,6 +366,24 @@ export default function ProfilePage() {
 
     if (showFirebaseSettings) {
       loadConfig();
+      // Load Brevo settings from Firebase
+      const loadBrevoConfig = async () => {
+        try {
+          const db = getFirestore();
+          const storeRef = doc(db, "settings", "store");
+          const storeSnap = await getDoc(storeRef);
+          if (storeSnap.exists()) {
+            const data = storeSnap.data();
+            setBrevoApiKey(data.brevoApiKey || "");
+            setBrevoFromEmail(data.brevoFromEmail || "");
+            setBrevoFromName(data.brevoFromName || "");
+            setAdminEmail(data.adminEmail || "");
+          }
+        } catch (error) {
+          console.log("Error loading Brevo config");
+        }
+      };
+      loadBrevoConfig();
     }
   }, [showFirebaseSettings]);
 
@@ -369,9 +394,16 @@ export default function ProfilePage() {
       return;
     }
 
+    if (!brevoApiKey || !brevoFromEmail || !adminEmail) {
+      toast.error("Please fill in all Brevo configuration fields");
+      return;
+    }
+
     setIsSaving(true);
     try {
       const db = getFirestore();
+      
+      // Save Firebase config
       const firebaseConfigRef = doc(db, "settings", "firebase");
       await setDoc(firebaseConfigRef, {
         projectId,
@@ -387,7 +419,17 @@ export default function ProfilePage() {
         updatedAt: new Date(),
       });
 
-      toast.success("Firebase configuration saved to Firestore successfully!");
+      // Save Brevo config
+      const storeRef = doc(db, "settings", "store");
+      await setDoc(storeRef, {
+        brevoApiKey,
+        brevoFromEmail,
+        brevoFromName,
+        adminEmail,
+        updatedAt: new Date(),
+      }, { merge: true });
+
+      toast.success("✅ Configuration saved successfully!");
       setClientEmail("");
     } catch (error) {
       toast.error("Failed to save configuration");
