@@ -119,7 +119,7 @@ export default function LoginPage() {
           )}
 
           <h1 className="text-2xl font-bold text-center mb-2" data-testid="text-title">
-            {isSignup ? t("signup", language) : t("login", language)}
+            {isSignup ? t("accountCreated", language) : t("welcomeBack", language)}
           </h1>
           <p className="text-gray-600 text-center mb-8" data-testid="text-subtitle">
             {isSignup ? t("accountCreated", language) : t("welcomeBack", language)}
@@ -182,9 +182,9 @@ export default function LoginPage() {
                   {t("loading", language)}
                 </div>
               ) : isSignup ? (
-                t("signup", language)
+                t("fillAllFields", language)
               ) : (
-                t("login", language)
+                t("fillAllFields", language)
               )}
             </button>
           </form>
@@ -213,7 +213,7 @@ export default function LoginPage() {
               className="text-primary font-medium hover:underline mt-2"
               data-testid="button-toggle-form"
             >
-              {isSignup ? t("login", language) : t("signup", language)}
+              {isSignup ? t("back", language) : t("fillAllFields", language)}
             </button>
           </div>
         </div>
