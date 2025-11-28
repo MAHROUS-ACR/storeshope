@@ -160,23 +160,163 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
       to: [userEmail, adminEmail],
     });
 
-    // Format order items
-    const itemsList = (order.items || [])
-      .map((item: any) => `<li>${item.title} × ${item.quantity} = L.E ${(item.price * item.quantity).toFixed(2)}</li>`)
+    // Format order items as table rows
+    const itemsRows = (order.items || [])
+      .map((item: any) => `
+        <tr style="border-bottom: 1px solid #e0e0e0;">
+          <td style="padding: 12px; text-align: left; font-size: 14px;">${item.title}</td>
+          <td style="padding: 12px; text-align: center; font-size: 14px;">${item.quantity}</td>
+          <td style="padding: 12px; text-align: center; font-size: 14px;">L.E ${Number(item.price).toFixed(2)}</td>
+          <td style="padding: 12px; text-align: right; font-size: 14px; font-weight: bold;">L.E ${(Number(item.price) * Number(item.quantity)).toFixed(2)}</td>
+        </tr>
+      `)
       .join("");
 
-    // Email template
+    const orderDate = new Date(order.createdAt).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
+    const statusArabic = { pending: "قيد الانتظار", shipped: "تم الشحن", completed: "مكتمل", cancelled: "ملغى" }[order.status] || order.status;
+
+    // Professional HTML Email Template
     const emailHTML = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333;">Order Confirmation #${order.orderNumber || order.id}</h2>
-        <p><strong>Status:</strong> ${order.status}</p>
-        <p><strong>Total:</strong> L.E ${order.total?.toFixed(2) || 0}</p>
-        <h3 style="color: #333;">Items:</h3>
-        <ul>${itemsList}</ul>
-        <p><strong>Shipping Address:</strong> ${order.shippingAddress || "N/A"}</p>
-        <p><strong>Phone:</strong> ${order.shippingPhone || "N/A"}</p>
-        <p style="margin-top: 20px; color: #666; font-size: 12px;">Thank you for your order!</p>
-      </div>
+      <!DOCTYPE html>
+      <html dir="rtl" style="margin:0; padding:0;">
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
+          .container { max-width: 650px; margin: 0 auto; background-color: #ffffff; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center; }
+          .header h1 { margin: 0 0 10px 0; font-size: 28px; font-weight: bold; }
+          .order-number { font-size: 14px; opacity: 0.9; }
+          .content { padding: 30px 20px; }
+          .section-title { font-size: 16px; font-weight: bold; color: #333; margin: 20px 0 15px 0; border-bottom: 2px solid #667eea; padding-bottom: 8px; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+          .info-item { background-color: #f9f9f9; padding: 12px; border-radius: 6px; }
+          .info-label { font-size: 12px; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+          .info-value { font-size: 14px; color: #333; font-weight: 500; }
+          .status { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin: 10px 0; }
+          .status.pending { background-color: #fff3cd; color: #856404; }
+          .status.shipped { background-color: #d1ecf1; color: #0c5460; }
+          .status.completed { background-color: #d4edda; color: #155724; }
+          .status.cancelled { background-color: #f8d7da; color: #721c24; }
+          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          th { background-color: #f0f0f0; padding: 12px; text-align: right; font-weight: bold; font-size: 13px; color: #333; border-bottom: 2px solid #ddd; }
+          td { padding: 12px; font-size: 14px; }
+          .summary { background-color: #f9f9f9; padding: 20px; border-radius: 6px; margin: 20px 0; }
+          .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0; }
+          .summary-row.total { border-bottom: none; font-weight: bold; font-size: 16px; color: #667eea; padding: 12px 0; }
+          .summary-label { color: #666; }
+          .summary-value { color: #333; font-weight: 500; }
+          .footer { background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; }
+          .shipping-box { background-color: #e8f4f8; border-right: 4px solid #667eea; padding: 15px; border-radius: 4px; margin: 15px 0; }
+          .button { display: inline-block; background-color: #667eea; color: white; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-weight: bold; margin-top: 15px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <!-- Header -->
+          <div class="header">
+            <h1>✅ تأكيد الطلب</h1>
+            <p class="order-number">Order #${order.orderNumber || order.id}</p>
+          </div>
+
+          <!-- Content -->
+          <div class="content">
+            <!-- Welcome -->
+            <p style="font-size: 16px; color: #333; margin: 0 0 15px 0;">
+              مرحباً ${order.customerName || "العميل"}،<br>
+              شكراً لك! تم استقبال طلبك بنجاح.
+            </p>
+
+            <!-- Order Status -->
+            <div>
+              <span class="section-title">حالة الطلب</span>
+              <span class="status ${order.status}">${statusArabic}</span>
+            </div>
+
+            <!-- Order Details Grid -->
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">📅 تاريخ الطلب</div>
+                <div class="info-value">${orderDate}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">📞 رقم الهاتف</div>
+                <div class="info-value">${order.shippingPhone || "—"}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">💳 طريقة الدفع</div>
+                <div class="info-value">${order.paymentMethod || "—"}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">🚚 نوع الشحن</div>
+                <div class="info-value">${order.shippingType || "—"}</div>
+              </div>
+            </div>
+
+            <!-- Items Table -->
+            <span class="section-title">📦 تفاصيل المنتجات</span>
+            <table>
+              <thead>
+                <tr>
+                  <th>المنتج</th>
+                  <th>الكمية</th>
+                  <th>السعر</th>
+                  <th>الإجمالي</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsRows}
+              </tbody>
+            </table>
+
+            <!-- Price Summary -->
+            <div class="summary">
+              <div class="summary-row">
+                <span class="summary-label">السعر الأساسي:</span>
+                <span class="summary-value">L.E ${Number(order.subtotal || 0).toFixed(2)}</span>
+              </div>
+              ${order.discountAmount > 0 ? `
+                <div class="summary-row">
+                  <span class="summary-label">الخصم:</span>
+                  <span class="summary-value" style="color: #27ae60;">-L.E ${Number(order.discountAmount || 0).toFixed(2)}</span>
+                </div>
+              ` : ""}
+              <div class="summary-row">
+                <span class="summary-label">تكلفة الشحن:</span>
+                <span class="summary-value">L.E ${Number(order.shippingCost || 0).toFixed(2)}</span>
+              </div>
+              <div class="summary-row total">
+                <span class="summary-label">الإجمالي النهائي:</span>
+                <span class="summary-value">L.E ${Number(order.total || 0).toFixed(2)}</span>
+              </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <span class="section-title">📍 عنوان التسليم</span>
+            <div class="shipping-box">
+              <p style="margin: 0; color: #333; font-weight: 500;">
+                ${order.shippingAddress || "لم يتم تحديد العنوان"}
+              </p>
+              ${order.shippingZone ? `<p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">المنطقة: ${order.shippingZone}</p>` : ""}
+            </div>
+
+            <!-- Next Steps -->
+            <div style="background-color: #f0f8ff; padding: 15px; border-radius: 6px; margin: 20px 0;">
+              <p style="margin: 0; color: #333; font-size: 14px;">
+                <strong>ما الخطوة التالية؟</strong><br>
+                سيتم تحضير طلبك قريباً وسيتلقى فريقنا طلبك للشحن. ستتلقى تحديثات حالة الطلب عبر البريد الإلكتروني.
+              </p>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="footer">
+            <p style="margin: 0 0 10px 0;">شكراً لاختيارك متجرنا! 💝</p>
+            <p style="margin: 0; color: #999;">للتواصل معنا أو للاستفسارات، لا تتردد في التواصل.</p>
+          </div>
+        </div>
+      </body>
+      </html>
     `;
 
     // Send email via Brevo REST API (using CORS proxy workaround)
