@@ -167,9 +167,12 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
         if (item.selectedColor || item.selectedSize) {
           variantHtml = "<br>";
           if (item.selectedColor) {
-            const colorCode = item.colorCode || "#cccccc";
-            variantHtml += `<span style="display: inline-block; width: 14px; height: 14px; background-color: ${colorCode}; border: 1px solid #ccc; border-radius: 2px; vertical-align: middle;"></span>`;
-            variantHtml += `<span style="font-size: 11px; color: #666; margin-left: 6px;">${item.selectedColor}</span>`;
+            // selectedColor format: "colorName|colorHex" or just "colorName"
+            const colorParts = typeof item.selectedColor === 'string' ? item.selectedColor.split('|') : [];
+            const colorName = colorParts[0] || item.selectedColor;
+            const colorCode = colorParts[1] || "#cccccc";
+            // Use background-color for better email client support
+            variantHtml += `<span style="background-color: ${colorCode}; padding: 1px 8px; border-radius: 2px; font-size: 11px; color: white; font-weight: 500;">${colorName}</span>`;
           }
           if (item.selectedSize) {
             variantHtml += `<br><span style="font-size: 11px; color: #666;">📏 ${item.selectedSize}</span>`;
