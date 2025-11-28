@@ -70,7 +70,6 @@ export default function LoginPage() {
       // Wait for user data to be set before redirecting
       setTimeout(() => setLocation("/"), 800);
     } catch (error: any) {
-
       if (error.code === "auth/email-already-in-use") {
         toast.error(t("emailExists", language));
       } else if (error.code === "auth/weak-password") {
@@ -136,7 +135,7 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition"
-                  placeholder={t("email", language)}
+                  placeholder={t("username", language)}
                   data-testid="input-username"
                 />
               </div>
