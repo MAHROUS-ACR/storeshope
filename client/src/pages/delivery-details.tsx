@@ -341,12 +341,16 @@ export default function DeliveryDetailsPage() {
           const data = orderSnap.data() as DeliveryOrderDetails;
           setOrder(data);
           
-          // Delivery destination location
+          // Delivery destination location - use deliveryLat/deliveryLng from order
           if (data.deliveryLat && data.deliveryLng) {
             setDeliveryLat(data.deliveryLat);
             setDeliveryLng(data.deliveryLng);
+          } else if (data.latitude && data.longitude) {
+            // Backward compatibility: use latitude/longitude if deliveryLat not available
+            setDeliveryLat(data.latitude);
+            setDeliveryLng(data.longitude);
           } else {
-            // Fallback: geocode the address
+            // Fallback: geocode the address if no coordinates
             const addr = data.shippingAddress || (data as any).deliveryAddress || data.shippingZone || "";
             if (addr) {
               geocodeAddress(addr);
@@ -400,10 +404,13 @@ export default function DeliveryDetailsPage() {
   // Try multiple address sources for backward compatibility
   const address = order.shippingAddress || (order as any).deliveryAddress || order.shippingZone || "";
   
-  const mapsLink = address 
-    ? `https://maps.google.com/?q=${encodeURIComponent(address)}`
+  // Create maps link from coordinates first (more accurate), then address
+  const mapsLink = order.deliveryLat && order.deliveryLng
+    ? `https://maps.google.com/?q=${order.deliveryLat},${order.deliveryLng}`
     : order.latitude && order.longitude 
     ? `https://maps.google.com/?q=${order.latitude},${order.longitude}`
+    : address 
+    ? `https://maps.google.com/?q=${encodeURIComponent(address)}`
     : null;
 
   return (

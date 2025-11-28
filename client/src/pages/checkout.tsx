@@ -187,8 +187,15 @@ export default function CheckoutPage() {
           ? `${user.address || zoneSelected?.name}` 
           : deliveryAddress.trim(),
         shippingPhone: customerPhone.trim(),
+        
+        // Delivery location coordinates
+        deliveryLat: finalLat,
+        deliveryLng: finalLng,
+        
+        // Also keep for backward compatibility
         latitude: finalLat,
         longitude: finalLng,
+        
         notes: notes.trim(),
         
         items: items.map(item => ({
