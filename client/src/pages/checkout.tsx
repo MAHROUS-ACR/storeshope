@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { getShippingZones, saveOrder, getDiscounts } from "@/lib/firebaseOps";
 import { getActiveDiscount, calculateDiscountedPrice, getDiscountAmount } from "@/lib/discountUtils";
 import { MapSelector } from "@/components/map-selector";
-import { sendNotification, setUserId, setUserEmail, requestNotificationPermission } from "@/lib/oneSignalService";
+import { sendNotification, setUserId, setUserEmail } from "@/lib/oneSignalService";
 
 interface Discount {
   id: string;
@@ -283,15 +283,10 @@ export default function CheckoutPage() {
         throw new Error("Failed to save order - check console logs");
       }
 
-      // Request notification permission first (if not already granted)
-      await requestNotificationPermission();
-
-      // Set user for OneSignal tracking
-      if (user?.id) {
-        await setUserId(user.id);
-        if (user?.email) {
-          await setUserEmail(user.email);
-        }
+      // Set user for OneSignal tracking (non-blocking)
+      setUserId(user?.id || "");
+      if (user?.email) {
+        setUserEmail(user.email);
       }
 
       // Send OneSignal notification

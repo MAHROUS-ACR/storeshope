@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import { t } from "@/lib/translations";
 import { getStoreSettings } from "@/lib/firebaseOps";
-import { requestNotificationPermission } from "@/lib/oneSignalService";
+import { setUserId, setUserEmail } from "@/lib/oneSignalService";
 
 export default function LoginPage() {
   const [, setLocation] = useLocation();
@@ -69,12 +69,18 @@ export default function LoginPage() {
           return;
         }
         await login(email, password);
+        // Register user in OneSignal after successful login
+        const authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
+        if (authUser?.id) {
+          setUserId(authUser.id);
+          if (authUser?.email) {
+            setUserEmail(authUser.email);
+          }
+        }
         toast.success(t("welcomeBack", language));
       }
-      // Request notification permission after successful login
-      await requestNotificationPermission();
       // Wait for user data to be set before redirecting
-      setTimeout(() => setLocation("/"), 1000);
+      setTimeout(() => setLocation("/"), 500);
     } catch (error: any) {
 
       if (error.code === "auth/email-already-in-use") {

@@ -1,25 +1,3 @@
-export const requestNotificationPermission = async () => {
-  try {
-    if (typeof window === 'undefined') return false;
-
-    // Check if OneSignal is available
-    if (!(window as any).OneSignal) {
-      // Wait for it to load
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-
-    const OneSignal = (window as any).OneSignal;
-    if (!OneSignal) return false;
-
-    // Show the notification prompt
-    await OneSignal.Notifications.requestPermission();
-    
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
 export const sendNotification = async (title: string, message: string, data?: any) => {
   try {
     if (typeof window === 'undefined') return;
@@ -37,33 +15,32 @@ export const sendNotification = async (title: string, message: string, data?: an
   }
 };
 
-export const setUserId = async (userId: string) => {
+export const setUserId = (userId: string) => {
   try {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !userId) return;
 
     const OneSignal = (window as any).OneSignal;
     if (!OneSignal) return;
 
-    await OneSignal.login(userId);
+    OneSignal.login(userId).catch(() => {
+      // Silently handle errors
+    });
   } catch (error) {
     // Silently handle errors
   }
 };
 
-export const setUserEmail = async (email: string) => {
+export const setUserEmail = (email: string) => {
   try {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !email) return;
 
     const OneSignal = (window as any).OneSignal;
     if (!OneSignal) return;
 
-    OneSignal.User.addEmail(email);
+    OneSignal.User.addEmail(email).catch(() => {
+      // Silently handle errors
+    });
   } catch (error) {
     // Silently handle errors
   }
-};
-
-export const initializeOneSignal = async () => {
-  // OneSignal initializes automatically via script tag in HTML
-  // This function is here for consistency
 };
