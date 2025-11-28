@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [formLoading, setFormLoading] = useState(false);
-  const [storeName, setStoreName] = useState("متجرنا");
+  const [storeName, setStoreName] = useState("");
   const [storeLogo, setStoreLogo] = useState("");
 
   useEffect(() => {
@@ -35,8 +35,6 @@ export default function LoginPage() {
           
           console.log("Applied store name:", name);
           console.log("Applied store logo:", logo);
-        } else {
-          console.warn("No store settings found in Firestore");
         }
       } catch (error) {
         console.error("Error fetching store settings:", error);
@@ -118,14 +116,12 @@ export default function LoginPage() {
         {/* Form Container */}
         <div className="flex-1 flex flex-col items-center justify-center">
         <div className="text-center mb-8">
-          {storeLogo ? (
+          {storeLogo && (
             <img src={storeLogo} alt={storeName} className="h-16 mx-auto mb-3 object-contain rounded-lg" data-testid="img-store-logo" />
-          ) : (
-            <div className="h-16 mx-auto mb-3 bg-gradient-to-br from-primary to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white text-2xl font-bold">🏪</span>
-            </div>
           )}
-          <h1 className="text-3xl font-bold mb-2" data-testid="text-store-name">{storeName || "متجرنا"}</h1>
+          {storeName && (
+            <h1 className="text-3xl font-bold mb-2" data-testid="text-store-name">{storeName}</h1>
+          )}
           <p className="text-muted-foreground">
             {isSignup ? (language === "ar" ? "إنشاء حساب" : "Create an account") : (language === "ar" ? "أهلاً وسهلاً" : "Welcome back")}
           </p>
