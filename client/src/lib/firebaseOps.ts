@@ -162,14 +162,22 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
 
     // Format order items as table rows
     const itemsRows = (order.items || [])
-      .map((item: any) => `
+      .map((item: any) => {
+        const colorDisplay = item.selectedColor ? `🎨 ${item.selectedColor}` : "—";
+        const sizeDisplay = item.selectedSize ? `📏 ${item.selectedSize}` : "—";
+        return `
         <tr style="border-bottom: 1px solid #e0e0e0;">
-          <td style="padding: 12px; text-align: left; font-size: 14px;">${item.title}</td>
+          <td style="padding: 12px; text-align: left; font-size: 14px;">
+            <strong>${item.title}</strong><br>
+            <span style="font-size: 12px; color: #666;">لون: ${colorDisplay}</span><br>
+            <span style="font-size: 12px; color: #666;">حجم: ${sizeDisplay}</span>
+          </td>
           <td style="padding: 12px; text-align: center; font-size: 14px;">${item.quantity}</td>
           <td style="padding: 12px; text-align: center; font-size: 14px;">L.E ${Number(item.price).toFixed(2)}</td>
           <td style="padding: 12px; text-align: right; font-size: 14px; font-weight: bold;">L.E ${(Number(item.price) * Number(item.quantity)).toFixed(2)}</td>
         </tr>
-      `)
+      `;
+      })
       .join("");
 
     const orderDate = new Date(order.createdAt).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
@@ -268,7 +276,7 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
             <table>
               <thead>
                 <tr>
-                  <th>المنتج</th>
+                  <th>المنتج (اللون • الحجم)</th>
                   <th>الكمية</th>
                   <th>السعر</th>
                   <th>الإجمالي</th>
