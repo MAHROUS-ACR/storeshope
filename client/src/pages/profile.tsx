@@ -64,6 +64,7 @@ export default function ProfilePage() {
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [deliveryUsers, setDeliveryUsers] = useState<any[]>([]);
   const [selectedDeliveryUserId, setSelectedDeliveryUserId] = useState<string>("");
+  const [showFirebaseSettings, setShowFirebaseSettings] = useState(false);
   const [showOrders, setShowOrders] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [analyticsDateRange, setAnalyticsDateRange] = useState<"all" | "month" | "year">("all");
@@ -182,6 +183,12 @@ export default function ProfilePage() {
   const [firebaseStorageBucket, setFirebaseStorageBucket] = useState("");
   const [firebaseMessagingSenderId, setFirebaseMessagingSenderId] = useState("");
   const [firebaseMeasurementId, setFirebaseMeasurementId] = useState("");
+  
+  // Brevo Email Config States
+  const [brevoApiKey, setBrevoApiKey] = useState("");
+  const [brevoFromEmail, setBrevoFromEmail] = useState("");
+  const [brevoFromName, setBrevoFromName] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
   
   const [isSaving, setIsSaving] = useState(false);
 
@@ -366,9 +373,60 @@ export default function ProfilePage() {
       }
     };
 
-    loadConfig();
-  }, []);
+    if (showFirebaseSettings) {
+      loadConfig();
+      // Load Brevo settings from Firebase
+      const loadBrevoConfig = async () => {
+        try {
+          const db = getFirestore();
+          const storeRef = doc(db, "settings", "store");
+          const storeSnap = await getDoc(storeRef);
+          if (storeSnap.exists()) {
+            const data = storeSnap.data();
+            setBrevoApiKey(data.brevoApiKey || "");
+            setBrevoFromEmail(data.brevoFromEmail || "");
+            setBrevoFromName(data.brevoFromName || "");
+            setAdminEmail(data.adminEmail || "");
+          }
+        } catch (error) {
+          console.log("Error loading Brevo config");
+        }
+      };
+      loadBrevoConfig();
+    }
+  }, [showFirebaseSettings]);
 
+
+  const handleSaveServerConfig = async () => {
+    // Validate Brevo config only
+    if (!brevoApiKey || !brevoFromEmail || !adminEmail) {
+      toast.error(language === "ar" ? "⚠️ ادخل كل بيانات Brevo المطلوبة" : "⚠️ Please fill in all Brevo configuration fields");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const db = getFirestore();
+      
+      // Save Brevo config to store document
+      const storeRef = doc(db, "settings", "store");
+      await setDoc(storeRef, {
+        brevoApiKey,
+        brevoFromEmail,
+        brevoFromName: brevoFromName || "Order System",
+        adminEmail,
+        updatedAt: new Date(),
+      }, { merge: true });
+
+      toast.success(language === "ar" ? "✅ تم حفظ إعدادات Brevo بنجاح!" : "✅ Brevo settings saved successfully!");
+      console.log("✅ Brevo config saved:", { brevoApiKey: "***", brevoFromEmail, adminEmail });
+    } catch (error: any) {
+      console.error("❌ Error saving Brevo config:", error);
+      toast.error(language === "ar" ? "❌ فشل حفظ الإعدادات" : "❌ Failed to save configuration");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleSaveAuthConfig = () => {
     if (!firebaseApiKey || !firebaseProjectId || !firebaseAppId) {
@@ -941,6 +999,85 @@ export default function ProfilePage() {
                   </div>
                 )}
 
+                {/* Brevo Email Settings */}
+                <button
+                  onClick={() => setShowFirebaseSettings(!showFirebaseSettings)}
+                  className="w-full flex items-center justify-between p-4 bg-orange-50 rounded-2xl border border-orange-200 hover:border-orange-300 transition-colors"
+                  data-testid="button-toggle-email-settings"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-orange-100 text-orange-600">
+                      <Bell className="w-6 h-6" />
+                    </div>
+                    <span className="font-semibold text-sm text-orange-900">{language === "ar" ? "⚙️ إعدادات الإيميل" : "⚙️ Email Settings"}</span>
+                  </div>
+                  <ChevronRight className={`w-5 h-5 text-orange-400 transition-transform ${showFirebaseSettings ? "rotate-90" : ""}`} />
+                </button>
+
+                {showFirebaseSettings && (
+                  <div className="bg-white rounded-2xl p-4 border border-gray-200 space-y-4 mb-4">
+                    <h3 className="text-sm font-bold text-orange-900">{language === "ar" ? "إعدادات Brevo للإيميل" : "Brevo Email Configuration"}</h3>
+                    
+                    <div>
+                      <label className="text-xs font-semibold mb-1 block text-gray-700">Brevo API Key *</label>
+                      <input
+                        type="password"
+                        placeholder="Your Brevo API Key"
+                        value={brevoApiKey}
+                        onChange={(e) => setBrevoApiKey(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
+                        data-testid="input-brevo-api-key"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">{language === "ar" ? "من لوحة Brevo" : "From Brevo Dashboard"}</p>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold mb-1 block text-gray-700">From Email Address *</label>
+                      <input
+                        type="email"
+                        placeholder="noreply@yourdomain.com"
+                        value={brevoFromEmail}
+                        onChange={(e) => setBrevoFromEmail(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
+                        data-testid="input-brevo-from-email"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold mb-1 block text-gray-700">{language === "ar" ? "اسم المرسل" : "From Name"}</label>
+                      <input
+                        type="text"
+                        placeholder="Order System"
+                        value={brevoFromName}
+                        onChange={(e) => setBrevoFromName(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
+                        data-testid="input-brevo-from-name"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold mb-1 block text-gray-700">{language === "ar" ? "بريد الإدمن" : "Admin Email"} *</label>
+                      <input
+                        type="email"
+                        placeholder="admin@yourdomain.com"
+                        value={adminEmail}
+                        onChange={(e) => setAdminEmail(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200"
+                        data-testid="input-admin-email"
+                      />
+                    </div>
+
+                    <button
+                      onClick={handleSaveServerConfig}
+                      disabled={isSaving}
+                      className="w-full bg-orange-600 text-white py-2 rounded-lg font-semibold text-sm hover:bg-orange-700 disabled:opacity-50"
+                      data-testid="button-save-email-settings"
+                    >
+                      {isSaving ? (language === "ar" ? "💾 جاري الحفظ..." : "💾 Saving...") : (language === "ar" ? "✓ حفظ الإعدادات" : "✓ Save Settings")}
+                    </button>
+                  </div>
+                )}
+
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center justify-between p-4 bg-red-50 rounded-2xl border border-red-100 hover:border-red-200 transition-colors group mt-6"
@@ -971,7 +1108,7 @@ export default function ProfilePage() {
                   </div>
                   <span className="font-semibold text-sm text-purple-900">{t("ordersPanel", language)}</span>
                 </div>
-                <ChevronRight className={`w-5 h-5 text-purple-400 transition-transform ${showOrders ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-5 h-5 text-purple-400 transition-transform L.E showOrders ? "rotate-90" : ""}`} />
               </button>
 
               {/* Orders Content */}

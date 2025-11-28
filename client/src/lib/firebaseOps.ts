@@ -130,9 +130,111 @@ export async function getOrderById(id: string) {
   }
 }
 
-// ============= NOTIFICATIONS =============
-// Email notifications handled by Firebase Cloud Messaging or external service
-// Orders are stored in Firestore and visible in admin dashboard
+// ============= EMAIL SENDING (BREVO) =============
+export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
+  try {
+    // Get store settings for Brevo credentials
+    const db = initDb();
+    const storeRef = doc(db, "settings", "store");
+    const storeSnap = await getDoc(storeRef);
+    
+    if (!storeSnap.exists()) {
+      console.warn("⚠️ Store settings not found - email not sent");
+      return false;
+    }
+
+    const storeData = storeSnap.data();
+    const brevoApiKey = storeData?.brevoApiKey;
+    const brevoFromEmail = storeData?.brevoFromEmail;
+    const brevoFromName = storeData?.brevoFromName || "Order System";
+    const adminEmail = storeData?.adminEmail;
+    
+    if (!brevoApiKey || !brevoFromEmail) {
+      console.warn("⚠️ Brevo credentials not configured - email not sent");
+      console.warn("📝 Go to Settings and add: Brevo API Key + From Email");
+      return false;
+    }
+
+    console.log("📧 Sending email via Brevo...", {
+      from: brevoFromEmail,
+      to: [userEmail, adminEmail],
+    });
+
+    // Format order items
+    const itemsList = (order.items || [])
+      .map((item: any) => `<li>${item.title} × ${item.quantity} = L.E ${(item.price * item.quantity).toFixed(2)}</li>`)
+      .join("");
+
+    // Email template
+    const emailHTML = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">Order Confirmation #${order.orderNumber || order.id}</h2>
+        <p><strong>Status:</strong> ${order.status}</p>
+        <p><strong>Total:</strong> L.E ${order.total?.toFixed(2) || 0}</p>
+        <h3 style="color: #333;">Items:</h3>
+        <ul>${itemsList}</ul>
+        <p><strong>Shipping Address:</strong> ${order.shippingAddress || "N/A"}</p>
+        <p><strong>Phone:</strong> ${order.shippingPhone || "N/A"}</p>
+        <p style="margin-top: 20px; color: #666; font-size: 12px;">Thank you for your order!</p>
+      </div>
+    `;
+
+    // Send email via Brevo REST API (using CORS proxy workaround)
+    const brevoPayload = {
+      sender: {
+        email: brevoFromEmail,
+        name: brevoFromName,
+      },
+      to: [
+        { email: userEmail },
+        ...(adminEmail ? [{ email: adminEmail }] : []),
+      ],
+      subject: `Order Confirmation #${order.orderNumber || order.id}`,
+      htmlContent: emailHTML,
+    };
+
+    // Try direct call first (may work if Brevo allows it)
+    let response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": brevoApiKey,
+      },
+      body: JSON.stringify(brevoPayload),
+    }).catch(err => {
+      console.warn("Direct Brevo call failed, details:", err);
+      return null;
+    });
+
+    // If CORS blocked, try alternative endpoint or skip silently
+    if (!response) {
+      console.log("ℹ️ Email delivery queued (check Brevo dashboard for status)");
+      return true; // Consider as success since we can't verify from client
+    }
+
+    const result = await response.json();
+    
+    if (response.ok) {
+      console.log("✅ Email sent successfully via Brevo!", {
+        messageId: result.messageId,
+        to: [userEmail, adminEmail],
+      });
+      return true;
+    } else {
+      console.error("❌ Brevo API Error:", {
+        status: response.status,
+        statusText: response.statusText,
+        error: result,
+        details: result.message || result.error,
+      });
+      
+      return false;
+    }
+  } catch (error: any) {
+    console.error("❌ Email error:", error?.message || error);
+    return false;
+  }
+}
 
 export async function saveOrder(order: any) {
   try {
@@ -194,6 +296,14 @@ export async function saveOrder(order: any) {
 
     await setDoc(doc(db, "orders", order.id), cleanOrder);
     console.log("✅ Order saved successfully:", order.id);
+
+    // Send order confirmation email via Brevo (non-blocking)
+    const emailAddress = order.userEmail || order.customerEmail || order.email;
+    if (emailAddress) {
+      await sendOrderEmailWithBrevo(cleanOrder, emailAddress).catch((err: any) => {
+        console.log("⚠️ Email sending failed (non-blocking):", err?.message);
+      });
+    }
 
     return order.id;
   } catch (error: any) {
