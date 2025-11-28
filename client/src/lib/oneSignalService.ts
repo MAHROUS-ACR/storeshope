@@ -38,10 +38,19 @@ export const setUserId = async (userId: string) => {
       return;
     }
 
+    // First, request permission for push notifications
+    console.log("📲 Requesting push notification permission...");
+    const permission = await OneSignal.Notifications.requestPermission();
+    console.log("📱 Permission result:", permission);
+
     // Register user ID in OneSignal
     console.log("🔐 Registering user in OneSignal:", userId);
     await OneSignal.login(userId);
     console.log("✅ User registered successfully in OneSignal");
+    
+    // Check subscription status
+    const isSubscribed = OneSignal.User.PushSubscription.isSubscribed;
+    console.log("🔔 User subscribed to push:", isSubscribed);
   } catch (error) {
     console.error("❌ Error registering user in OneSignal:", error);
   }
