@@ -1,8 +1,22 @@
+// Initialize OneSignal when available
+let OneSignalInstance: any = null;
+
+const getOneSignal = async (timeout = 3000) => {
+  if (OneSignalInstance) return OneSignalInstance;
+  
+  const start = Date.now();
+  while (!OneSignalInstance && Date.now() - start < timeout) {
+    OneSignalInstance = (window as any).OneSignal;
+    if (OneSignalInstance) break;
+    await new Promise(r => setTimeout(r, 100));
+  }
+  
+  return OneSignalInstance;
+};
+
 export const sendNotification = async (title: string, message: string, data?: any) => {
   try {
-    if (typeof window === 'undefined') return;
-
-    const OneSignal = (window as any).OneSignal;
+    const OneSignal = await getOneSignal();
     if (!OneSignal) return;
 
     await OneSignal.Notifications.sendNotification({
@@ -11,36 +25,30 @@ export const sendNotification = async (title: string, message: string, data?: an
       ...(data && { data: data }),
     });
   } catch (error) {
-    // Silently handle errors
+    // Silently handle
   }
 };
 
-export const setUserId = (userId: string) => {
+export const setUserId = async (userId: string) => {
   try {
-    if (typeof window === 'undefined' || !userId) return;
-
-    const OneSignal = (window as any).OneSignal;
+    if (!userId) return;
+    const OneSignal = await getOneSignal();
     if (!OneSignal) return;
 
-    OneSignal.login(userId).catch(() => {
-      // Silently handle errors
-    });
+    await OneSignal.login(userId);
   } catch (error) {
-    // Silently handle errors
+    // Silently handle
   }
 };
 
-export const setUserEmail = (email: string) => {
+export const setUserEmail = async (email: string) => {
   try {
-    if (typeof window === 'undefined' || !email) return;
-
-    const OneSignal = (window as any).OneSignal;
+    if (!email) return;
+    const OneSignal = await getOneSignal();
     if (!OneSignal) return;
 
-    OneSignal.User.addEmail(email).catch(() => {
-      // Silently handle errors
-    });
+    OneSignal.User.addEmail(email);
   } catch (error) {
-    // Silently handle errors
+    // Silently handle
   }
 };

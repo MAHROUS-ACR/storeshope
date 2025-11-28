@@ -283,10 +283,12 @@ export default function CheckoutPage() {
         throw new Error("Failed to save order - check console logs");
       }
 
-      // Set user for OneSignal tracking (non-blocking)
-      setUserId(user?.id || "");
-      if (user?.email) {
-        setUserEmail(user.email);
+      // Set user for OneSignal tracking
+      if (user?.id) {
+        await setUserId(user.id);
+        if (user?.email) {
+          await setUserEmail(user.email);
+        }
       }
 
       // Send OneSignal notification

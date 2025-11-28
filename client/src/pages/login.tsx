@@ -72,15 +72,15 @@ export default function LoginPage() {
         // Register user in OneSignal after successful login
         const authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
         if (authUser?.id) {
-          setUserId(authUser.id);
+          await setUserId(authUser.id);
           if (authUser?.email) {
-            setUserEmail(authUser.email);
+            await setUserEmail(authUser.email);
           }
         }
         toast.success(t("welcomeBack", language));
       }
       // Wait for user data to be set before redirecting
-      setTimeout(() => setLocation("/"), 500);
+      setTimeout(() => setLocation("/"), 800);
     } catch (error: any) {
 
       if (error.code === "auth/email-already-in-use") {
