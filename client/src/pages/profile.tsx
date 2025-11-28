@@ -14,7 +14,6 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { getProducts, getOrders } from "@/lib/firebaseOps";
 import { getStatusColor } from "@/lib/statusColors";
 import { MapSelector } from "@/components/map-selector";
-import { enableNotifications, checkNotificationStatus } from "@/lib/oneSignalService";
 
 const getMenuItems = (language: any) => [
   { icon: Package, label: t("myOrders", language), path: "/orders", buttonBg: "bg-purple-50", borderColor: "border-purple-200 hover:border-purple-300", iconColor: "text-purple-600 bg-purple-100", textColor: "text-purple-900" },
@@ -841,51 +840,6 @@ export default function ProfilePage() {
                     <ChevronRight className={`w-5 h-5 transition-colors ${item.textColor.split(' ')[0].replace('text-', 'group-hover:text-')}-600`} />
                   </button>
                 ))}
-
-                {/* Enable Notifications Button */}
-                <button
-                  onClick={async () => {
-                    setIsEnablingNotifications(true);
-                    try {
-                      // Show status check first
-                      await checkNotificationStatus();
-                      
-                      if (user?.id) {
-                        const result = await enableNotifications(user.id);
-                        
-                        // Check final status
-                        await new Promise(r => setTimeout(r, 1000));
-                        const status = await checkNotificationStatus();
-                        
-                        if (result && status?.isSubscribed) {
-                          toast.success(language === "ar" ? "✅ تم تفعيل الإشعارات" : "✅ Notifications enabled");
-                        } else {
-                          toast.error(language === "ar" ? "❌ لم يتم تفعيل الإشعارات - تحقق من Console" : "❌ Notifications not enabled - check Console");
-                        }
-                      }
-                    } catch (error) {
-                      console.error("Error enabling notifications:", error);
-                      toast.error(language === "ar" ? "❌ خطأ في تفعيل الإشعارات" : "❌ Failed to enable notifications");
-                    } finally {
-                      setIsEnablingNotifications(false);
-                    }
-                  }}
-                  disabled={isEnablingNotifications}
-                  className="w-full flex items-center justify-between p-4 bg-blue-50 rounded-2xl border border-blue-200 hover:border-blue-300 transition-colors disabled:opacity-50"
-                  data-testid="button-enable-notifications"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-blue-100 text-blue-600">
-                      <Bell className="w-6 h-6" />
-                    </div>
-                    <span className="font-semibold text-sm text-blue-900">
-                      {isEnablingNotifications 
-                        ? (language === "ar" ? "جاري التفعيل..." : "Enabling...") 
-                        : (language === "ar" ? "تفعيل الإشعارات" : "Enable Notifications")}
-                    </span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-blue-400" />
-                </button>
 
                 {/* User Profile Section */}
                 <button
