@@ -21,33 +21,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        console.log("🔧 OneSignal SDK initializing...");
-        console.log("📍 Current URL:", window.location.href);
-        console.log("🌐 Origin:", window.location.origin);
-        try {
-          await OneSignal.init({
-            appId: "93a6fd35-e795-4201-a5a0-0c31336979be",
-            safari_web_id: "web.onesignal.auto.5b1b15a7-d107-41ff-b02e-c379c8847bd2",
-            notifyButton: {
-              enable: false,
-            },
-            allowLocalhostAsSecureOrigin: true,
-          });
-          console.log("✅ OneSignal initialized successfully");
-          window.OneSignalReady = true;
-        } catch (error) {
-          console.error("❌ OneSignal init error:", error);
-          if (error instanceof Error) {
-            console.error("Error message:", error.message);
-            console.error("Error stack:", error.stack);
-          }
-        }
-      });
-    </script>
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script>
+    <!-- OneSignal will be added when deploying to production domain -->
     <script type="module" src="/src/main.tsx" defer></script>
   </body>
 </html>
