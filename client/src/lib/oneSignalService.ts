@@ -31,18 +31,16 @@ export const sendNotification = async (title: string, message: string, data?: an
 
 export const requestPushPermission = async () => {
   try {
-    const OneSignal = await getOneSignal();
+    const OneSignal = await getOneSignal(5000);
     if (!OneSignal) {
       console.warn("OneSignal not available");
       return;
     }
 
     console.log("📲 Requesting push notification permission...");
+    // Show the native browser permission prompt
     const permission = await OneSignal.Notifications.requestPermission();
     console.log("📱 Permission result:", permission);
-
-    // Wait a moment for subscription to complete
-    await new Promise((r) => setTimeout(r, 500));
   } catch (error) {
     console.error("Error requesting permission:", error);
   }
