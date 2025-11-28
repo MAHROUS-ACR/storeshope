@@ -35,19 +35,11 @@ export const setUserId = async (userId: string) => {
     const OneSignal = await getOneSignal();
     if (!OneSignal) return;
 
-    await OneSignal.login(userId);
-  } catch (error) {
-    // Silently handle
-  }
-};
-
-export const setUserEmail = async (email: string) => {
-  try {
-    if (!email) return;
-    const OneSignal = await getOneSignal();
-    if (!OneSignal) return;
-
-    OneSignal.User.addEmail(email);
+    // Only set user ID if they have push notification subscription
+    const isSubscribed = OneSignal.User.PushSubscription.isSubscribed;
+    if (isSubscribed) {
+      await OneSignal.login(userId);
+    }
   } catch (error) {
     // Silently handle
   }
@@ -64,13 +56,10 @@ export const setupSubscriptionListener = async () => {
       const isSubscribed = OneSignal.User.PushSubscription.isSubscribed;
       
       if (isSubscribed) {
-        // User subscribed - register them in OneSignal
+        // User just subscribed to push notifications
         const authUser = JSON.parse(localStorage.getItem("authUser") || "{}");
         if (authUser?.id) {
           await setUserId(authUser.id);
-          if (authUser?.email) {
-            await setUserEmail(authUser.email);
-          }
         }
       }
     });
