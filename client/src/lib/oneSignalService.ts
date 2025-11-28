@@ -1,14 +1,14 @@
 // Initialize OneSignal when available
 let OneSignalInstance: any = null;
 
-const getOneSignal = async (timeout = 5000) => {
+const getOneSignal = async (timeout = 8000) => {
   if (OneSignalInstance) return OneSignalInstance;
 
   const start = Date.now();
   while (!OneSignalInstance && Date.now() - start < timeout) {
     OneSignalInstance = (window as any).OneSignal;
     if (OneSignalInstance) break;
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 50));
   }
 
   return OneSignalInstance;
