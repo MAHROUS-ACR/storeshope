@@ -168,8 +168,8 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
           variantHtml = "<br>";
           if (item.selectedColor) {
             const colorCode = item.colorCode || "#cccccc";
-            variantHtml += `<span style="display: inline-block; width: 16px; height: 16px; background-color: ${colorCode}; border: 1px solid #ccc; border-radius: 3px; margin-left: 6px; vertical-align: middle;"></span>`;
-            variantHtml += `<span style="font-size: 11px; color: #666; margin-left: 4px;">🎨 ${item.selectedColor}</span>`;
+            variantHtml += `<span style="display: inline-block; width: 14px; height: 14px; background-color: ${colorCode}; border: 1px solid #ccc; border-radius: 2px; vertical-align: middle;"></span>`;
+            variantHtml += `<span style="font-size: 11px; color: #666; margin-left: 6px;">${item.selectedColor}</span>`;
           }
           if (item.selectedSize) {
             variantHtml += `<br><span style="font-size: 11px; color: #666;">📏 ${item.selectedSize}</span>`;
