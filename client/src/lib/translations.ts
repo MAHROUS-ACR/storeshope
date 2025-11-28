@@ -232,6 +232,19 @@ export const translations = {
     invalidExpiryDate: "Invalid expiry date",
     invalidCVV: "Invalid CVV",
     enterCardholderName: "Please enter cardholder name",
+    
+    // Reset Password
+    forgotPassword: "Forgot Your Password?",
+    resetPassword: "Reset Password",
+    enterEmail: "Enter your email",
+    sendResetLink: "Send Reset Link",
+    checkEmail: "Check your email for the reset link",
+    resetLinkSent: "✅ Reset link sent successfully!",
+    redirectingToLogin: "Redirecting to login...",
+    enterYourEmail: "Please enter your email",
+    invalidEmail: "Invalid email",
+    emailNotFound: "Email not found",
+    back: "Back",
   },
   ar: {
     // Bottom Navigation
@@ -446,6 +459,19 @@ export const translations = {
     invalidExpiryDate: "تاريخ انتهاء غير صحيح",
     invalidCVV: "CVV غير صحيح",
     enterCardholderName: "الرجاء إدخال اسم صاحب البطاقة",
+    
+    // Reset Password
+    forgotPassword: "هل نسيت كلمة المرور؟",
+    resetPassword: "استعادة كلمة المرور",
+    enterEmail: "أدخل بريدك الإلكتروني",
+    sendResetLink: "إرسال رابط التعيين",
+    checkEmail: "تحقق من بريدك الإلكتروني للحصول على رابط التعيين",
+    resetLinkSent: "✅ تم إرسال رابط التعيين بنجاح!",
+    redirectingToLogin: "جاري إعادة التوجيه...",
+    enterYourEmail: "الرجاء إدخال بريدك الإلكتروني",
+    invalidEmail: "البريد الإلكتروني غير صحيح",
+    emailNotFound: "البريد الإلكتروني غير مسجل",
+    back: "عودة",
   },
 };
 

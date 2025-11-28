@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { useLocation } from "wouter";
+import { useLanguage } from "@/lib/languageContext";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
+import { t } from "@/lib/translations";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 import { initializeApp, getApps } from "firebase/app";
@@ -27,6 +29,7 @@ function initApp() {
 
 export default function ForgotPasswordPage() {
   const [, setLocation] = useLocation();
+  const { language } = useLanguage();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
@@ -37,7 +40,7 @@ export default function ForgotPasswordPage() {
 
     try {
       if (!email.trim()) {
-        toast.error("Please enter your email");
+        toast.error(t("enterYourEmail", language));
         setIsLoading(false);
         return;
       }
@@ -45,16 +48,16 @@ export default function ForgotPasswordPage() {
       const auth = initApp();
       await sendPasswordResetEmail(auth, email);
       setIsSent(true);
-      toast.success("✅ تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني");
+      toast.success(t("resetLinkSent", language));
       
       setTimeout(() => setLocation("/login"), 3000);
     } catch (error: any) {
       if (error.code === "auth/user-not-found") {
-        toast.error("البريد الإلكتروني غير مسجل");
+        toast.error(t("emailNotFound", language));
       } else if (error.code === "auth/invalid-email") {
-        toast.error("البريد الإلكتروني غير صحيح");
+        toast.error(t("invalidEmail", language));
       } else {
-        toast.error(error.message || "حدث خطأ");
+        toast.error(error.message || "Error");
       }
     } finally {
       setIsLoading(false);
@@ -64,26 +67,28 @@ export default function ForgotPasswordPage() {
   return (
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col px-5 pb-20">
-        {/* Header with back button */}
-        <div className="pt-4 pb-6">
+        {/* Header with Navigation Back Button */}
+        <div className="pt-4 pb-6 border-b border-gray-100">
           <button
             onClick={() => setLocation("/login")}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition"
-            data-testid="button-back"
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition font-semibold"
+            data-testid="button-nav-back"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>عودة</span>
+            <span>{t("back", language)}</span>
           </button>
         </div>
 
         {/* Content */}
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="text-center mb-8 w-full">
-            <h1 className="text-2xl font-bold mb-2">💌 استعادة كلمة المرور</h1>
+            <h1 className="text-2xl font-bold mb-2">💌 {t("resetPassword", language)}</h1>
             <p className="text-muted-foreground text-sm">
               {isSent
-                ? "تحقق من بريدك الإلكتروني للحصول على رابط التعيين"
-                : "أدخل بريدك الإلكتروني وسنرسل لك رابط استعادة كلمة المرور"}
+                ? t("checkEmail", language)
+                : (language === "ar" 
+                    ? "أدخل بريدك الإلكتروني وسنرسل لك رابط استعادة كلمة المرور"
+                    : "Enter your email and we'll send you a password reset link")}
             </p>
           </div>
 
@@ -91,16 +96,16 @@ export default function ForgotPasswordPage() {
             <form onSubmit={handleSubmit} className="w-full max-w-xs space-y-4">
               <div>
                 <label className="block text-sm font-semibold mb-2" htmlFor="email">
-                  البريد الإلكتروني
+                  {t("email", language) || "Email"}
                 </label>
                 <input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="أدخل بريدك الإلكتروني"
+                  placeholder={t("enterEmail", language)}
                   className="w-full px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  data-testid="input-email"
+                  data-testid="input-reset-email"
                 />
               </div>
 
@@ -113,17 +118,17 @@ export default function ForgotPasswordPage() {
                 {isLoading ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    جاري الإرسال...
+                    {t("loading", language)}
                   </>
                 ) : (
-                  "إرسال رابط التعيين"
+                  t("sendResetLink", language)
                 )}
               </button>
             </form>
           ) : (
             <div className="w-full max-w-xs bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
-              <p className="text-green-700 font-semibold">✅ تم الإرسال بنجاح!</p>
-              <p className="text-sm text-green-600 mt-2">سيتم إعادة توجيهك إلى صفحة تسجيل الدخول...</p>
+              <p className="text-green-700 font-semibold">{t("resetLinkSent", language)}</p>
+              <p className="text-sm text-green-600 mt-2">{t("redirectingToLogin", language)}</p>
             </div>
           )}
         </div>
