@@ -943,20 +943,6 @@ export default function ProfilePage() {
                 )}
 
                 <button
-                  onClick={() => setLocation("/settings")}
-                  className="w-full flex items-center justify-between p-4 bg-orange-50 rounded-2xl border border-orange-200 hover:border-orange-300 transition-colors mb-4"
-                  data-testid="button-settings-brevo"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-orange-100 text-orange-600">
-                      <Settings className="w-6 h-6" />
-                    </div>
-                    <span className="font-semibold text-sm text-orange-900">{language === "ar" ? "⚙️ إعدادات الإيميل" : "⚙️ Email Settings"}</span>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-orange-400" />
-                </button>
-
-                <button
                   onClick={handleLogout}
                   className="w-full flex items-center justify-between p-4 bg-red-50 rounded-2xl border border-red-100 hover:border-red-200 transition-colors group mt-6"
                   data-testid="button-logout"
