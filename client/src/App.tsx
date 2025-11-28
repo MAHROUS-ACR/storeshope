@@ -18,6 +18,7 @@ import OrdersPage from "@/pages/orders";
 import OrderDetailsPage from "@/pages/order-details";
 import ProductDetailsPage from "@/pages/product-details";
 import LoginPage from "@/pages/login";
+import ForgotPasswordPage from "@/pages/forgot-password";
 import DiscountsPage from "@/pages/discounts";
 import NotificationSetupPage from "@/pages/notification-setup";
 import AdminNotificationsPage from "@/pages/admin-notifications";
@@ -27,6 +28,7 @@ function AppRouter() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/login" component={LoginPage} />
+      <Route path="/forgot-password" component={ForgotPasswordPage} />
       <Route path="/profile" component={ProfilePage} />
       <Route path="/delivery" component={DeliveryPage} />
       <Route path="/delivery-order/:id" component={DeliveryDetailsPage} />

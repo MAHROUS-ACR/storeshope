@@ -1,17 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { useLocation } from "wouter";
 import { useUser } from "@/lib/userContext";
+import { useLanguage } from "@/lib/languageContext";
 import { toast } from "sonner";
+import { getStoreSettings } from "@/lib/firebaseOps";
 
 export default function LoginPage() {
   const [, setLocation] = useLocation();
   const { login, signup, isLoading } = useUser();
+  const { language } = useLanguage();
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [formLoading, setFormLoading] = useState(false);
+  const [storeName, setStoreName] = useState("متجرنا");
+  const [storeLogo, setStoreLogo] = useState("");
+
+  useEffect(() => {
+    const fetchStoreInfo = async () => {
+      try {
+        const settings = await getStoreSettings();
+        if (settings) {
+          setStoreName(settings.storeName || "متجرنا");
+          setStoreLogo(settings.storeLogo || "");
+        }
+      } catch (error) {
+        console.log("Could not fetch store settings");
+      }
+    };
+    fetchStoreInfo();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,9 +92,12 @@ export default function LoginPage() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col items-center justify-center px-5 pb-20">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Flux Wallet</h1>
+          {storeLogo && (
+            <img src={storeLogo} alt={storeName} className="h-16 mx-auto mb-3 object-contain" data-testid="img-store-logo" />
+          )}
+          <h1 className="text-3xl font-bold mb-2">{storeName}</h1>
           <p className="text-muted-foreground">
-            {isSignup ? "Create an account" : "Welcome back"}
+            {isSignup ? (language === "ar" ? "إنشاء حساب" : "Create an account") : (language === "ar" ? "أهلاً وسهلاً" : "Welcome back")}
           </p>
         </div>
 
@@ -145,20 +168,32 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <button
-          onClick={() => {
-            setIsSignup(!isSignup);
-            setEmail("");
-            setPassword("");
-            setUsername("");
-          }}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors mt-6"
-          data-testid="button-toggle-auth"
-        >
-          {isSignup
-            ? "Already have an account? Sign in"
-            : "Don't have an account? Sign up"}
-        </button>
+        <div className="w-full space-y-2 mt-6">
+          <button
+            onClick={() => {
+              setIsSignup(!isSignup);
+              setEmail("");
+              setPassword("");
+              setUsername("");
+            }}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors w-full text-center"
+            data-testid="button-toggle-auth"
+          >
+            {isSignup
+              ? (language === "ar" ? "لديك حساب بالفعل؟ تسجيل الدخول" : "Already have an account? Sign in")
+              : (language === "ar" ? "ليس لديك حساب؟ إنشاء حساب" : "Don't have an account? Sign up")}
+          </button>
+          
+          {!isSignup && (
+            <button
+              onClick={() => setLocation("/forgot-password")}
+              className="text-sm text-blue-600 hover:text-blue-700 transition-colors w-full text-center"
+              data-testid="button-forgot-password"
+            >
+              {language === "ar" ? "هل نسيت كلمة المرور؟" : "Forgot your password?"}
+            </button>
+          )}
+        </div>
       </div>
     </MobileWrapper>
   );
