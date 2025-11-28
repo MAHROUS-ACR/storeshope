@@ -173,7 +173,8 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
       .join("");
 
     const orderDate = new Date(order.createdAt).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
-    const statusArabic = { pending: "قيد الانتظار", shipped: "تم الشحن", completed: "مكتمل", cancelled: "ملغى" }[order.status] || order.status;
+    const statusMap: { [key: string]: string } = { pending: "قيد الانتظار", shipped: "تم الشحن", completed: "مكتمل", cancelled: "ملغى" };
+    const statusArabic = statusMap[order.status] || order.status;
 
     // Professional HTML Email Template
     const emailHTML = `
@@ -182,33 +183,40 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
       <head>
         <meta charset="UTF-8">
         <style>
-          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
-          .container { max-width: 650px; margin: 0 auto; background-color: #ffffff; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px 20px; text-align: center; }
-          .header h1 { margin: 0 0 10px 0; font-size: 28px; font-weight: bold; }
-          .order-number { font-size: 14px; opacity: 0.9; }
-          .content { padding: 30px 20px; }
-          .section-title { font-size: 16px; font-weight: bold; color: #333; margin: 20px 0 15px 0; border-bottom: 2px solid #667eea; padding-bottom: 8px; }
-          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
-          .info-item { background-color: #f9f9f9; padding: 12px; border-radius: 6px; }
-          .info-label { font-size: 12px; color: #666; text-transform: uppercase; margin-bottom: 5px; }
-          .info-value { font-size: 14px; color: #333; font-weight: 500; }
-          .status { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin: 10px 0; }
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; line-height: 1.6; }
+          .container { max-width: 700px; margin: 0 auto; background-color: #ffffff; padding: 0; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15); border-radius: 8px; overflow: hidden; }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
+          .header h1 { margin: 0 0 8px 0; font-size: 32px; font-weight: bold; letter-spacing: -0.5px; }
+          .order-number { font-size: 15px; opacity: 0.95; font-weight: 500; letter-spacing: 0.5px; }
+          .content { padding: 40px 30px; }
+          .welcome { font-size: 16px; color: #333; margin: 0 0 25px 0; line-height: 1.8; font-weight: 500; }
+          .section-title { font-size: 17px; font-weight: bold; color: #333; margin: 28px 0 18px 0; border-bottom: 3px solid #667eea; padding-bottom: 10px; display: inline-block; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 20px 0 30px 0; }
+          .info-item { background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%); padding: 16px; border-radius: 8px; border-left: 3px solid #667eea; }
+          .info-label { font-size: 11px; color: #667eea; text-transform: uppercase; margin-bottom: 6px; font-weight: 700; letter-spacing: 0.5px; }
+          .info-value { font-size: 15px; color: #333; font-weight: 600; }
+          .status { display: inline-block; padding: 8px 16px; border-radius: 25px; font-size: 13px; font-weight: bold; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
           .status.pending { background-color: #fff3cd; color: #856404; }
           .status.shipped { background-color: #d1ecf1; color: #0c5460; }
           .status.completed { background-color: #d4edda; color: #155724; }
           .status.cancelled { background-color: #f8d7da; color: #721c24; }
-          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-          th { background-color: #f0f0f0; padding: 12px; text-align: right; font-weight: bold; font-size: 13px; color: #333; border-bottom: 2px solid #ddd; }
-          td { padding: 12px; font-size: 14px; }
-          .summary { background-color: #f9f9f9; padding: 20px; border-radius: 6px; margin: 20px 0; }
-          .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0; }
-          .summary-row.total { border-bottom: none; font-weight: bold; font-size: 16px; color: #667eea; padding: 12px 0; }
-          .summary-label { color: #666; }
-          .summary-value { color: #333; font-weight: 500; }
-          .footer { background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; }
-          .shipping-box { background-color: #e8f4f8; border-right: 4px solid #667eea; padding: 15px; border-radius: 4px; margin: 15px 0; }
-          .button { display: inline-block; background-color: #667eea; color: white; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-weight: bold; margin-top: 15px; }
+          table { width: 100%; border-collapse: collapse; margin: 25px 0; border-radius: 6px; overflow: hidden; }
+          th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px; text-align: right; font-weight: bold; font-size: 13px; }
+          td { padding: 14px; font-size: 14px; border-bottom: 1px solid #f0f0f0; }
+          tbody tr:last-child td { border-bottom: none; }
+          tbody tr { background-color: #fafbff; }
+          tbody tr:hover { background-color: #f5f7ff; }
+          .summary { background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%); padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #667eea; }
+          .summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e8e8f0; font-size: 15px; }
+          .summary-row.total { border-bottom: none; font-weight: bold; font-size: 18px; color: #667eea; padding: 16px 0; background: white; margin: 0 -25px -25px -25px; padding: 16px 25px; border-radius: 0 0 8px 8px; }
+          .summary-label { color: #666; font-weight: 600; }
+          .summary-value { color: #333; font-weight: 700; }
+          .footer { background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%); padding: 25px 30px; text-align: center; font-size: 13px; color: #666; border-top: 1px solid #e8e8f0; }
+          .shipping-box { background: linear-gradient(135deg, #e8f4f8 0%, #d9ecf7 100%); border-right: 4px solid #667eea; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .shipping-box p { margin: 0; color: #333; font-weight: 600; font-size: 15px; }
+          .next-steps { background: linear-gradient(135deg, #f0f8ff 0%, #e8f4fb 100%); padding: 18px; border-radius: 8px; margin: 25px 0; border-right: 4px solid #667eea; }
+          .next-steps p { margin: 0; color: #333; font-size: 14px; line-height: 1.7; }
+          .next-steps strong { color: #667eea; font-weight: 700; }
         </style>
       </head>
       <body>
@@ -222,34 +230,36 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
           <!-- Content -->
           <div class="content">
             <!-- Welcome -->
-            <p style="font-size: 16px; color: #333; margin: 0 0 15px 0;">
+            <p class="welcome">
               مرحباً ${order.customerName || "العميل"}،<br>
-              شكراً لك! تم استقبال طلبك بنجاح.
+              شكراً لك على اختيارك! تم استقبال طلبك بنجاح ✨
             </p>
 
             <!-- Order Status -->
-            <div>
+            <div style="margin-bottom: 28px;">
               <span class="section-title">حالة الطلب</span>
-              <span class="status ${order.status}">${statusArabic}</span>
+              <div style="margin-top: 12px;">
+                <span class="status ${order.status}">${statusArabic}</span>
+              </div>
             </div>
 
             <!-- Order Details Grid -->
             <div class="info-grid">
               <div class="info-item">
-                <div class="info-label">📅 تاريخ الطلب</div>
+                <div class="info-label">📅 التاريخ</div>
                 <div class="info-value">${orderDate}</div>
               </div>
               <div class="info-item">
-                <div class="info-label">📞 رقم الهاتف</div>
+                <div class="info-label">📞 الجوال</div>
                 <div class="info-value">${order.shippingPhone || "—"}</div>
               </div>
               <div class="info-item">
-                <div class="info-label">💳 طريقة الدفع</div>
+                <div class="info-label">💳 الدفع</div>
                 <div class="info-value">${order.paymentMethod || "—"}</div>
               </div>
               <div class="info-item">
-                <div class="info-label">🚚 نوع الشحن</div>
-                <div class="info-value">${order.shippingType || "—"}</div>
+                <div class="info-label">🛍️ عدد المنتجات</div>
+                <div class="info-value">${order.items?.length || 0} منتج</div>
               </div>
             </div>
 
@@ -301,10 +311,10 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
             </div>
 
             <!-- Next Steps -->
-            <div style="background-color: #f0f8ff; padding: 15px; border-radius: 6px; margin: 20px 0;">
-              <p style="margin: 0; color: #333; font-size: 14px;">
-                <strong>ما الخطوة التالية؟</strong><br>
-                سيتم تحضير طلبك قريباً وسيتلقى فريقنا طلبك للشحن. ستتلقى تحديثات حالة الطلب عبر البريد الإلكتروني.
+            <div class="next-steps">
+              <p>
+                <strong>⏭️ ما الخطوة التالية؟</strong><br>
+                سيتم تحضير طلبك قريباً وشحنه إليك. ستتلقى تحديثات الحالة مباشرة عبر البريد الإلكتروني.
               </p>
             </div>
           </div>
