@@ -24,15 +24,22 @@ export default function LoginPage() {
     const fetchStoreInfo = async () => {
       try {
         const settings = await getStoreSettings();
-        console.log("Store settings fetched:", settings);
-        if (settings && settings.storeName) {
-          setStoreName(settings.storeName);
-        }
-        if (settings && settings.storeLogo) {
-          setStoreLogo(settings.storeLogo);
+        console.log("Store settings fetched from Firestore:", settings);
+        if (settings) {
+          // Handle both naming conventions (storeName/name, storeLogo/logo)
+          const name = settings.storeName || settings.name;
+          const logo = settings.storeLogo || settings.logo;
+          
+          if (name) setStoreName(name);
+          if (logo) setStoreLogo(logo);
+          
+          console.log("Applied store name:", name);
+          console.log("Applied store logo:", logo);
+        } else {
+          console.warn("No store settings found in Firestore");
         }
       } catch (error) {
-        console.error("Could not fetch store settings:", error);
+        console.error("Error fetching store settings:", error);
       }
     };
     fetchStoreInfo();
