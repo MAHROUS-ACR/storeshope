@@ -403,27 +403,30 @@ export default function ProductDetailsPage() {
           </div>
         </div>
 
-        {/* Bottom Actions */}
-        <div className="absolute bottom-28 left-0 right-0 px-5 py-4 bg-white border-t border-gray-100 flex gap-3">
-          <button
-            onClick={() => setLocation("/")}
-            className="flex-1 px-5 py-3 border border-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
-            data-testid="button-continue-shopping"
-          >
-            {t("continueShoppingButton", language)}
-          </button>
-          <button
-            onClick={handleAddToCart}
-            disabled={isAdding || !product.available}
-            className="flex-1 px-5 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors"
-            data-testid="button-add-to-cart"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            {isAdding ? t("addingToCart", language) : t("addToCart", language)}
-          </button>
-        </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0">
+
+      {/* Bottom Actions - Fixed positioning above BottomNav */}
+      <div className="fixed bottom-20 left-0 right-0 px-5 py-4 bg-white border-t border-gray-100 flex gap-3 z-40">
+        <button
+          onClick={() => setLocation("/")}
+          className="flex-1 px-5 py-3 border border-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
+          data-testid="button-continue-shopping"
+        >
+          {t("continueShoppingButton", language)}
+        </button>
+        <button
+          onClick={handleAddToCart}
+          disabled={isAdding || !product.available}
+          className="flex-1 px-5 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors"
+          data-testid="button-add-to-cart"
+        >
+          <ShoppingCart className="w-4 h-4" />
+          {isAdding ? t("addingToCart", language) : t("addToCart", language)}
+        </button>
+      </div>
+
+      {/* Bottom Nav */}
+      <div className="absolute bottom-0 left-0 right-0 z-50">
         <BottomNav />
       </div>
     </MobileWrapper>
