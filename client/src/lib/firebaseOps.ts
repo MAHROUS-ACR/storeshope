@@ -163,18 +163,19 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
     // Format order items as table rows
     const itemsRows = (order.items || [])
       .map((item: any) => {
-        const colorDisplay = item.selectedColor ? `🎨 ${item.selectedColor}` : "—";
-        const sizeDisplay = item.selectedSize ? `📏 ${item.selectedSize}` : "—";
+        const variants = [];
+        if (item.selectedColor) variants.push(`🎨 ${item.selectedColor}`);
+        if (item.selectedSize) variants.push(`📏 ${item.selectedSize}`);
+        const variantText = variants.length > 0 ? `<br><span style="font-size: 11px; color: #888;">${variants.join(" • ")}</span>` : "";
+        
         return `
         <tr style="border-bottom: 1px solid #e0e0e0;">
-          <td style="padding: 12px; text-align: left; font-size: 14px;">
-            <strong>${item.title}</strong><br>
-            <span style="font-size: 12px; color: #666;">لون: ${colorDisplay}</span><br>
-            <span style="font-size: 12px; color: #666;">حجم: ${sizeDisplay}</span>
+          <td style="padding: 14px; text-align: right; font-size: 14px;">
+            <strong>${item.title}</strong>${variantText}
           </td>
-          <td style="padding: 12px; text-align: center; font-size: 14px;">${item.quantity}</td>
-          <td style="padding: 12px; text-align: center; font-size: 14px;">L.E ${Number(item.price).toFixed(2)}</td>
-          <td style="padding: 12px; text-align: right; font-size: 14px; font-weight: bold;">L.E ${(Number(item.price) * Number(item.quantity)).toFixed(2)}</td>
+          <td style="padding: 14px; text-align: center; font-size: 14px;">${item.quantity}</td>
+          <td style="padding: 14px; text-align: center; font-size: 14px;">L.E ${Number(item.price).toFixed(2)}</td>
+          <td style="padding: 14px; text-align: left; font-size: 14px; font-weight: bold;">L.E ${(Number(item.price) * Number(item.quantity)).toFixed(2)}</td>
         </tr>
       `;
       })
@@ -273,13 +274,13 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
 
             <!-- Items Table -->
             <span class="section-title">📦 تفاصيل المنتجات</span>
-            <table>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
               <thead>
-                <tr>
-                  <th>المنتج (اللون • الحجم)</th>
-                  <th>الكمية</th>
-                  <th>السعر</th>
-                  <th>الإجمالي</th>
+                <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                  <th style="padding: 12px; text-align: right; font-weight: bold; font-size: 13px;">المنتج</th>
+                  <th style="padding: 12px; text-align: center; font-weight: bold; font-size: 13px; width: 60px;">الكمية</th>
+                  <th style="padding: 12px; text-align: center; font-weight: bold; font-size: 13px;">السعر</th>
+                  <th style="padding: 12px; text-align: left; font-weight: bold; font-size: 13px;">الإجمالي</th>
                 </tr>
               </thead>
               <tbody>
