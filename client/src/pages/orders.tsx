@@ -229,11 +229,12 @@ export default function OrdersPage() {
       .bindPopup(`<div style="text-align: center"><strong>${language === "ar" ? "موقع التسليم" : "Delivery Location"}</strong></div>`)
       .openPopup();
 
-    // Add driver location marker if available - use driverLat/driverLng
-    const driverLat = selectedOrder?.driverLat || selectedOrder?.latitude;
-    const driverLng = selectedOrder?.driverLng || selectedOrder?.longitude;
+    // Add driver location marker if available - ONLY use driverLat/driverLng (not fallback to delivery location)
+    const driverLat = selectedOrder?.driverLat;
+    const driverLng = selectedOrder?.driverLng;
     
     if (driverLat !== undefined && driverLat !== null && driverLng !== undefined && driverLng !== null && map.current) {
+      console.log("✅ Adding driver marker in orders:", driverLat, driverLng);
       if (driverMarker.current) {
         driverMarker.current.remove();
       }
@@ -256,6 +257,8 @@ export default function OrdersPage() {
           })
           .catch(err => console.log("Route error:", err));
       }
+    } else {
+      console.log("❌ Driver location not available in orders - no marker shown");
     }
   }, [mapLat, mapLng, language, selectedOrder?.driverLat, selectedOrder?.driverLng, selectedOrder?.latitude, selectedOrder?.longitude]);
 
