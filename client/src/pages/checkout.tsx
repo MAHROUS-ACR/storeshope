@@ -283,11 +283,6 @@ export default function CheckoutPage() {
         throw new Error("Failed to save order - check console logs");
       }
 
-      // Set user for OneSignal tracking
-      if (user?.id) {
-        await setUserId(user.id);
-      }
-
       // Send OneSignal notification
       await sendNotification(
         language === "ar" ? "تم تأكيد طلبك ✅" : "Order Confirmed ✅",
