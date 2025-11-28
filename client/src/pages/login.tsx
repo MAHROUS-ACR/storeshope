@@ -4,6 +4,8 @@ import { useLocation } from "wouter";
 import { useUser } from "@/lib/userContext";
 import { useLanguage } from "@/lib/languageContext";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
+import { t } from "@/lib/translations";
 import { getStoreSettings } from "@/lib/firebaseOps";
 
 export default function LoginPage() {
@@ -90,7 +92,21 @@ export default function LoginPage() {
 
   return (
     <MobileWrapper>
-      <div className="w-full flex-1 flex flex-col items-center justify-center px-5 pb-20">
+      <div className="w-full flex-1 flex flex-col px-5 pb-20">
+        {/* Navigation Back Button */}
+        <div className="pt-4 pb-6 border-b border-gray-100">
+          <button
+            onClick={() => setLocation("/")}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition font-semibold"
+            data-testid="button-nav-home"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>{t("back", language)}</span>
+          </button>
+        </div>
+
+        {/* Form Container */}
+        <div className="flex-1 flex flex-col items-center justify-center">
         <div className="text-center mb-8">
           {storeLogo && (
             <img src={storeLogo} alt={storeName} className="h-16 mx-auto mb-3 object-contain" data-testid="img-store-logo" />
@@ -193,6 +209,7 @@ export default function LoginPage() {
               {language === "ar" ? "هل نسيت كلمة المرور؟" : "Forgot your password?"}
             </button>
           )}
+        </div>
         </div>
       </div>
     </MobileWrapper>
