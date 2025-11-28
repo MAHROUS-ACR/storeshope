@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { getShippingZones, saveOrder, getDiscounts } from "@/lib/firebaseOps";
 import { getActiveDiscount, calculateDiscountedPrice, getDiscountAmount } from "@/lib/discountUtils";
 import { MapSelector } from "@/components/map-selector";
-import { sendNotification, setUserId, setUserEmail } from "@/lib/oneSignalService";
+import { sendNotification, setUserId } from "@/lib/oneSignalService";
 
 interface Discount {
   id: string;
