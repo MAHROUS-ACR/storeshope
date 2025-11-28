@@ -130,10 +130,10 @@ export async function getOrderById(id: string) {
   }
 }
 
-// ============= EMAIL SENDING (RESEND) =============
-export async function sendOrderEmailWithResend(order: any, userEmail: string) {
+// ============= EMAIL SENDING (BREVO) =============
+export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
   try {
-    // Get store settings for Resend credentials
+    // Get store settings for Brevo credentials
     const db = initDb();
     const storeRef = doc(db, "settings", "store");
     const storeSnap = await getDoc(storeRef);
@@ -144,18 +144,19 @@ export async function sendOrderEmailWithResend(order: any, userEmail: string) {
     }
 
     const storeData = storeSnap.data();
-    const resendApiKey = storeData?.resendApiKey;
-    const resendFromEmail = storeData?.resendFromEmail;
+    const brevoApiKey = storeData?.brevoApiKey;
+    const brevoFromEmail = storeData?.brevoFromEmail;
+    const brevoFromName = storeData?.brevoFromName || "Order System";
     const adminEmail = storeData?.adminEmail;
     
-    if (!resendApiKey || !resendFromEmail) {
-      console.warn("⚠️ Resend credentials not configured - email not sent");
-      console.warn("📝 Go to Settings and add: Resend API Key + From Email");
+    if (!brevoApiKey || !brevoFromEmail) {
+      console.warn("⚠️ Brevo credentials not configured - email not sent");
+      console.warn("📝 Go to Settings and add: Brevo API Key + From Email");
       return false;
     }
 
-    console.log("📧 Sending email via Resend...", {
-      from: resendFromEmail,
+    console.log("📧 Sending email via Brevo...", {
+      from: brevoFromEmail,
       to: [userEmail, adminEmail],
     });
 
@@ -178,42 +179,42 @@ export async function sendOrderEmailWithResend(order: any, userEmail: string) {
       </div>
     `;
 
-    // Send email via Resend REST API
-    const response = await fetch("https://api.resend.com/emails", {
+    // Send email via Brevo REST API
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${resendApiKey}`,
+        "api-key": brevoApiKey,
       },
       body: JSON.stringify({
-        from: resendFromEmail,
-        to: [userEmail, adminEmail],
+        sender: {
+          email: brevoFromEmail,
+          name: brevoFromName,
+        },
+        to: [
+          { email: userEmail },
+          ...(adminEmail ? [{ email: adminEmail }] : []),
+        ],
         subject: `Order Confirmation #${order.orderNumber || order.id}`,
-        html: emailHTML,
+        htmlContent: emailHTML,
       }),
     });
 
     const result = await response.json();
     
     if (response.ok) {
-      console.log("✅ Email sent successfully!", {
-        messageId: result.id,
+      console.log("✅ Email sent successfully via Brevo!", {
+        messageId: result.messageId,
         to: [userEmail, adminEmail],
       });
       return true;
     } else {
-      console.error("❌ Resend API Error:", {
+      console.error("❌ Brevo API Error:", {
         status: response.status,
         statusText: response.statusText,
         error: result,
         details: result.message || result.error,
       });
-      
-      // Common errors help
-      if (result.message?.includes("Invalid `from` email")) {
-        console.error("💡 Fix: The 'From Email' must be verified in Resend settings");
-        console.error("   Use: Acme <onboarding@resend.dev> for testing");
-      }
       
       return false;
     }
@@ -284,10 +285,10 @@ export async function saveOrder(order: any) {
     await setDoc(doc(db, "orders", order.id), cleanOrder);
     console.log("✅ Order saved successfully:", order.id);
 
-    // Send order confirmation email via Resend (non-blocking)
+    // Send order confirmation email via Brevo (non-blocking)
     const emailAddress = order.userEmail || order.customerEmail || order.email;
     if (emailAddress) {
-      await sendOrderEmailWithResend(cleanOrder, emailAddress).catch((err: any) => {
+      await sendOrderEmailWithBrevo(cleanOrder, emailAddress).catch((err: any) => {
         console.log("⚠️ Email sending failed (non-blocking):", err?.message);
       });
     }
