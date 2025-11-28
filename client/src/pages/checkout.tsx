@@ -160,23 +160,44 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // Get delivery coordinates
-      let deliveryLat = locationCoords?.lat;
-      let deliveryLng = locationCoords?.lng;
+      // Get delivery coordinates and address
+      let deliveryLat: number | undefined;
+      let deliveryLng: number | undefined;
+      let finalAddress = "";
 
       if (shippingSelected === "saved") {
-        // Use user's saved coordinates
-        deliveryLat = user?.addressLat || deliveryLat;
-        deliveryLng = user?.addressLng || deliveryLng;
+        // Use user's saved coordinates and address
+        deliveryLat = user?.addressLat;
+        deliveryLng = user?.addressLng;
+        finalAddress = user?.address || zoneSelected?.name || "";
         
         await updateUserProfile({
           phone: customerPhone,
-          address: deliveryAddress,
+          address: finalAddress,
           addressLat: deliveryLat,
           addressLng: deliveryLng,
           zoneId: zoneSelected?.id,
           zoneName: zoneSelected?.name,
         });
+      } else {
+        // New address - use coordinates from map selection
+        deliveryLat = locationCoords?.lat;
+        deliveryLng = locationCoords?.lng;
+        finalAddress = deliveryAddress.trim();
+        
+        // If no coordinates from map, show error
+        if (!deliveryLat || !deliveryLng) {
+          toast.error("اختر الموقع من الخريطة - Please select location from map");
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // Validate coordinates exist
+      if (!deliveryLat || !deliveryLng) {
+        toast.error("خطأ: لا توجد إحداثيات - Error: No coordinates available");
+        setIsSubmitting(false);
+        return;
       }
 
       const orderId = `ord_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
@@ -189,9 +210,7 @@ export default function CheckoutPage() {
         
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),
-        shippingAddress: shippingSelected === "saved" 
-          ? `${user.address || zoneSelected?.name}` 
-          : deliveryAddress.trim(),
+        shippingAddress: finalAddress,
         shippingPhone: customerPhone.trim(),
         
         // Delivery location coordinates (customer)
