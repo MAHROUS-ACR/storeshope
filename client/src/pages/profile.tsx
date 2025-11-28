@@ -14,7 +14,6 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { getProducts, getOrders } from "@/lib/firebaseOps";
 import { getStatusColor } from "@/lib/statusColors";
 import { MapSelector } from "@/components/map-selector";
-import { createOrderStatusNotification } from "@/lib/notificationService";
 
 const getMenuItems = (language: any) => [
   { icon: Package, label: t("myOrders", language), path: "/orders", buttonBg: "bg-purple-50", borderColor: "border-purple-200 hover:border-purple-300", iconColor: "text-purple-600 bg-purple-100", textColor: "text-purple-900" },

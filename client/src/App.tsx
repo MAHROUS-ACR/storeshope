@@ -1,14 +1,11 @@
-import { useEffect } from "react";
 import { Switch, Route, Router } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster, toast } from "sonner";
+import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/lib/cartContext";
 import { UserProvider } from "@/lib/userContext";
 import { LanguageProvider } from "@/lib/languageContext";
-import { setupNotificationListener, deleteNotificationListener } from "@/lib/notificationService";
-import { useUser } from "@/lib/userContext";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import ProfilePage from "@/pages/profile";
@@ -50,41 +47,6 @@ function AppRouter() {
   );
 }
 
-function AppContent() {
-  const { user } = useUser();
-
-  useEffect(() => {
-    if (!user?.id) return;
-
-    const unsubscribe = setupNotificationListener(user.id, (notification) => {
-      toast(notification.message, {
-        description: notification.title,
-        duration: 5000,
-      });
-    });
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-      deleteNotificationListener();
-    };
-  }, [user?.id]);
-
-  return (
-      <QueryClientProvider client={queryClient}>
-        <LanguageProvider>
-          <UserProvider>
-            <CartProvider>
-              <TooltipProvider>
-                <Toaster />
-                <AppRouter />
-              </TooltipProvider>
-            </CartProvider>
-          </UserProvider>
-        </LanguageProvider>
-      </QueryClientProvider>
-    );
-}
-
 function App() {
   return (
     <Router base="/storeshope">
@@ -94,7 +56,7 @@ function App() {
             <CartProvider>
               <TooltipProvider>
                 <Toaster />
-                <AppContent />
+                <AppRouter />
               </TooltipProvider>
             </CartProvider>
           </UserProvider>
