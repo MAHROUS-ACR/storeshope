@@ -89,6 +89,7 @@ export default function OrderDetailsPage() {
   const map = useRef<L.Map | null>(null);
   const driverMarker = useRef<L.Marker | null>(null);
   const routePolyline = useRef<L.Polyline | null>(null);
+  const userInteractedWithMap = useRef(false);
 
   // Extract order ID from URL
   const orderId = location.split("/order/")[1]?.split("?")[0];
@@ -113,19 +114,25 @@ export default function OrderDetailsPage() {
     }
   };
 
-  // Initialize map
+  // Initialize map only once
   useEffect(() => {
     if (!mapContainer.current || !mapLat || !mapLng) return;
     
-    if (map.current) {
-      map.current.remove();
-    }
-
+    if (map.current) return; // Don't recreate if already exists
+    
     map.current = L.map(mapContainer.current).setView([mapLat, mapLng], 14);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; OpenStreetMap',
       maxZoom: 19,
     }).addTo(map.current);
+
+    // Track user interactions to prevent auto-centering
+    map.current.on('zoom', () => {
+      userInteractedWithMap.current = true;
+    });
+    map.current.on('drag', () => {
+      userInteractedWithMap.current = true;
+    });
 
     // Destination marker (red)
     L.marker([mapLat, mapLng], {
@@ -140,28 +147,31 @@ export default function OrderDetailsPage() {
       .addTo(map.current)
       .bindPopup(`<div style="text-align: center"><strong>${language === "ar" ? "موقع التسليم" : "Delivery Location"}</strong></div>`)
       .openPopup();
+  }, [mapLat, mapLng]);
 
-    // Add driver location marker if available - ONLY use driverLat/driverLng (not fallback to delivery location)
+  // Update driver marker and route - don't recreate map
+  useEffect(() => {
+    if (!map.current) return;
+    
     const driverLat = order?.driverLat;
     const driverLng = order?.driverLng;
     
-    if (driverLat !== undefined && driverLat !== null && driverLng !== undefined && driverLng !== null && map.current) {
-      console.log("✅ Adding driver marker:", driverLat, driverLng);
+    if (driverLat !== undefined && driverLat !== null && driverLng !== undefined && driverLng !== null) {
       if (driverMarker.current) {
-        driverMarker.current.remove();
+        driverMarker.current.setLatLng([driverLat, driverLng]);
+      } else {
+        driverMarker.current = L.marker([driverLat, driverLng], {
+          icon: createDeliveryIcon()
+        })
+          .addTo(map.current)
+          .bindPopup(`<div style="text-align: center"><strong>${language === "ar" ? "موقع السائق" : "Driver Location"}</strong></div>`);
       }
-      driverMarker.current = L.marker([driverLat, driverLng], {
-        icon: createDeliveryIcon()
-      })
-        .addTo(map.current)
-        .bindPopup(`<div style="text-align: center"><strong>${language === "ar" ? "موقع السائق" : "Driver Location"}</strong></div>`);
 
       // Fetch and display route
-      if (typeof driverLng === 'number' && typeof driverLat === 'number' && typeof mapLng === 'number' && typeof mapLat === 'number') {
+      if (typeof driverLng === 'number' && typeof driverLat === 'number' && mapLat && mapLng) {
         fetch(`https://router.project-osrm.org/route/v1/driving/${driverLng},${driverLat};${mapLng},${mapLat}?geometries=geojson`)
           .then(res => res.json())
           .then(data => {
-            console.log("Route data:", data);
             if (data.routes && data.routes[0] && map.current) {
               const coords = data.routes[0].geometry.coordinates.map((coord: any) => [coord[1], coord[0]]);
               if (routePolyline.current) routePolyline.current.remove();
@@ -171,16 +181,10 @@ export default function OrderDetailsPage() {
           .catch(err => console.log("Route error:", err));
       }
     } else {
-      console.log("❌ Driver location not available - no marker shown");
-    }
-  }, [mapLat, mapLng, language, order?.driverLat, order?.driverLng, order?.latitude, order?.longitude]);
-
-  // Update driver marker position when order location changes
-  useEffect(() => {
-    const driverLat = order?.driverLat;
-    const driverLng = order?.driverLng;
-    if (driverLat !== undefined && driverLat !== null && driverLng !== undefined && driverLng !== null && driverMarker.current && map.current) {
-      driverMarker.current.setLatLng([driverLat, driverLng]);
+      if (driverMarker.current) {
+        driverMarker.current.remove();
+        driverMarker.current = null;
+      }
     }
   }, [order?.driverLat, order?.driverLng]);
 
