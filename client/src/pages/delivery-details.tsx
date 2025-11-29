@@ -141,34 +141,14 @@ export default function DeliveryDetailsPage() {
 
   // Create motorcycle delivery icon using emoji
   const createDeliveryIcon = (isActive: boolean = false) => {
-    const motorcycleEmoji = "🏍️";
-    
-    const canvas = document.createElement('canvas');
-    canvas.width = isActive ? 60 : 50;
-    canvas.height = isActive ? 60 : 50;
-    const ctx = canvas.getContext('2d');
-    
-    if (ctx) {
-      // Emoji only
-      ctx.font = `${isActive ? 48 : 40}px Arial`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(motorcycleEmoji, canvas.width / 2, canvas.height / 2);
-      
-      const url = canvas.toDataURL('image/png');
-      return L.icon({
-        iconUrl: url,
-        iconSize: [canvas.width, canvas.height],
-        iconAnchor: [canvas.width / 2, canvas.height / 2],
-        popupAnchor: [0, -canvas.height / 2],
-      });
-    }
-    
-    return L.icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
+    const size = isActive ? 60 : 50;
+    const fontSize = isActive ? 48 : 40;
+    return L.divIcon({
+      html: `<div style="font-size: ${fontSize}px; text-align: center; line-height: ${size}px; width: ${size}px; height: ${size}px;">🏍️</div>`,
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size / 2],
+      popupAnchor: [0, -(size / 2)],
+      className: ''
     });
   };
 

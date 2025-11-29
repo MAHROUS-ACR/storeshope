@@ -15,33 +15,12 @@ import "leaflet/dist/leaflet.css";
 
 // Create motorcycle delivery icon using emoji
 const createDeliveryIcon = () => {
-  const motorcycleEmoji = "🏍️";
-  
-  const canvas = document.createElement('canvas');
-  canvas.width = 50;
-  canvas.height = 50;
-  const ctx = canvas.getContext('2d');
-  
-  if (ctx) {
-    ctx.font = '40px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(motorcycleEmoji, canvas.width / 2, canvas.height / 2);
-    
-    const url = canvas.toDataURL('image/png');
-    return L.icon({
-      iconUrl: url,
-      iconSize: [canvas.width, canvas.height],
-      iconAnchor: [canvas.width / 2, canvas.height / 2],
-      popupAnchor: [0, -canvas.height / 2],
-    });
-  }
-  
-  return L.icon({
-    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
+  return L.divIcon({
+    html: '<div style="font-size: 40px; text-align: center; line-height: 50px; width: 50px; height: 50px;">🏍️</div>',
+    iconSize: [50, 50],
+    iconAnchor: [25, 25],
+    popupAnchor: [0, -25],
+    className: ''
   });
 };
 
@@ -150,12 +129,12 @@ export default function OrderDetailsPage() {
 
     // Destination marker (red)
     L.marker([mapLat, mapLng], {
-      icon: L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
+      icon: L.divIcon({
+        html: '<div style="font-size: 30px; text-align: center; line-height: 35px;">📍</div>',
+        iconSize: [35, 35],
+        iconAnchor: [17, 35],
+        popupAnchor: [0, -35],
+        className: ''
       })
     })
       .addTo(map.current)
