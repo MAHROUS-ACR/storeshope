@@ -43,6 +43,12 @@ export default function CheckoutPage() {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [notes, setNotes] = useState("");
   
+  // Card data
+  const [cardholderName, setCardholderName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvv, setCvv] = useState("");
+  
   const [isLoadingZones, setIsLoadingZones] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [discounts, setDiscounts] = useState<Discount[]>([]);
@@ -132,7 +138,8 @@ export default function CheckoutPage() {
     zoneSelected &&
     customerName.trim() &&
     customerPhone.trim() &&
-    (shippingSelected === "saved" || (locationCoords?.lat && locationCoords?.lng));
+    (shippingSelected === "saved" || (locationCoords?.lat && locationCoords?.lng)) &&
+    (paymentSelected === "delivery" || (cardholderName.trim() && cardNumber.replace(/\s/g, "").length >= 13 && expiry.trim() && cvv.trim()));
 
   const handleSubmit = async () => {
 
@@ -605,40 +612,52 @@ export default function CheckoutPage() {
               <h3 className="font-bold text-lg text-gray-900 mb-4">💳 {t("cardDetails", language)}</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t("cardholderName", language)}</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t("cardholderName", language)} {!cardholderName.trim() && <span className="text-red-500">*</span>}</label>
                   <input
                     type="text"
                     placeholder={t("cardNamePlaceholder", language)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    value={cardholderName}
+                    onChange={(e) => setCardholderName(e.target.value)}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition ${cardholderName.trim() ? "border-green-500" : "border-red-400"}`}
                   />
+                  {!cardholderName.trim() && <p className="text-xs text-red-500 mt-1">⚠️ {t("cardholderName", language)}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t("cardNumber", language)}</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">{t("cardNumber", language)} {!cardNumber.replace(/\s/g, "").length || cardNumber.replace(/\s/g, "").length < 13 && <span className="text-red-500">*</span>}</label>
                   <input
                     type="text"
                     placeholder={language === "ar" ? "1234 5678 9012 3456" : "1234 5678 9012 3456"}
                     maxLength={19}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(e.target.value)}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono transition ${cardNumber.replace(/\s/g, "").length >= 13 ? "border-green-500" : "border-red-400"}`}
                   />
+                  {(!cardNumber.replace(/\s/g, "").length || cardNumber.replace(/\s/g, "").length < 13) && <p className="text-xs text-red-500 mt-1">⚠️ رقم بطاقة صحيح مطلوب</p>}
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t("expiry", language)}</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t("expiry", language)} {!expiry.trim() && <span className="text-red-500">*</span>}</label>
                     <input
                       type="text"
                       placeholder={language === "ar" ? "MM/YY" : "MM/YY"}
                       maxLength={5}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      value={expiry}
+                      onChange={(e) => setExpiry(e.target.value)}
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition ${expiry.trim() ? "border-green-500" : "border-red-400"}`}
                     />
+                    {!expiry.trim() && <p className="text-xs text-red-500 mt-1">⚠️ مطلوب</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t("cvv", language)}</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t("cvv", language)} {!cvv.trim() && <span className="text-red-500">*</span>}</label>
                     <input
                       type="text"
                       placeholder={language === "ar" ? "123" : "123"}
                       maxLength={4}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono"
+                      value={cvv}
+                      onChange={(e) => setCvv(e.target.value)}
+                      className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono transition ${cvv.trim() ? "border-green-500" : "border-red-400"}`}
                     />
+                    {!cvv.trim() && <p className="text-xs text-red-500 mt-1">⚠️ مطلوب</p>}
                   </div>
                 </div>
               </div>
