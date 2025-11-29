@@ -13,10 +13,10 @@ import { getFirestore, collection, query, where, onSnapshot } from "firebase/fir
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Create motorcycle delivery icon using emoji
+// Create package delivery icon using emoji
 const createDeliveryIcon = () => {
   return L.divIcon({
-    html: '<div style="font-size: 40px; text-align: center; line-height: 50px; width: 50px; height: 50px;">🏍️</div>',
+    html: '<div style="font-size: 40px; text-align: center; line-height: 50px; width: 50px; height: 50px; background-color: #8B4513; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">📦</div>',
     iconSize: [50, 50],
     iconAnchor: [25, 25],
     popupAnchor: [0, -25],
@@ -201,10 +201,10 @@ export default function OrdersPage() {
         userInteractedWithMap.current = true;
       });
 
-      // Destination marker (red)
+      // Destination marker (BLUE PERSON)
       L.marker([mapLat, mapLng], {
         icon: L.divIcon({
-          html: '<div style="font-size: 30px; text-align: center; line-height: 35px;">📍</div>',
+          html: '<div style="font-size: 30px; text-align: center; line-height: 35px; width: 35px; height: 35px; background-color: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">👤</div>',
           iconSize: [35, 35],
           iconAnchor: [17, 35],
           popupAnchor: [0, -35],

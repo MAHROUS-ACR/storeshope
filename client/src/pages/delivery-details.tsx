@@ -145,7 +145,7 @@ export default function DeliveryDetailsPage() {
     const size = isActive ? 60 : 50;
     const fontSize = isActive ? 48 : 40;
     return L.divIcon({
-      html: `<div style="font-size: ${fontSize}px; text-align: center; line-height: ${size}px; width: ${size}px; height: ${size}px;">📦</div>`,
+      html: `<div style="font-size: ${fontSize}px; text-align: center; line-height: ${size}px; width: ${size}px; height: ${size}px; background-color: #8B4513; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">📦</div>`,
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2],
       popupAnchor: [0, -(size / 2)],
@@ -201,7 +201,7 @@ export default function DeliveryDetailsPage() {
     // Delivery destination marker (BLUE PERSON)
     L.marker([deliveryLat, deliveryLng], {
       icon: L.divIcon({
-        html: '<div style="font-size: 30px; text-align: center; line-height: 35px;">👤</div>',
+        html: '<div style="font-size: 30px; text-align: center; line-height: 35px; width: 35px; height: 35px; background-color: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">👤</div>',
         iconSize: [35, 35],
         iconAnchor: [17, 35],
         popupAnchor: [0, -35],
