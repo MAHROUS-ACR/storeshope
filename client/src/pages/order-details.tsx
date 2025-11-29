@@ -405,7 +405,7 @@ export default function OrderDetailsPage() {
         ) : (
           <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
             {/* Map Section */}
-            {(order.shippingAddress || order.deliveryAddress) && order?.status !== "completed" && order?.status !== "received" && (
+            {(order.shippingAddress || order.deliveryAddress) && order?.status !== "completed" && order?.status !== "received" && order?.status !== "cancelled" && (
               <div className="w-full">
                 {mapLoading ? (
                   <div className="w-full bg-blue-50 border-b border-blue-200 flex items-center justify-center gap-2 py-3">
