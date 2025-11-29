@@ -154,6 +154,16 @@ export default function DeliveryPage() {
               attribution: '&copy; OpenStreetMap',
               maxZoom: 19,
             }).addTo(map.current);
+            
+            // Add marker for current location
+            L.marker([currentLat, currentLng], {
+              icon: L.icon({
+                iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxMiIgZmlsbD0iIzIyYzU1ZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+',
+                iconSize: [32, 32],
+                iconAnchor: [16, 16],
+              })
+            }).addTo(map.current).bindPopup(language === "ar" ? "📍 موقعك الحالي" : "📍 Your Location");
+            
             map.current.invalidateSize();
             setMapLoading(false);
           } catch (error) {
