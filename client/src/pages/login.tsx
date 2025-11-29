@@ -113,7 +113,7 @@ export default function LoginPage() {
           {/* Store Logo and Name */}
           {storeLogo && (
             <div className="flex justify-center mb-6">
-              <img src={storeLogo} alt={storeName} className="h-16 object-contain" />
+              <img src={storeLogo} alt={storeName} className="w-32 h-32 object-contain" />
             </div>
           )}
 
