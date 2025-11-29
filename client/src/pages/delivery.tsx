@@ -210,12 +210,17 @@ export default function DeliveryPage() {
       console.log("Initializing map with container:", mapContainer.current);
       try {
         map.current = L.map(mapContainer.current, { 
-          preferCanvas: true
+          preferCanvas: true,
+          zoomControl: true
         }).setView([currentLat, currentLng], 13);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: '&copy; OpenStreetMap',
+        
+        // Use CartoDB tiles instead of OpenStreetMap
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/rastered/voyager/{z}/{x}/{y}.png", {
+          attribution: '&copy; CartoDB',
           maxZoom: 19,
+          subdomains: 'abcd'
         }).addTo(map.current);
+        
         console.log("Map initialized successfully");
       } catch (error) {
         console.error("Map initialization error:", error);
