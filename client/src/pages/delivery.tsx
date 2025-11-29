@@ -360,27 +360,27 @@ export default function DeliveryPage() {
 
             {/* Map View */}
             {viewMode === "map" && (
-              <div className="flex-1 overflow-hidden flex flex-col px-5 py-4 pb-32">
+              <div className="flex-1 overflow-hidden flex flex-col px-5 py-4 pb-32 gap-3">
                 {mapError ? (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">{mapError}</div>
                 ) : (
                   <>
-                    <div id="leaflet-map" style={{ flex: 1, height: "calc(100% - 140px)", borderRadius: "16px", border: "1px solid #e5e7eb" }} />
-                    <div className="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-200">
-                      <div className="flex gap-6 mb-4">
-                        <div className="flex-1">
-                          <p className="text-xs text-gray-600 font-semibold">{language === "ar" ? "المسافة الإجمالية" : "Total Distance"}</p>
-                          <p className="text-xl font-bold text-orange-600 mt-1">{totalDistance.toFixed(1)} <span className="text-sm">km</span></p>
+                    <div id="leaflet-map" style={{ flex: 1, minHeight: 0, borderRadius: "16px", border: "1px solid #e5e7eb" }} />
+                    <div className="p-3 bg-gray-50 rounded-2xl border border-gray-200 flex-shrink-0">
+                      <div className="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                          <p className="text-xs text-gray-600 font-semibold">{language === "ar" ? "المسافة" : "Distance"}</p>
+                          <p className="text-lg font-bold text-orange-600 mt-1">{totalDistance.toFixed(1)} <span className="text-xs">km</span></p>
                         </div>
-                        <div className="flex-1">
-                          <p className="text-xs text-gray-600 font-semibold">{language === "ar" ? "الوقت المتوقع" : "Estimated Time"}</p>
-                          <p className="text-xl font-bold text-blue-600 mt-1">{Math.round((totalDistance / selectedSpeed) * 60)} <span className="text-sm">{language === "ar" ? "دقيقة" : "min"}</span></p>
+                        <div>
+                          <p className="text-xs text-gray-600 font-semibold">{language === "ar" ? "الوقت" : "Time"}</p>
+                          <p className="text-lg font-bold text-blue-600 mt-1">{Math.round((totalDistance / selectedSpeed) * 60)} <span className="text-xs">{language === "ar" ? "د" : "m"}</span></p>
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <button onClick={() => setSelectedSpeed(30)} className={`flex-1 py-2 px-3 rounded-lg font-semibold text-sm ${selectedSpeed === 30 ? "bg-orange-500 text-white" : "bg-white text-gray-700 border border-gray-200"}`} data-testid="button-speed-30">30</button>
-                        <button onClick={() => setSelectedSpeed(50)} className={`flex-1 py-2 px-3 rounded-lg font-semibold text-sm ${selectedSpeed === 50 ? "bg-orange-500 text-white" : "bg-white text-gray-700 border border-gray-200"}`} data-testid="button-speed-50">50</button>
-                        <button onClick={() => setSelectedSpeed(70)} className={`flex-1 py-2 px-3 rounded-lg font-semibold text-sm ${selectedSpeed === 70 ? "bg-orange-500 text-white" : "bg-white text-gray-700 border border-gray-200"}`} data-testid="button-speed-70">70</button>
+                        <button onClick={() => setSelectedSpeed(30)} className={`flex-1 py-2 px-2 rounded-lg font-semibold text-sm ${selectedSpeed === 30 ? "bg-orange-500 text-white" : "bg-white text-gray-700 border border-gray-200"}`} data-testid="button-speed-30">30</button>
+                        <button onClick={() => setSelectedSpeed(50)} className={`flex-1 py-2 px-2 rounded-lg font-semibold text-sm ${selectedSpeed === 50 ? "bg-orange-500 text-white" : "bg-white text-gray-700 border border-gray-200"}`} data-testid="button-speed-50">50</button>
+                        <button onClick={() => setSelectedSpeed(70)} className={`flex-1 py-2 px-2 rounded-lg font-semibold text-sm ${selectedSpeed === 70 ? "bg-orange-500 text-white" : "bg-white text-gray-700 border border-gray-200"}`} data-testid="button-speed-70">70</button>
                       </div>
                     </div>
                   </>
