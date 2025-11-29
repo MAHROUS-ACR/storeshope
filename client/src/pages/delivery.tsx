@@ -207,6 +207,7 @@ export default function DeliveryPage() {
         let accumulatedDistance = 0;
         let accumulatedTime = 0;
         let routesCount = 0;
+        const routeDistances: { [key: number]: number } = {};
         
         ordersWithDistance.forEach((order, idx) => {
           const routeColor = idx === 0 ? '#ef4444' : '#ff8c00';
@@ -217,6 +218,7 @@ export default function DeliveryPage() {
                 const route = data.routes[0];
                 const latlngs = route.geometry.coordinates.map((c: [number, number]) => [c[1], c[0]]);
                 const distance = route.distance / 1000;
+                routeDistances[idx] = distance;
                 const polyline = L.polyline(latlngs, { color: routeColor, weight: 3, opacity: 0.7 }).addTo(map);
                 
                 // Add distance label on the route
@@ -242,6 +244,20 @@ export default function DeliveryPage() {
                     setTotalDistance(accumulatedDistance);
                     setTotalTime(accumulatedTime);
                   }
+                  // Add markers after all routes are fetched
+                  ordersWithDistance.forEach((o, i) => {
+                    const isFirst = i === 0;
+                    const markerColor = isFirst ? '#ef4444' : '#3B82F6';
+                    const dist = routeDistances[i] || 0;
+                    L.marker([o.deliveryLat!, o.deliveryLng!], {
+                      icon: L.divIcon({
+                        html: `<div style="width: ${isFirst ? 40 : 32}px; height: ${isFirst ? 40 : 32}px; background: ${markerColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: ${isFirst ? 18 : 14}px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); ${isFirst ? 'border: 3px solid white;' : ''}">${i + 1}</div>`,
+                        iconSize: [isFirst ? 40 : 32, isFirst ? 40 : 32],
+                        iconAnchor: [isFirst ? 20 : 16, isFirst ? 20 : 16],
+                        className: 'order-marker'
+                      })
+                    }).addTo(map).bindPopup(`<strong>Order #${o.orderNumber}</strong><br/>📍 ${language === "ar" ? "العنوان:" : "Address:"} ${o.shippingAddress || 'N/A'}<br/><strong>${language === "ar" ? "المسافة:" : "Distance:"} ${dist.toFixed(1)} km</strong>`);
+                  });
                 }
               }
             })
@@ -249,19 +265,6 @@ export default function DeliveryPage() {
           
           startLat = order.deliveryLat!;
           startLng = order.deliveryLng!;
-        });
-
-        ordersWithDistance.forEach((order, idx) => {
-          const isFirst = idx === 0;
-          const markerColor = isFirst ? '#ef4444' : '#3B82F6';
-          L.marker([order.deliveryLat!, order.deliveryLng!], {
-            icon: L.divIcon({
-              html: `<div style="width: ${isFirst ? 40 : 32}px; height: ${isFirst ? 40 : 32}px; background: ${markerColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: ${isFirst ? 18 : 14}px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); ${isFirst ? 'border: 3px solid white;' : ''}">${idx + 1}</div>`,
-              iconSize: [isFirst ? 40 : 32, isFirst ? 40 : 32],
-              iconAnchor: [isFirst ? 20 : 16, isFirst ? 20 : 16],
-              className: 'order-marker'
-            })
-          }).addTo(map).bindPopup(`<strong>Order #${order.orderNumber}</strong><br/>📍 ${language === "ar" ? "التسليم:" : "Delivery:"} ${idx + 1}<br/>${order.shippingAddress || ''}<br/><strong>Distance: ${order.distance.toFixed(1)} km</strong>`);
         });
 
         setTimeout(() => {
