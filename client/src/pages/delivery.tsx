@@ -12,13 +12,27 @@ import { Check, Map, List, Loader } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Fix for Leaflet default markers
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-});
+// Create delivery location icon (👤 in blue)
+const createDeliveryLocationIcon = (number: number) => {
+  return L.divIcon({
+    html: `<div style="font-size: 20px; text-align: center; line-height: 30px; width: 30px; height: 30px; background-color: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">${number}</div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15],
+    className: ''
+  });
+};
+
+// Create driver location icon (🚗 in green)
+const createDriverIcon = () => {
+  return L.divIcon({
+    html: '<div style="font-size: 40px; text-align: center; line-height: 50px; width: 50px; height: 50px; background-color: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">🚗</div>',
+    iconSize: [50, 50],
+    iconAnchor: [25, 25],
+    popupAnchor: [0, -25],
+    className: ''
+  });
+};
 
 interface DeliveryOrder {
   id: string;
@@ -174,7 +188,6 @@ export default function DeliveryPage() {
   // Calculate optimized route for all pending orders
   const calculateOptimizedRoute = async () => {
     if (!currentLat || !currentLng) {
-      console.log("No location data", currentLat, currentLng);
       toast.error("Cannot determine your location");
       return;
     }
@@ -186,167 +199,74 @@ export default function DeliveryPage() {
       let lat = order.deliveryLat || order.latitude;
       let lng = order.deliveryLng || order.longitude;
 
-      if (!lat || !lng) {
-        // Geocode address if no coordinates
+      if (!lat || !lng && order.shippingAddress) {
         try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(order.shippingAddress || "")}&format=json&limit=1`
-          );
+          const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(order.shippingAddress)}&format=json&limit=1`);
           const results = await response.json();
           if (results.length > 0) {
             lat = parseFloat(results[0].lat);
             lng = parseFloat(results[0].lon);
           }
         } catch (error) {
-          console.error("Geocoding error:", error);
           continue;
         }
       }
 
       if (lat && lng) {
-        orderLocations.push({
-          id: order.id,
-          orderNumber: order.orderNumber,
-          lat,
-          lng,
-          status: order.status,
-        });
+        orderLocations.push({ id: order.id, orderNumber: order.orderNumber, lat, lng, status: order.status });
       }
-    }
-
-    if (orderLocations.length === 0) {
-      console.log("No pending orders with locations");
-      toast.error("No pending deliveries with valid locations");
-      return;
     }
 
     setMapLoading(true);
 
-    // Initialize map first
     if (!map.current && mapContainer.current) {
-      console.log("Initializing map with container:", mapContainer.current);
-      try {
-        map.current = L.map(mapContainer.current, { 
-          preferCanvas: true,
-          zoomControl: true
-        }).setView([currentLat, currentLng], 13);
-        
-        // Use Esri World Street Map - most reliable
-        const esriTile = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-          attribution: '&copy; Esri',
-          maxZoom: 19,
-        });
-        
-        // Fallback to USGS
-        const usgsaTile = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}", {
-          attribution: '&copy; USGS',
-          maxZoom: 16,
-        });
-        
-        esriTile.addTo(map.current);
-        console.log("Esri tiles added");
-        
-        esriTile.on('tileerror', () => {
-          console.log("Esri tiles failed, trying USGS");
-          esriTile.remove();
-          usgsaTile.addTo(map.current);
-        });
-        
-        console.log("Map initialized successfully");
-      } catch (error) {
-        console.error("Map initialization error:", error);
-        setMapLoading(false);
-        return;
-      }
+      map.current = L.map(mapContainer.current).setView([currentLat, currentLng], 13);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; OpenStreetMap',
+        maxZoom: 19,
+      }).addTo(map.current);
     }
 
-    // Use OSRM to find best route
-    const coordinates = [
-      [currentLng, currentLat],
-      ...orderLocations.map(o => [o.lng, o.lat])
-    ];
+    if (map.current && orderLocations.length > 0) {
+      markersRef.current.forEach(m => m.remove());
+      markersRef.current = [];
+      if (routePolylineRef.current) routePolylineRef.current.remove();
 
-    try {
+      const driverMarker = L.marker([currentLat, currentLng], { icon: createDriverIcon() })
+        .addTo(map.current)
+        .bindPopup("Your Location");
+      markersRef.current.push(driverMarker);
+
+      orderLocations.forEach((order, index) => {
+        const marker = L.marker([order.lat, order.lng], { icon: createDeliveryLocationIcon(index + 1) })
+          .addTo(map.current!)
+          .bindPopup(`Order #${order.orderNumber}`);
+        markersRef.current.push(marker);
+      });
+
+      const bounds = L.latLngBounds([[currentLat, currentLng], ...orderLocations.map(o => [o.lat, o.lng] as L.LatLngExpression)]);
+      map.current.fitBounds(bounds, { padding: [50, 50] });
+
+      const coordinates = [[currentLng, currentLat], ...orderLocations.map(o => [o.lng, o.lat])];
       const coordsStr = coordinates.map(c => `${c[0]},${c[1]}`).join(";");
-      console.log("Requesting OSRM route:", coordsStr);
-      const response = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${coordsStr}?geometries=geojson&overview=full`
-      );
-      const data = await response.json();
-      console.log("OSRM response:", data);
-
-      if (data.routes && data.routes[0]) {
-        const route = data.routes[0];
-        setRouteInfo({
-          distance: Math.round(route.distance / 1000 * 10) / 10,
-          duration: Math.round(route.duration / 60)
-        });
-
-        if (map.current) {
-          const mapInstance = map.current;
-          // Clear old markers and route
-          markersRef.current.forEach(m => m.remove());
-          markersRef.current = [];
-          if (routePolylineRef.current) routePolylineRef.current.remove();
-
-          // Trigger map resize
-          setTimeout(() => {
-            console.log("Calling invalidateSize");
-            mapInstance.invalidateSize();
-          }, 100);
-
-          // Draw route
-          const coords = route.geometry.coordinates.map((c: [number, number]): L.LatLngExpression => [c[1], c[0]]);
-          console.log("Drawing route with", coords.length, "points");
-          routePolylineRef.current = L.polyline(coords, {
-            color: '#2563eb',
-            weight: 3,
-            opacity: 0.7,
-          }).addTo(mapInstance);
-
-          // Add driver marker
-          const driverMarker = L.marker([currentLat, currentLng], {
-            icon: L.divIcon({
-              html: '<div style="font-size: 40px; text-align: center; line-height: 50px; width: 50px; height: 50px; background-color: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">🚗</div>',
-              iconSize: [50, 50],
-              iconAnchor: [25, 25],
-              popupAnchor: [0, -25],
-            })
-          }).addTo(mapInstance).bindPopup("Your Location");
-          markersRef.current.push(driverMarker);
-
-          // Add order markers
-          orderLocations.forEach((order, index) => {
-            const marker = L.marker([order.lat, order.lng], {
-              icon: L.divIcon({
-                html: `<div style="font-size: 20px; text-align: center; line-height: 30px; width: 30px; height: 30px; background-color: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">${index + 1}</div>`,
-                iconSize: [30, 30],
-                iconAnchor: [15, 15],
-                popupAnchor: [0, -15],
-              })
-            }).addTo(mapInstance).bindPopup(`Order #${order.orderNumber}`);
-            markersRef.current.push(marker);
+      try {
+        const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${coordsStr}?geometries=geojson&overview=full`);
+        const data = await res.json();
+        if (data.routes?.[0]) {
+          const route = data.routes[0];
+          setRouteInfo({
+            distance: Math.round(route.distance / 1000 * 10) / 10,
+            duration: Math.round(route.duration / 60)
           });
-
-          // Fit all markers in view
-          const boundsArray: L.LatLngExpression[] = [
-            [currentLat, currentLng],
-            ...orderLocations.map(o => [o.lat, o.lng] as L.LatLngExpression)
-          ];
-          const bounds = L.latLngBounds(boundsArray);
-          console.log("Fitting bounds");
-          mapInstance.fitBounds(bounds, { padding: [50, 50] });
+          const coords = route.geometry.coordinates.map((c: [number, number]) => [c[1], c[0]] as L.LatLngExpression);
+          routePolylineRef.current = L.polyline(coords, { color: '#2563eb', weight: 3, opacity: 0.7 }).addTo(map.current);
         }
-      } else {
-        console.error("No routes in OSRM response");
-        toast.error("Failed to calculate route");
+      } catch (error) {
+        // Route calculation failed silently
       }
-    } catch (error) {
-      console.error("Route calculation error:", error);
-      toast.error("Failed to calculate route");
-    } finally {
-      setMapLoading(false);
     }
+
+    setMapLoading(false);
   };
 
   useEffect(() => {
