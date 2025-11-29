@@ -97,7 +97,7 @@ export default function DeliveryPage() {
         
         console.log("📦 Loaded orders:", ordersList.length);
         ordersList.forEach(o => {
-          console.log(`Order #${o.orderNumber}: status=${o.status}, lat=${o.latitude}, lng=${o.longitude}`);
+          console.log(`Order #${o.orderNumber}: status=${o.status}, lat=${o.deliveryLat}, lng=${o.deliveryLng}`);
         });
         
         setOrders(ordersList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
@@ -200,8 +200,8 @@ export default function DeliveryPage() {
     const pendingOrders = orders.filter(o => o.status === "shipped");
     
     pendingOrders.forEach((order, idx) => {
-      const lat = order.latitude;
-      const lng = order.longitude;
+      const lat = order.deliveryLat;
+      const lng = order.deliveryLng;
       
       if (typeof lat === "number" && typeof lng === "number" && lat && lng) {
         try {
