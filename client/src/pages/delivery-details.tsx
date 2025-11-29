@@ -328,20 +328,14 @@ export default function DeliveryDetailsPage() {
         let notificationMessage = "";
 
         if (data.status === "shipped") {
-          notificationTitle = language === "ar" ? "🚚 تم شحن طلبك" : "🚚 Order Shipped";
-          notificationMessage = language === "ar" 
-            ? "تم شحن طلبك! سيصل إليك قريباً."
-            : "Your order has been shipped! It's on the way.";
+          notificationTitle = t("orderShipped", language);
+          notificationMessage = t("orderShippedMessage", language);
         } else if (data.status === "in-transit") {
-          notificationTitle = language === "ar" ? "📍 الطلب في الطريق" : "📍 Out for Delivery";
-          notificationMessage = language === "ar"
-            ? "طلبك في الطريق إليك الآن."
-            : "Your order is out for delivery.";
+          notificationTitle = t("outForDelivery", language);
+          notificationMessage = t("outForDeliveryMessage", language);
         } else if (data.status === "received") {
-          notificationTitle = language === "ar" ? "✅ تم استقبال طلبك" : "✅ Delivered";
-          notificationMessage = language === "ar"
-            ? "شكراً لك! تم استقبال طلبك بنجاح."
-            : "Thank you! Your order has been delivered.";
+          notificationTitle = t("delivered", language);
+          notificationMessage = t("deliveredMessage", language);
         }
 
         if (notificationTitle && notificationMessage) {
@@ -421,11 +415,11 @@ export default function DeliveryDetailsPage() {
           <div className="px-5 py-4 border-b border-gray-100">
             <button onClick={() => setLocation("/delivery")} className="flex items-center gap-2">
               <ArrowLeft size={20} />
-              <span>{language === "ar" ? "رجوع" : "Back"}</span>
+              <span>{t("backButton", language)}</span>
             </button>
           </div>
           <div className="flex-1 flex items-center justify-center">
-            <p>{language === "ar" ? "لم يتم العثور على الطلب" : "Order not found"}</p>
+            <p>{t("orderNotFound", language)}</p>
           </div>
         </div>
       </MobileWrapper>
@@ -452,7 +446,7 @@ export default function DeliveryDetailsPage() {
           <div className="flex items-center justify-between gap-1 h-8">
             <button onClick={() => setLocation("/delivery")} className="flex items-center gap-0.5 min-w-0">
               <ArrowLeft size={14} />
-              <span className="font-semibold text-[10px] truncate">{language === "ar" ? "رجوع" : "Back"}</span>
+              <span className="font-semibold text-[10px] truncate">{t("backButton", language)}</span>
             </button>
             <div className="flex items-center gap-0 flex-shrink-0">
               {order?.status !== "received" && (
@@ -460,7 +454,7 @@ export default function DeliveryDetailsPage() {
                   onClick={() => setIsNavigating(!isNavigating)}
                   className={`p-1 rounded transition-colors ${isNavigating ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   data-testid="button-navigation"
-                  title={language === "ar" ? "ملاحة" : "Navigate"}
+                  title={t("navigate", language)}
                 >
                   <Navigation size={12} />
                 </button>
@@ -470,7 +464,7 @@ export default function DeliveryDetailsPage() {
                   onClick={recenterMap}
                   className={`p-1 rounded transition-colors ${isAutoCentering ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   data-testid="button-recenter-map"
-                  title={language === "ar" ? "توسيط الخريطة" : "Center map"}
+                  title={t("centerMap", language)}
                 >
                   <Target size={12} />
                 </button>
@@ -479,7 +473,7 @@ export default function DeliveryDetailsPage() {
                 onClick={() => setShowMap(!showMap)}
                 className="p-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
                 data-testid="button-toggle-map"
-                title={showMap ? (language === "ar" ? "إغلاق الخريطة" : "Close") : (language === "ar" ? "فتح الخريطة" : "Open")}
+                title={showMap ? t("closeMap", language) : t("openMap", language)}
               >
                 {showMap ? <ChevronUp size={12} className="text-gray-700" /> : <ChevronDown size={12} className="text-gray-700" />}
               </button>
@@ -495,14 +489,14 @@ export default function DeliveryDetailsPage() {
             {mapLoading ? (
               <div className="w-full bg-blue-50 border-b border-blue-200 flex items-center justify-center gap-2 py-3">
                 <Loader size={18} className="animate-spin text-blue-600" />
-                <span className="text-blue-600 font-semibold text-sm">{language === "ar" ? "جاري تحميل الخريطة..." : "Loading map..."}</span>
+                <span className="text-blue-600 font-semibold text-sm">{t("loadingMapMessage", language)}</span>
               </div>
             ) : deliveryLat && deliveryLng ? (
               <div className="w-full bg-blue-100 border-b border-blue-300 overflow-hidden h-80" ref={mapContainer}></div>
             ) : (
               <div className="w-full bg-gray-200 border-b border-gray-300 py-12 flex items-center justify-center gap-2">
                 <MapPin size={20} className="text-gray-600" />
-                <span className="text-gray-600 font-semibold">{language === "ar" ? "لا توجد معلومات موقع" : "No location info"}</span>
+                <span className="text-gray-600 font-semibold">{t("noLocationInfoMessage", language)}</span>
               </div>
             )}
           </>
@@ -510,7 +504,7 @@ export default function DeliveryDetailsPage() {
         {order?.status === "received" && (
           <div className="w-full bg-green-50 border-b border-green-300 py-8 flex items-center justify-center gap-2">
             <MapPin size={20} className="text-green-600" />
-            <span className="text-green-600 font-semibold">{language === "ar" ? "تم التسليم - الخريطة غير متاحة" : "Delivered - Map unavailable"}</span>
+            <span className="text-green-600 font-semibold">{t("deliveredMapUnavailableMessage", language)}</span>
           </div>
         )}
 
@@ -519,13 +513,13 @@ export default function DeliveryDetailsPage() {
 
           {/* Delivery Info */}
           <div className="bg-white rounded-2xl p-4 border border-gray-200">
-            <h2 className="font-bold text-base mb-3">{language === "ar" ? "معلومات التسليم" : "Delivery Info"}</h2>
+            <h2 className="font-bold text-base mb-3">{t("deliveryInfoTitle", language)}</h2>
             <div className="space-y-3">
               {address && (
                 <div className="flex gap-2">
                   <MapPin size={18} className="text-orange-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "العنوان" : "Address"}</p>
+                    <p className="text-sm font-semibold text-gray-600">{t("address", language)}</p>
                     <p className="text-base">{address}</p>
                   </div>
                 </div>
@@ -535,7 +529,7 @@ export default function DeliveryDetailsPage() {
                 <div className="flex gap-2">
                   <Phone size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "الهاتف" : "Phone"}</p>
+                    <p className="text-sm font-semibold text-gray-600">{t("phone", language)}</p>
                     <a href={`tel:${order.shippingPhone}`} className="text-base text-blue-600 hover:underline">{order.shippingPhone}</a>
                   </div>
                 </div>
@@ -545,7 +539,7 @@ export default function DeliveryDetailsPage() {
                 <div className="flex gap-2">
                   <User size={18} className="text-green-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "العميل" : "Customer"}</p>
+                    <p className="text-sm font-semibold text-gray-600">{t("customer", language)}</p>
                     <p className="text-base">{order.customerName}</p>
                   </div>
                 </div>
@@ -555,7 +549,7 @@ export default function DeliveryDetailsPage() {
                 <div className="flex gap-2">
                   <User size={18} className="text-purple-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "المستلم" : "Recipient"}</p>
+                    <p className="text-sm font-semibold text-gray-600">{t("recipient", language)}</p>
                     <p className="text-base">{order.recipientName}</p>
                   </div>
                 </div>
@@ -565,7 +559,7 @@ export default function DeliveryDetailsPage() {
                 <div className="flex gap-2">
                   <User size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "اسم الدليفرى" : "Delivery Driver"}</p>
+                    <p className="text-sm font-semibold text-gray-600">{t("driver", language)}</p>
                     <p className="text-base">{order.deliveryUsername}</p>
                   </div>
                 </div>
@@ -575,7 +569,7 @@ export default function DeliveryDetailsPage() {
                 <div className="flex gap-2">
                   <FileText size={18} className="text-orange-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "ملاحظات التسليم" : "Delivery Remarks"}</p>
+                    <p className="text-sm font-semibold text-gray-600">{t("remarks", language)}</p>
                     <p className="text-base">{order.deliveryRemarks}</p>
                   </div>
                 </div>
@@ -586,7 +580,7 @@ export default function DeliveryDetailsPage() {
           {/* Items */}
           {order.items && order.items.length > 0 && (
             <div className="bg-white rounded-2xl p-4 border border-gray-200">
-              <h2 className="font-bold text-base mb-3">{language === "ar" ? "المنتجات" : "Items"}</h2>
+              <h2 className="font-bold text-base mb-3">{t("itemsTitle", language)}</h2>
               <div className="space-y-2">
                 {order.items.map((item: any, idx: number) => (
                   <div key={idx} className="flex justify-between text-base pb-2 border-b border-gray-100 last:border-0">
@@ -602,22 +596,22 @@ export default function DeliveryDetailsPage() {
           {/* Route Info & Navigation */}
           {(routeDistance && routeDuration) || isNavigating ? (
             <div className={`rounded-2xl p-4 border ${isNavigating ? "bg-blue-100 border-blue-300" : "bg-blue-50 border-blue-200"}`}>
-              <h2 className="font-bold text-base mb-3 text-blue-900">{isNavigating ? (language === "ar" ? "الملاحة النشطة" : "Active Navigation") : (language === "ar" ? "معلومات المسار" : "Route Info")}</h2>
+              <h2 className="font-bold text-base mb-3 text-blue-900">{isNavigating ? t("activeNavigation", language) : t("routeInfo", language)}</h2>
               <div className="space-y-2 text-base">
                 <div className="flex justify-between">
-                  <span className="text-blue-700">{language === "ar" ? isNavigating ? "المسافة المتبقية" : "المسافة" : isNavigating ? "Remaining" : "Distance"}</span>
+                  <span className="text-blue-700">{isNavigating ? t("remainingDistance", language) : t("distance", language)}</span>
                   <span className="font-semibold text-blue-900">{isNavigating && remainingDistance ? remainingDistance.toFixed(1) : routeDistance?.toFixed(1)} km</span>
                 </div>
                 {!isNavigating && routeDuration && (
                   <div className="flex justify-between">
-                    <span className="text-blue-700">{language === "ar" ? "الوقت المتوقع" : "Estimated Time"}</span>
-                    <span className="font-semibold text-blue-900">{Math.ceil(routeDuration)} {language === "ar" ? "دقيقة" : "min"}</span>
+                    <span className="text-blue-700">{t("estimatedTime", language)}</span>
+                    <span className="font-semibold text-blue-900">{Math.ceil(routeDuration)} {t("minute", language)}</span>
                   </div>
                 )}
                 {isNavigating && (
                   <div className="flex justify-between">
-                    <span className="text-blue-700">{language === "ar" ? "الحالة" : "Status"}</span>
-                    <span className="font-semibold text-green-600">{language === "ar" ? "في الطريق" : "In Transit"}</span>
+                    <span className="text-blue-700">{t("status", language)}</span>
+                    <span className="font-semibold text-green-600">{t("inTransit", language)}</span>
                   </div>
                 )}
               </div>
@@ -630,7 +624,7 @@ export default function DeliveryDetailsPage() {
               <div className="flex gap-2">
                 <CreditCard size={18} className="text-indigo-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "طريقة الدفع" : "Payment"}</p>
+                  <p className="text-sm font-semibold text-gray-600">{t("payment", language)}</p>
                   <p className="text-base font-semibold">{order.paymentMethod}</p>
                 </div>
               </div>
@@ -640,7 +634,7 @@ export default function DeliveryDetailsPage() {
               <div className="flex gap-2">
                 <Truck size={18} className="text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "منطقة الشحن" : "Shipping Zone"}</p>
+                  <p className="text-sm font-semibold text-gray-600">{t("shippingZoneLabel", language)}</p>
                   <p className="text-base font-semibold">{order.shippingZone}</p>
                 </div>
               </div>
@@ -650,7 +644,7 @@ export default function DeliveryDetailsPage() {
               <div className="flex gap-2">
                 <FileText size={18} className="text-yellow-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-gray-600">{language === "ar" ? "ملاحظات" : "Notes"}</p>
+                  <p className="text-sm font-semibold text-gray-600">{t("notesLabel", language)}</p>
                   <p className="text-base">{order.notes}</p>
                 </div>
               </div>
@@ -659,31 +653,31 @@ export default function DeliveryDetailsPage() {
 
           {/* Price Breakdown */}
           <div className="bg-white rounded-2xl p-4 border border-gray-200">
-            <h2 className="font-bold text-base mb-3">{language === "ar" ? "ملخص الأسعار" : "Price Breakdown"}</h2>
+            <h2 className="font-bold text-base mb-3">{t("priceBreakdown", language)}</h2>
             <div className="space-y-2 text-base">
               {order.subtotal !== undefined && (
                 <div className="flex justify-between">
-                  <span className="text-gray-700">{language === "ar" ? "السعر الأساسي" : "Subtotal"}</span>
+                  <span className="text-gray-700">{t("subtotalLabel", language)}</span>
                   <span className="font-semibold">L.E {order.subtotal.toFixed(2)}</span>
                 </div>
               )}
               
               {order.discountAmount ? (
                 <div className="flex justify-between text-red-600">
-                  <span>{language === "ar" ? "خصم" : "Discount"}</span>
+                  <span>{t("discountLabel", language)}</span>
                   <span className="font-semibold">-L.E {order.discountAmount.toFixed(2)}</span>
                 </div>
               ) : null}
               
               {order.shippingCost !== undefined && order.shippingCost > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-gray-700">{language === "ar" ? "شحن" : "Shipping"}</span>
+                  <span className="text-gray-700">{t("shippingLabel", language)}</span>
                   <span className="font-semibold">+L.E {order.shippingCost.toFixed(2)}</span>
                 </div>
               )}
               
               <div className="border-t border-gray-200 pt-2 flex justify-between font-bold text-lg">
-                <span>{language === "ar" ? "الإجمالي" : "Total"}</span>
+                <span>{t("totalLabel", language)}</span>
                 <span>L.E {order.total.toFixed(2)}</span>
               </div>
             </div>
