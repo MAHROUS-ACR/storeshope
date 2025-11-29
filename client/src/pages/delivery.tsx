@@ -165,7 +165,10 @@ export default function DeliveryPage() {
     if (map.current) {
       try {
         map.current.remove();
-      } catch (e) {}
+        console.log("Old map removed");
+      } catch (e) {
+        console.error("Error removing old map:", e);
+      }
       map.current = null;
     }
     
@@ -176,14 +179,25 @@ export default function DeliveryPage() {
     orderMarkersRef.current = [];
     
     const timer = setTimeout(() => {
-      if (!mapContainer.current) return;
+      console.log("Map init timer fired, container:", mapContainer.current);
+      if (!mapContainer.current) {
+        console.error("mapContainer.current is null!");
+        setMapLoading(false);
+        return;
+      }
       
       try {
-        map.current = L.map(mapContainer.current).setView([currentLat, currentLng], 13);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        console.log("Creating Leaflet map...");
+        map.current = L.map(mapContainer.current, {
+          preferCanvas: true,
+        }).setView([currentLat, currentLng], 13);
+        console.log("Map created:", map.current);
+        
+        const tileLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution: '&copy; OpenStreetMap',
           maxZoom: 19,
         }).addTo(map.current);
+        console.log("Tile layer added");
         
         // Add marker for current location
         L.marker([currentLat, currentLng], {
@@ -193,16 +207,23 @@ export default function DeliveryPage() {
             iconAnchor: [16, 16],
           })
         }).addTo(map.current).bindPopup(language === "ar" ? "📍 موقعك الحالي" : "📍 Your Location");
+        console.log("Driver location marker added");
         
-        map.current.invalidateSize();
+        if (map.current) {
+          map.current.invalidateSize();
+          console.log("Map invalidateSize called");
+        }
         setMapLoading(false);
+        console.log("Map ready!");
       } catch (error) {
         console.error("Map init error:", error);
         setMapLoading(false);
       }
-    }, 50);
+    }, 100);
     
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [viewMode, currentLat, currentLng]);
 
   // Add order markers to map
@@ -429,11 +450,13 @@ export default function DeliveryPage() {
                 ) : (
                   <div className="space-y-4">
                     {/* Interactive Map */}
-                    <div className="relative bg-white border border-gray-200 rounded-2xl overflow-hidden" style={{ height: "600px" }}>
+                    <div className="relative bg-white border border-gray-200 rounded-2xl overflow-hidden" style={{ height: "500px" }}>
                       <div 
                         ref={mapContainer}
-                        style={{ height: "100%", width: "100%", position: "relative" }}
+                        id="map-container"
+                        style={{ height: "100%", width: "100%", position: "relative", backgroundColor: "#f0f0f0" }}
                         className="rounded-2xl"
+                        data-testid="map-container"
                       />
                       {/* Update Location Button */}
                       <button
