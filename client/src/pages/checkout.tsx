@@ -138,23 +138,23 @@ export default function CheckoutPage() {
 
     
     if (!customerName.trim()) {
-      toast.error("اكتب الاسم - Enter name");
+      toast.error(t("enterName", language));
       return;
     }
     if (!customerPhone.trim()) {
-      toast.error("اكتب الهاتف - Enter phone");
+      toast.error(t("enterPhone", language));
       return;
     }
     if (shippingSelected === "new" && !deliveryAddress.trim()) {
-      toast.error("اكتب العنوان - Enter address");
+      toast.error(t("enterAddress", language));
       return;
     }
     if (!paymentSelected || !shippingSelected || !zoneSelected) {
-      toast.error("اختر جميع الخيارات");
+      toast.error(t("selectAllOptions", language));
       return;
     }
     if (!items?.length || !user?.id) {
-      toast.error("خطأ في البيانات");
+      toast.error(t("dataError", language));
       return;
     }
 
@@ -180,7 +180,7 @@ export default function CheckoutPage() {
           deliveryLng = locationCoords.lng;
         } else {
           // No coordinates available
-          toast.error("اختر الموقع من الخريطة - Please select location from map");
+          toast.error(t("selectLocationFromMap", language));
           setIsSubmitting(false);
           return;
         }
@@ -204,7 +204,7 @@ export default function CheckoutPage() {
         
         // If no coordinates from map, show error
         if (!deliveryLat || !deliveryLng) {
-          toast.error("اختر الموقع من الخريطة - Please select location from map");
+          toast.error(t("selectLocationFromMap", language));
           setIsSubmitting(false);
           return;
         }
@@ -212,7 +212,7 @@ export default function CheckoutPage() {
 
       // Final validation - coordinates MUST exist
       if (!deliveryLat || !deliveryLng) {
-        toast.error("خطأ: لا توجد إحداثيات - Error: No coordinates available");
+        toast.error(t("errorNoCoordinates", language));
         setIsSubmitting(false);
         return;
       }
