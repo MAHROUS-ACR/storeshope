@@ -178,28 +178,41 @@ export default function DeliveryPage() {
 
   // Add order markers to map
   useEffect(() => {
-    if (viewMode === "map" && map.current && orders.length > 0) {
+    if (!map.current) return;
+    
+    // Remove old order markers (keep driver marker)
+    const markersToRemove: L.Marker[] = [];
+    map.current.eachLayer((layer) => {
+      if (layer instanceof L.Marker && layer !== L.marker([currentLat, currentLng])) {
+        markersToRemove.push(layer as L.Marker);
+      }
+    });
+    markersToRemove.forEach(m => map.current!.removeLayer(m));
+    
+    if (viewMode === "map" && orders.length > 0) {
       const pendingOrders = orders.filter(o => o.status !== "received" && o.status !== "cancelled" && o.status !== "completed");
       
       pendingOrders.forEach((order, idx) => {
-        // Use latitude/longitude for delivery location
-        const lat = order.latitude || 30.0444;
-        const lng = order.longitude || 31.2357;
+        const lat = order.latitude;
+        const lng = order.longitude;
         
-        const markerIcon = L.divIcon({
-          html: `<div style="font-size: 18px; text-align: center; line-height: 28px; width: 28px; height: 28px; background-color: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">${idx + 1}</div>`,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-          popupAnchor: [0, -14],
-          className: ''
-        });
-        
-        L.marker([lat, lng], { icon: markerIcon })
-          .addTo(map.current!)
-          .bindPopup(`Order #${order.orderNumber || "N/A"}<br/>${order.shippingAddress || "No address"}`);
+        // Only add marker if coordinates exist
+        if (lat && lng) {
+          const markerIcon = L.divIcon({
+            html: `<div style="font-size: 18px; text-align: center; line-height: 28px; width: 28px; height: 28px; background-color: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">${idx + 1}</div>`,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14],
+            popupAnchor: [0, -14],
+            className: ''
+          });
+          
+          L.marker([lat, lng], { icon: markerIcon })
+            .addTo(map.current!)
+            .bindPopup(`Order #${order.orderNumber || "N/A"}<br/>${order.shippingAddress || "No address"}`);
+        }
       });
     }
-  }, [viewMode, orders]);
+  }, [viewMode, orders, currentLat, currentLng]);
 
   useEffect(() => {
     const unsubscribe = setupOrdersListener();
