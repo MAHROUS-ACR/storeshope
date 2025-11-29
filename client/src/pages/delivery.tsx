@@ -176,16 +176,15 @@ export default function DeliveryPage() {
     orderMarkersRef.current = [];
     
     const initializeMap = () => {
-      if (!mapContainer.current) {
-        // Retry if container not ready yet
+      // Use getElementById as direct fallback
+      const container = document.getElementById("map-container");
+      if (!container) {
         setTimeout(initializeMap, 50);
         return;
       }
       
       try {
-        map.current = L.map(mapContainer.current, {
-          preferCanvas: true,
-        }).setView([currentLat, currentLng], 13);
+        map.current = L.map(container).setView([currentLat, currentLng], 13);
         
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution: '&copy; OpenStreetMap',
