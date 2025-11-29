@@ -231,24 +231,25 @@ export default function DeliveryPage() {
           zoomControl: true
         }).setView([currentLat, currentLng], 13);
         
-        // Use multiple tile providers as fallback
-        const osmTile = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: '&copy; OpenStreetMap',
+        // Use Esri World Street Map - most reliable
+        const esriTile = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+          attribution: '&copy; Esri',
           maxZoom: 19,
         });
         
-        const fallbackTile = L.tileLayer("https://tile.openstreetmap.de/{z}/{x}/{y}.png", {
-          attribution: '&copy; OpenStreetMap',
-          maxZoom: 19,
+        // Fallback to USGS
+        const usgsaTile = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}", {
+          attribution: '&copy; USGS',
+          maxZoom: 16,
         });
         
-        osmTile.addTo(map.current);
+        esriTile.addTo(map.current);
+        console.log("Esri tiles added");
         
-        osmTile.on('tileload', () => console.log("Tiles loading..."));
-        osmTile.on('tileerror', () => {
-          console.log("OSM tiles failed, trying fallback");
-          osmTile.remove();
-          fallbackTile.addTo(map.current);
+        esriTile.on('tileerror', () => {
+          console.log("Esri tiles failed, trying USGS");
+          esriTile.remove();
+          usgsaTile.addTo(map.current);
         });
         
         console.log("Map initialized successfully");
