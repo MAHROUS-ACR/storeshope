@@ -1133,7 +1133,7 @@ export default function ProfilePage() {
 
                               {newStatus === "shipped" && (
                                 <div>
-                                  <label className="text-xs font-semibold text-gray-700 block mb-2">{`"🚚 " + t("selectDelivery", language)}</label>
+                                  <label className="text-xs font-semibold text-gray-700 block mb-2">{"🚚 " + t("selectDelivery", language)}</label>
                                   <select
                                     value={selectedDeliveryUserId}
                                     onChange={(e) => setSelectedDeliveryUserId(e.target.value)}
@@ -1145,7 +1145,7 @@ export default function ProfilePage() {
                                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-300"
                                     data-testid={`select-delivery-${order.id}`}
                                   >
-                                    <option value="">{`"-- " + t("selectDelivery", language) + " --"`}</option>
+                                    <option value="">{"-- " + t("selectDelivery", language) + " --"}</option>
                                     {deliveryUsers.map((du) => (
                                       <option key={du.id} value={du.id}>
                                         🚚 {du.username || du.email}
@@ -1165,7 +1165,7 @@ export default function ProfilePage() {
                                   className="flex-1 px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 disabled:bg-gray-400 transition"
                                   data-testid={`button-save-order-status-${order.id}`}
                                 >
-                                  {`"✓ " + t("save", language)}
+                                  {"✓ " + t("save", language)}
                                 </button>
                                 <button
                                   onClick={() => {
@@ -1176,7 +1176,7 @@ export default function ProfilePage() {
                                   className="flex-1 px-3 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-400 transition"
                                   data-testid={`button-cancel-order-edit-${order.id}`}
                                 >
-                                  {`"✕ " + t("cancel", language)}
+                                  {"✕ " + t("cancel", language)}
                                 </button>
                               </div>
                             </div>
@@ -1218,7 +1218,7 @@ export default function ProfilePage() {
                                       className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-semibold hover:bg-blue-200 transition"
                                       data-testid={`button-edit-order-${order.id}`}
                                     >
-                                      {`"✎ " + t("edit", language)}
+                                      {"✎ " + t("edit", language)}
                                     </button>
                                   </div>
                                   {order.deliveryUsername && (
@@ -1717,7 +1717,7 @@ export default function ProfilePage() {
                   >
                     <h3 className={`text-sm font-bold mb-3 ${editingItemId ? "text-amber-700" : ""}`}>
                       {editingItemId ? t("editProduct", language) : t("addNewProduct", language)}
-                      {editingItemId && <span className="ml-2 text-xs text-amber-600">{`"(" + t("editMode", language) + ")"`}</span>}
+                      {editingItemId && <span className="ml-2 text-xs text-amber-600">{"(" + t("editMode", language) + ")"}</span>}
                     </h3>
                     <div className="space-y-3">
                       {/* Product Main Image */}
