@@ -8,7 +8,7 @@ import { t } from "@/lib/translations";
 import { getStatusColor } from "@/lib/statusColors";
 import { getFirestore, collection, onSnapshot, doc, updateDoc } from "firebase/firestore";
 import { toast } from "sonner";
-import { Check, Map, List, Loader, Navigation } from "lucide-react";
+import { Check, Map, List, Loader, Navigation, FileText } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -334,7 +334,7 @@ export default function DeliveryPage() {
 
                     {/* Orders */}
                     {orders.filter(order => selectedStatusFilter === null || order.status === selectedStatusFilter).map((order) => (
-                      <div key={order.id} onClick={() => { sessionStorage.setItem('previousPage', '/delivery'); setLocation(`/delivery-order/${order.id}`); }} className="w-full text-left p-4 bg-white border border-gray-200 rounded-2xl hover:border-orange-300 cursor-pointer" data-testid={`card-order-${order.id}`}>
+                      <div key={order.id} className="w-full text-left p-4 bg-white border border-gray-200 rounded-2xl" data-testid={`card-order-${order.id}`}>
                         <div className="flex items-center justify-between mb-2">
                           <div>
                             <p className="text-sm font-bold text-gray-900">Order #{order.orderNumber || "N/A"}</p>
@@ -347,8 +347,16 @@ export default function DeliveryPage() {
                           </div>
                         </div>
                         <p className="text-sm font-bold text-orange-600 mb-3">L.E {order.total.toFixed(2)}</p>
+                        <div className="flex gap-2">
+                          <button onClick={() => { sessionStorage.setItem('previousPage', '/delivery'); setLocation(`/delivery-order/${order.id}`); }} className="flex-1 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg flex items-center justify-center gap-2" data-testid={`button-map-${order.id}`}>
+                            <Map size={16} /> {language === "ar" ? "الخريطة" : "Map"}
+                          </button>
+                          <button onClick={() => { sessionStorage.setItem('previousPage', '/delivery'); setLocation(`/delivery-order-info/${order.id}`); }} className="flex-1 py-2 px-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg flex items-center justify-center gap-2" data-testid={`button-info-${order.id}`}>
+                            <FileText size={16} /> {language === "ar" ? "البيانات" : "Info"}
+                          </button>
+                        </div>
                         {order.status === "shipped" && (
-                          <button onClick={(e) => { e.stopPropagation(); handleMarkAsReceived(order.id); }} className="w-full py-2 px-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg flex items-center justify-center gap-2" data-testid={`button-mark-received-${order.id}`}>
+                          <button onClick={(e) => { e.stopPropagation(); handleMarkAsReceived(order.id); }} className="w-full py-2 px-4 mt-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg flex items-center justify-center gap-2" data-testid={`button-mark-received-${order.id}`}>
                             <Check size={16} /> {t("markAsReceived", language)}
                           </button>
                         )}

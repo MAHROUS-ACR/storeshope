@@ -11,6 +11,7 @@ import Home from "@/pages/home";
 import ProfilePage from "@/pages/profile";
 import DeliveryPage from "@/pages/delivery";
 import DeliveryDetailsPage from "@/pages/delivery-details";
+import DeliveryOrderInfoPage from "@/pages/delivery-order-info";
 import SettingsPage from "@/pages/settings";
 import CartPage from "@/pages/cart";
 import CheckoutPage from "@/pages/checkout";
@@ -30,6 +31,7 @@ function AppRouter() {
       <Route path="/profile" component={ProfilePage} />
       <Route path="/delivery" component={DeliveryPage} />
       <Route path="/delivery-order/:id" component={DeliveryDetailsPage} />
+      <Route path="/delivery-order-info/:id" component={DeliveryOrderInfoPage} />
       <Route path="/settings" component={SettingsPage} />
       <Route path="/cart" component={CartPage} />
       <Route path="/checkout" component={CheckoutPage} />
