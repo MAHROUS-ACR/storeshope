@@ -561,11 +561,6 @@ export default function DeliveryPage() {
                     </div>
                   )}
                 </div>
-              ) : (
-                <div className="text-center py-12 text-gray-500">
-                  <p className="text-lg font-semibold mb-2">📍</p>
-                  <p>{language === "ar" ? "لا توجد طلبات للتسليم" : "No orders to deliver"}</p>
-                </div>
               )}
             </>
           )}
