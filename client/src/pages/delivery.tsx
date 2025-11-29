@@ -188,7 +188,7 @@ export default function DeliveryPage() {
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    {language === "ar" ? "🎉 مكتمل" : "🎉 Completed"}
+                    {t("completed", language)}
                   </button>
                 </div>
               </div>
