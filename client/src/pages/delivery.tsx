@@ -192,6 +192,24 @@ export default function DeliveryPage() {
       return;
     }
 
+    setMapLoading(true);
+
+    // Ensure map is initialized
+    if (!map.current && mapContainer.current) {
+      try {
+        map.current = L.map(mapContainer.current).setView([currentLat, currentLng], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; OpenStreetMap',
+          maxZoom: 19,
+        }).addTo(map.current);
+        map.current.invalidateSize();
+      } catch (error) {
+        console.error("Map reinit error:", error);
+        setMapLoading(false);
+        return;
+      }
+    }
+
     const pendingOrders = orders.filter(o => o.status !== "received" && o.status !== "cancelled" && o.status !== "completed");
     const orderLocations: OrderLocation[] = [];
 
@@ -217,21 +235,22 @@ export default function DeliveryPage() {
       }
     }
 
-    if (orderLocations.length === 0) {
-      setRouteInfo(null);
+    if (!map.current || orderLocations.length === 0) {
       setMapLoading(false);
       return;
     }
 
-    setMapLoading(true);
+    try {
+      // Clear old markers and route
+      markersRef.current.forEach(m => {
+        try { m.remove(); } catch (e) {}
+      });
+      markersRef.current = [];
+      if (routePolylineRef.current) {
+        try { routePolylineRef.current.remove(); } catch (e) {}
+      }
 
-    // Clear old markers and route
-    markersRef.current.forEach(m => m.remove());
-    markersRef.current = [];
-    if (routePolylineRef.current) routePolylineRef.current.remove();
-
-    // Add driver marker (green car)
-    if (map.current) {
+      // Add driver marker (green car)
       const driverMarker = L.marker([currentLat, currentLng], { icon: createDriverIcon() })
         .addTo(map.current)
         .bindPopup("🚗 " + (language === "ar" ? "موقعك الحالي" : "Your Location"));
@@ -246,18 +265,14 @@ export default function DeliveryPage() {
       });
 
       // Fit all markers in view
-      if (orderLocations.length > 0) {
-        const allPoints: L.LatLngExpression[] = [[currentLat, currentLng], ...orderLocations.map(o => [o.lat, o.lng] as L.LatLngExpression)];
-        const bounds = L.latLngBounds(allPoints);
-        map.current.fitBounds(bounds, { padding: [50, 50] });
-      }
-    }
+      const allPoints: L.LatLngExpression[] = [[currentLat, currentLng], ...orderLocations.map(o => [o.lat, o.lng] as L.LatLngExpression)];
+      const bounds = L.latLngBounds(allPoints);
+      map.current.fitBounds(bounds, { padding: [50, 50] });
 
-    // Calculate route using OSRM
-    const coordinates = [[currentLng, currentLat], ...orderLocations.map(o => [o.lng, o.lat])];
-    const coordsStr = coordinates.map(c => `${c[0]},${c[1]}`).join(";");
-    
-    try {
+      // Calculate route using OSRM
+      const coordinates = [[currentLng, currentLat], ...orderLocations.map(o => [o.lng, o.lat])];
+      const coordsStr = coordinates.map(c => `${c[0]},${c[1]}`).join(";");
+      
       const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${coordsStr}?geometries=geojson&overview=full`);
       const data = await res.json();
       if (data.routes?.[0]) {
@@ -275,8 +290,7 @@ export default function DeliveryPage() {
         }
       }
     } catch (error) {
-      console.error("Route error:", error);
-      setRouteInfo(null);
+      console.error("Map error:", error);
     } finally {
       setMapLoading(false);
     }
