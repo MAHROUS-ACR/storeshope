@@ -371,25 +371,25 @@ export default function CheckoutPage() {
             </div>
             <div className="border-t border-gray-200 pt-4 space-y-2">
               <div className="flex justify-between text-gray-700">
-                <span>{language === "ar" ? "الأصلي:" : "Original:"}</span>
+                <span>{t("original", language)}</span>
                 <span>L.E {originalSubtotal.toFixed(2)}</span>
               </div>
               {totalDiscount > 0 && (
                 <div className="flex justify-between text-green-600 font-semibold">
-                  <span>{language === "ar" ? "الخصم:" : "Discount:"}</span>
+                  <span>{t("discount", language)}</span>
                   <span>-L.E {totalDiscount.toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between text-gray-700">
-                <span>{language === "ar" ? "المجموع:" : "Subtotal:"}</span>
+                <span>{t("subtotal", language)}</span>
                 <span>L.E {subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-700">
-                <span>{language === "ar" ? "التوصيل:" : "Shipping:"}</span>
+                <span>{t("shippingCost", language)}</span>
                 <span className="text-orange-600 font-semibold">+ L.E {shipping.toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
-                <span className="font-bold text-lg text-gray-900">{language === "ar" ? "الإجمالي:" : "Total:"}</span>
+                <span className="font-bold text-lg text-gray-900">{t("total", language)}</span>
                 <span className="text-2xl font-bold text-green-600">L.E {grandTotal.toFixed(2)}</span>
               </div>
             </div>
@@ -398,7 +398,7 @@ export default function CheckoutPage() {
           {/* Shipping Type */}
           <section className="bg-white rounded-xl p-5 mb-5 border border-gray-200 shadow-sm">
             <h3 className="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
-              <MapPin className="w-5 h-5" /> {language === "ar" ? "طريقة التوصيل" : "Delivery Method"}
+              <MapPin className="w-5 h-5" /> {t("deliveryMethod", language)}
             </h3>
             <div className="space-y-2">
               <button
@@ -409,8 +409,8 @@ export default function CheckoutPage() {
               >
                 <span className="text-lg">📍</span>
                 <div className={language === "ar" ? "text-left" : "text-right"}>
-                  <p>{language === "ar" ? "بيانات محفوظة" : "Saved Address"}</p>
-                  <p className="text-sm opacity-75">{language === "ar" ? "استخدم البيانات المحفوظة" : "Use saved address"}</p>
+                  <p>{t("savedAddress", language)}</p>
+                  <p className="text-sm opacity-75">{t("useSavedAddress", language)}</p>
                 </div>
               </button>
               <button
@@ -421,8 +421,8 @@ export default function CheckoutPage() {
               >
                 <span className="text-lg">✏️</span>
                 <div className={language === "ar" ? "text-left" : "text-right"}>
-                  <p>{language === "ar" ? "عنوان جديد" : "New Address"}</p>
-                  <p className="text-sm opacity-75">{language === "ar" ? "أدخل بيانات مختلفة" : "Enter different details"}</p>
+                  <p>{t("newAddress", language)}</p>
+                  <p className="text-sm opacity-75">{t("enterDifferentDetails", language)}</p>
                 </div>
               </button>
             </div>
@@ -433,16 +433,16 @@ export default function CheckoutPage() {
             <section className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 mb-5 border-2 border-blue-300 shadow-md">
               <h3 className="font-bold text-lg text-gray-900 mb-5 flex items-center gap-2">
                 <User className="w-5 h-5" />
-                {language === "ar" ? (shippingSelected === "saved" ? "بيانات الطلب" : "بيانات التوصيل") : (shippingSelected === "saved" ? "Order Information" : "Delivery Information")}
+                {shippingSelected === "saved" ? t("orderInformation", language) : t("deliveryInformation", language)}
               </h3>
               
               {/* Customer Info Fields */}
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">👤 {language === "ar" ? "الاسم" : "Name"}</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">👤 {t("name", language)}</label>
                   <input
                     type="text"
-                    placeholder={language === "ar" ? (shippingSelected === "saved" ? "اسمك الكامل" : "اسم المستقبل") : (shippingSelected === "saved" ? "Your full name" : "Recipient's name")}
+                    placeholder={shippingSelected === "saved" ? t("fullName", language) : t("recipientName", language)}
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     disabled={shippingSelected === "saved"}
@@ -454,10 +454,10 @@ export default function CheckoutPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">📱 {language === "ar" ? "رقم الهاتف" : "Phone"}</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">📱 {t("phone", language)}</label>
                   <input
                     type="tel"
-                    placeholder={language === "ar" ? "+201012345678" : "+20 1012345678"}
+                    placeholder={t("fullPhone", language)}
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     disabled={shippingSelected === "saved"}
@@ -476,7 +476,7 @@ export default function CheckoutPage() {
                         onClick={() => setShowMapSelector(!showMapSelector)}
                         className="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition"
                       >
-                        {showMapSelector ? (language === "ar" ? "❌ إغلاق الخريطة" : "❌ Close Map") : (language === "ar" ? "🗺️ اختر من الخريطة" : "🗺️ Choose from Map")}
+                        {showMapSelector ? t("closeMap", language) : t("chooseFromMap", language)}
                       </button>
                     </div>
                     
@@ -487,7 +487,7 @@ export default function CheckoutPage() {
                             setDeliveryAddress(address);
                             setLocationCoords({ lat, lng });
                             setShowMapSelector(false);
-                            toast.success(language === "ar" ? "✅ تم تحديد الموقع" : "✅ Location set");
+                            toast.success(t("locationSet", language));
                           }}
                           initialAddress={deliveryAddress}
                           initialLat={locationCoords?.lat}
