@@ -73,124 +73,123 @@ export default function CartPage() {
 
   return (
     <MobileWrapper>
-      <div className="w-full flex-1 flex flex-col overflow-hidden">
+      <div className="w-full flex-1 flex flex-col overflow-hidden bg-gradient-to-b from-gray-50 to-white">
         {/* Header */}
-        <div className="px-5 pb-4 pt-2 flex items-center gap-4 border-b border-gray-100 flex-shrink-0">
+        <div className="px-5 py-4 flex items-center gap-3 bg-white border-b border-gray-200 flex-shrink-0 shadow-sm">
           <button
             onClick={() => setLocation("/")}
-            className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center"
+            className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition"
             data-testid="button-back"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
           </button>
-          <h1 className="text-lg font-bold">{t("cart", language)} ({items.length})</h1>
+          <h1 className="text-xl font-bold text-gray-900">{t("cart", language)}</h1>
+          <span className="ml-auto text-xs font-semibold bg-black text-white px-2.5 py-1 rounded-full">{items.length} {language === "ar" ? "منتج" : "items"}</span>
         </div>
 
         {/* Items List - Scrollable */}
-        <div className="flex-1 overflow-y-auto no-scrollbar w-full" style={{ paddingBottom: "240px" }}>
-          <div className="w-full px-5 py-4 space-y-3">
+        <div className="flex-1 overflow-y-auto no-scrollbar w-full" style={{ paddingBottom: "220px" }}>
+          <div className="w-full px-4 py-3 space-y-2.5">
             {items.map((item) => (
               <div
                 key={item._uniqueId}
-                className="flex gap-3 p-4 bg-white rounded-2xl border border-gray-100"
+                className="flex gap-3 p-3.5 bg-white rounded-xl border border-gray-200 shadow-xs hover:shadow-sm transition"
                 data-testid={`cart-item-${item._uniqueId}`}
               >
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
+                  className="w-24 h-24 rounded-lg object-cover flex-shrink-0"
                 />
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm line-clamp-1">{item.title}</p>
-                  {(item.selectedColor || item.selectedSize || item.selectedUnit) && (
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {item.selectedUnit && <span className="inline-block px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px]">{item.selectedUnit}</span>}
-                      {item.selectedSize && <span className="inline-block px-1.5 py-0.5 bg-green-100 text-green-700 rounded text-[9px]">{item.selectedSize}</span>}
-                      {item.selectedColor && (() => {
-                        const [colorName, colorHex] = typeof item.selectedColor === 'string' ? item.selectedColor.split('|') : [item.selectedColor, '#000000'];
-                        return (
-                          <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-medium" style={{backgroundColor: colorHex || '#000000', color: ['#ffffff', '#f0f0f0', '#e0e0e0'].includes((colorHex || '#000000').toLowerCase()) ? '#000000' : '#ffffff'}}>
-                            {colorName}
-                          </span>
-                        );
-                      })()}
-                    </div>
-                  )}
-                  {(() => {
-                    const activeDiscount = getActiveDiscount(item.id, discounts);
-                    const discountedPrice = calculateItemPrice(item);
-                    return (
-                      <div className="mt-1">
-                        {activeDiscount ? (
-                          <div className="flex items-baseline gap-2">
-                            <p className="text-lg font-bold text-green-600">L.E {discountedPrice.toFixed(2)}</p>
-                            <p className="text-xs text-gray-400 line-through">L.E {item.price.toFixed(2)}</p>
-                          </div>
-                        ) : (
-                          <p className="text-lg font-bold">L.E {item.price.toFixed(2)}</p>
-                        )}
+                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <div>
+                    <p className="font-semibold text-sm text-gray-900 line-clamp-2">{item.title}</p>
+                    {(item.selectedColor || item.selectedSize || item.selectedUnit) && (
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        {item.selectedUnit && <span className="inline-block px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-[8px] font-medium">{item.selectedUnit}</span>}
+                        {item.selectedSize && <span className="inline-block px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-[8px] font-medium">{item.selectedSize}</span>}
+                        {item.selectedColor && (() => {
+                          const [colorName, colorHex] = typeof item.selectedColor === 'string' ? item.selectedColor.split('|') : [item.selectedColor, '#000000'];
+                          return (
+                            <span className="inline-block px-2 py-0.5 rounded text-[8px] font-medium" style={{backgroundColor: colorHex || '#000000', color: ['#ffffff', '#f0f0f0', '#e0e0e0'].includes((colorHex || '#000000').toLowerCase()) ? '#000000' : '#ffffff'}}>
+                              {colorName}
+                            </span>
+                          );
+                        })()}
                       </div>
-                    );
-                  })()}
-                  <div className="flex items-center gap-2 mt-2">
-                    <button
-                      onClick={() => updateQuantity(item._uniqueId, item.quantity - 1)}
-                      className="p-1 rounded-lg bg-gray-100 hover:bg-gray-200"
-                      data-testid={`button-decrease-${item._uniqueId}`}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="w-6 text-center text-sm font-semibold">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item._uniqueId, item.quantity + 1)}
-                      className="p-1 rounded-lg bg-gray-100 hover:bg-gray-200"
-                      data-testid={`button-increase-${item._uniqueId}`}
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => removeItem(item._uniqueId)}
-                      className="p-1 text-red-500 hover:bg-red-50 rounded-lg ml-auto"
-                      data-testid={`button-remove-${item._uniqueId}`}
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    {(() => {
+                      const activeDiscount = getActiveDiscount(item.id, discounts);
+                      const discountedPrice = calculateItemPrice(item);
+                      return (
+                        <div>
+                          {activeDiscount ? (
+                            <div className="flex items-baseline gap-1.5">
+                              <p className="text-base font-bold text-green-600">L.E {discountedPrice.toFixed(2)}</p>
+                              <p className="text-xs text-gray-400 line-through">L.E {item.price.toFixed(2)}</p>
+                            </div>
+                          ) : (
+                            <p className="text-base font-bold text-gray-900">L.E {item.price.toFixed(2)}</p>
+                          )}
+                        </div>
+                      );
+                    })()}
+                    <div className="flex items-center gap-1.5 bg-gray-100 rounded-lg p-1">
+                      <button
+                        onClick={() => updateQuantity(item._uniqueId, item.quantity - 1)}
+                        className="p-1 rounded hover:bg-gray-200 transition"
+                        data-testid={`button-decrease-${item._uniqueId}`}
+                      >
+                        <Minus className="w-3.5 h-3.5 text-gray-600" />
+                      </button>
+                      <span className="w-5 text-center text-xs font-bold text-gray-900">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item._uniqueId, item.quantity + 1)}
+                        className="p-1 rounded hover:bg-gray-200 transition"
+                        data-testid={`button-increase-${item._uniqueId}`}
+                      >
+                        <Plus className="w-3.5 h-3.5 text-gray-600" />
+                      </button>
+                    </div>
                   </div>
                 </div>
+                <button
+                  onClick={() => removeItem(item._uniqueId)}
+                  className="text-red-500 hover:bg-red-50 rounded-lg p-2 transition self-start flex-shrink-0"
+                  data-testid={`button-remove-${item._uniqueId}`}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             ))}
           </div>
         </div>
 
         {/* Order Summary & Checkout Button - Fixed at bottom */}
-        <div className="fixed left-0 right-0 px-5 py-3 border-t border-gray-100 bg-white space-y-2 max-w-[500px] mx-auto" style={{ bottom: "72px", width: "100%", boxSizing: "border-box" }}>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t("subtotal", language)}</span>
-              <span className="font-semibold">L.E {total.toFixed(2)}</span>
-            </div>
+        <div className="fixed left-0 right-0 px-4 py-3 bg-white border-t border-gray-200 space-y-3 shadow-2xl" style={{ bottom: "72px", width: "100%", boxSizing: "border-box" }}>
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-3.5 space-y-2 border border-gray-200">
             {totalWithDiscounts < total && (
-              <>
-                <div className="flex justify-between text-sm text-green-600">
-                  <span>{t("discountSavings", language)}</span>
-                  <span className="font-semibold">-L.E {(total - totalWithDiscounts).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100 text-green-600">
-                  <span>{t("total", language)}</span>
-                  <span>L.E {totalWithDiscounts.toFixed(2)}</span>
-                </div>
-              </>
-            )}
-            {totalWithDiscounts === total && (
-              <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100">
-                <span>{t("total", language)}</span>
-                <span>L.E {total.toFixed(2)}</span>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-600">{t("subtotal", language)}</span>
+                <span className="text-gray-600">L.E {total.toFixed(2)}</span>
               </div>
             )}
+            {totalWithDiscounts < total && (
+              <div className="flex justify-between text-xs text-green-600">
+                <span>{t("discountSavings", language)}</span>
+                <span className="font-semibold">-L.E {(total - totalWithDiscounts).toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t border-gray-200">
+              <span>{t("total", language)}</span>
+              <span className="text-green-600">L.E {(totalWithDiscounts || total).toFixed(2)}</span>
+            </div>
           </div>
           <button
             onClick={handleCheckout}
-            className="w-full bg-black text-white py-4 rounded-2xl font-semibold hover:bg-neutral-800 active:bg-neutral-900 transition-colors"
+            className="w-full bg-gradient-to-r from-black to-gray-800 text-white py-3.5 rounded-xl font-bold hover:shadow-lg active:scale-95 transition-all"
             data-testid="button-checkout"
           >
             {t("proceedToPayment", language)}
