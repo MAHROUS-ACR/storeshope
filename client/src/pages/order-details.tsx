@@ -73,6 +73,7 @@ interface Order {
   shippingZone?: string;
   customerName?: string;
   customerPhone?: string;
+  customerEmail?: string;
   deliveryAddress?: string;
   notes?: string;
   deliveryUsername?: string;
@@ -84,6 +85,7 @@ interface Order {
   deliveryLng?: number;
   driverLat?: number;
   driverLng?: number;
+  userEmail?: string;
 }
 
 export default function OrderDetailsPage() {

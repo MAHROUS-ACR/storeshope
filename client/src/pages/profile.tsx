@@ -11,7 +11,7 @@ import avatarImage from "@assets/generated_images/professional_user_avatar_portr
 import { saveFirebaseConfig, getFirebaseConfig, clearFirebaseConfig } from "@/lib/firebaseConfig";
 import { getFirestore, doc, updateDoc, getDoc, collection, setDoc, getDocs, addDoc, deleteDoc, query, where, onSnapshot } from "firebase/firestore";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { getProducts, getOrders } from "@/lib/firebaseOps";
+import { getProducts, getOrders, sendOrderStatusUpdateEmail } from "@/lib/firebaseOps";
 import { getStatusColor } from "@/lib/statusColors";
 import { MapSelector } from "@/components/map-selector";
 
@@ -657,7 +657,13 @@ export default function ProfilePage() {
     try {
       const db = getFirestore();
       const orderRef = doc(db, "orders", orderId);
-      const updateData: any = { status };
+      
+      // Find the order to get old status and customer email
+      const currentOrder = orders.find(o => o.id === orderId);
+      const oldStatus = currentOrder?.status || "pending";
+      const customerEmail = currentOrder?.userEmail || currentOrder?.customerEmail;
+      
+      const updateData: any = { status, updatedAt: new Date().toISOString() };
       
       if (status === "shipped" && selectedDeliveryUserId) {
         const selectedDelivery = deliveryUsers.find(d => d.id === selectedDeliveryUserId);
@@ -666,14 +672,22 @@ export default function ProfilePage() {
       }
       
       await updateDoc(orderRef, updateData);
-      toast.success("Order status updated!");
+      
+      // Send status update email if customer email exists
+      if (customerEmail && currentOrder) {
+        const updatedOrder = { ...currentOrder, status };
+        await sendOrderStatusUpdateEmail(updatedOrder, customerEmail, oldStatus).catch(() => {
+          // Silent fail for email
+        });
+      }
+      
+      toast.success(language === "ar" ? "تم تحديث الحالة!" : "Order status updated!");
       setEditingOrderId(null);
       setNewStatus("");
       setSelectedDeliveryUserId("");
       setupOrdersListener();
-    } catch (error) {
-
-      toast.error("Failed to update order");
+    } catch (error: any) {
+      toast.error(language === "ar" ? "فشل تحديث الطلب" : "Failed to update order");
     }
   };
 
