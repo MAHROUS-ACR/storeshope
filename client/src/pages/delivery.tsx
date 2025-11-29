@@ -217,6 +217,8 @@ export default function DeliveryPage() {
   useEffect(() => {
     if (!map.current || viewMode !== "map" || orders.length === 0) return;
     
+    console.log("Adding markers to map...");
+    
     // Remove old markers
     orderMarkersRef.current.forEach(m => {
       try { map.current?.removeLayer(m); } catch (e) {}
@@ -224,6 +226,7 @@ export default function DeliveryPage() {
     orderMarkersRef.current = [];
     
     const pendingOrders = orders.filter(o => o.status === "shipped");
+    console.log("Pending orders:", pendingOrders.length);
     
     let markerCount = 0;
     pendingOrders.forEach((order, idx) => {
@@ -252,7 +255,8 @@ export default function DeliveryPage() {
         }
       }
     });
-  }, [viewMode, orders, map]);
+    console.log("Total markers added:", markerCount);
+  }, [viewMode, orders]);
 
   useEffect(() => {
     const unsubscribe = setupOrdersListener();
