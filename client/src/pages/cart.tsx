@@ -88,7 +88,7 @@ export default function CartPage() {
         </div>
 
         {/* Items List - Scrollable */}
-        <div className="flex-1 overflow-y-auto no-scrollbar w-full" style={{ paddingBottom: "220px" }}>
+        <div className="flex-1 overflow-y-auto no-scrollbar w-full" style={{ paddingBottom: "160px" }}>
           <div className="w-full px-4 py-3 space-y-2.5">
             {items.map((item) => (
               <div
