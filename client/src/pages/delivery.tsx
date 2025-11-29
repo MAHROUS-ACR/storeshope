@@ -157,6 +157,7 @@ export default function DeliveryPage() {
   // Calculate optimized route for all pending orders
   const calculateOptimizedRoute = async () => {
     if (!currentLat || !currentLng) {
+      console.log("No location data", currentLat, currentLng);
       toast.error("Cannot determine your location");
       return;
     }
@@ -180,7 +181,7 @@ export default function DeliveryPage() {
             lng = parseFloat(results[0].lon);
           }
         } catch (error) {
-          // Skip this order
+          console.error("Geocoding error:", error);
           continue;
         }
       }
@@ -197,11 +198,31 @@ export default function DeliveryPage() {
     }
 
     if (orderLocations.length === 0) {
+      console.log("No pending orders with locations");
       toast.error("No pending deliveries with valid locations");
       return;
     }
 
     setMapLoading(true);
+
+    // Initialize map first
+    if (!map.current && mapContainer.current) {
+      console.log("Initializing map with container:", mapContainer.current);
+      try {
+        map.current = L.map(mapContainer.current, { 
+          preferCanvas: true
+        }).setView([currentLat, currentLng], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; OpenStreetMap',
+          maxZoom: 19,
+        }).addTo(map.current);
+        console.log("Map initialized successfully");
+      } catch (error) {
+        console.error("Map initialization error:", error);
+        setMapLoading(false);
+        return;
+      }
+    }
 
     // Use OSRM to find best route
     const coordinates = [
@@ -211,10 +232,12 @@ export default function DeliveryPage() {
 
     try {
       const coordsStr = coordinates.map(c => `${c[0]},${c[1]}`).join(";");
+      console.log("Requesting OSRM route:", coordsStr);
       const response = await fetch(
         `https://router.project-osrm.org/route/v1/driving/${coordsStr}?geometries=geojson&overview=full`
       );
       const data = await response.json();
+      console.log("OSRM response:", data);
 
       if (data.routes && data.routes[0]) {
         const route = data.routes[0];
@@ -222,15 +245,6 @@ export default function DeliveryPage() {
           distance: Math.round(route.distance / 1000 * 10) / 10,
           duration: Math.round(route.duration / 60)
         });
-
-        // Initialize map if not already done
-        if (!map.current && mapContainer.current) {
-          map.current = L.map(mapContainer.current).setView([currentLat, currentLng], 13);
-          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: '&copy; OpenStreetMap',
-            maxZoom: 19,
-          }).addTo(map.current);
-        }
 
         if (map.current) {
           const mapInstance = map.current;
@@ -240,10 +254,14 @@ export default function DeliveryPage() {
           if (routePolylineRef.current) routePolylineRef.current.remove();
 
           // Trigger map resize
-          setTimeout(() => mapInstance.invalidateSize(), 100);
+          setTimeout(() => {
+            console.log("Calling invalidateSize");
+            mapInstance.invalidateSize();
+          }, 100);
 
           // Draw route
           const coords = route.geometry.coordinates.map((c: [number, number]): L.LatLngExpression => [c[1], c[0]]);
+          console.log("Drawing route with", coords.length, "points");
           routePolylineRef.current = L.polyline(coords, {
             color: '#2563eb',
             weight: 3,
@@ -280,10 +298,15 @@ export default function DeliveryPage() {
             ...orderLocations.map(o => [o.lat, o.lng] as L.LatLngExpression)
           ];
           const bounds = L.latLngBounds(boundsArray);
+          console.log("Fitting bounds");
           mapInstance.fitBounds(bounds, { padding: [50, 50] });
         }
+      } else {
+        console.error("No routes in OSRM response");
+        toast.error("Failed to calculate route");
       }
     } catch (error) {
+      console.error("Route calculation error:", error);
       toast.error("Failed to calculate route");
     } finally {
       setMapLoading(false);
