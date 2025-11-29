@@ -179,15 +179,12 @@ export default function DeliveryPage() {
   // Add order markers to map
   useEffect(() => {
     if (viewMode === "map" && map.current && orders.length > 0) {
-      console.log("Adding markers for orders:", orders.length);
-      
       const pendingOrders = orders.filter(o => o.status !== "received" && o.status !== "cancelled" && o.status !== "completed");
       
       pendingOrders.forEach((order, idx) => {
-        const lat = order.latitude || order.deliveryLat || 30.0444;
-        const lng = order.longitude || order.deliveryLng || 31.2357;
-        
-        console.log(`Order ${order.orderNumber}: lat=${lat}, lng=${lng}`);
+        // Use latitude/longitude for delivery location
+        const lat = order.latitude || 30.0444;
+        const lng = order.longitude || 31.2357;
         
         const markerIcon = L.divIcon({
           html: `<div style="font-size: 18px; text-align: center; line-height: 28px; width: 28px; height: 28px; background-color: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">${idx + 1}</div>`,
