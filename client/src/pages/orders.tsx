@@ -474,11 +474,11 @@ export default function OrdersPage() {
                       {/* Customer & Delivery Information */}
                       {(selectedOrder.customerName || selectedOrder.customerPhone || selectedOrder.deliveryAddress || selectedOrder.shippingAddress || selectedOrder.shippingPhone || selectedOrder.shippingZone) && (
                         <div className="mt-3 pt-3 border-t border-gray-100">
-                          <p className="text-xs font-semibold text-gray-500 mb-2">👤 {language === "ar" ? "بيانات التوصيل" : "Delivery Information"}</p>
+                          <p className="text-xs font-semibold text-gray-500 mb-2">👤 {t("deliveryInformationLabel", language)}</p>
                           <div className="space-y-1.5">
                             {(selectedOrder.customerName || selectedOrder.shippingAddress) && (
                               <div>
-                                <p className="text-xs text-gray-500">{language === "ar" ? "الاسم" : "Name"}</p>
+                                <p className="text-xs text-gray-500">{t("nameLabel", language)}</p>
                                 <p className="text-xs font-medium text-gray-900">{selectedOrder.customerName || selectedOrder.shippingAddress || "N/A"}</p>
                               </div>
                             )}
@@ -513,7 +513,7 @@ export default function OrdersPage() {
                       {/* Notes */}
                       {selectedOrder.notes && (
                         <div className="mt-3 pt-3 border-t border-gray-100">
-                          <p className="text-xs font-semibold text-gray-500 mb-2">📝 {language === "ar" ? "ملاحظات" : "Notes"}</p>
+                          <p className="text-xs font-semibold text-gray-500 mb-2">📝 {t("notesLabel", language)}</p>
                           <p className="text-xs text-gray-900">{selectedOrder.notes}</p>
                         </div>
                       )}
@@ -531,11 +531,11 @@ export default function OrdersPage() {
                           {selectedOrder.discountedTotal !== undefined && selectedOrder.subtotal !== undefined && selectedOrder.discountedTotal < selectedOrder.subtotal && (
                             <>
                               <div className="flex justify-between text-green-600 font-semibold">
-                                <span>{language === "ar" ? "الخصم" : "Discount"}</span>
+                                <span>{t("discountLabel", language)}</span>
                                 <span>-{(selectedOrder.subtotal - selectedOrder.discountedTotal).toFixed(2)}</span>
                               </div>
                               <div className="flex justify-between text-green-600 font-semibold">
-                                <span>{language === "ar" ? "بعد الخصم" : "After Discount"}</span>
+                                <span>{t("afterDiscountLabel", language)}</span>
                                 <span>{selectedOrder.discountedTotal.toFixed(2)}</span>
                               </div>
                             </>
