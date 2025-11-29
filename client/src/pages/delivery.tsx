@@ -165,10 +165,7 @@ export default function DeliveryPage() {
     if (map.current) {
       try {
         map.current.remove();
-        console.log("Old map removed");
-      } catch (e) {
-        console.error("Error removing old map:", e);
-      }
+      } catch (e) {}
       map.current = null;
     }
     
@@ -178,26 +175,22 @@ export default function DeliveryPage() {
     });
     orderMarkersRef.current = [];
     
-    const timer = setTimeout(() => {
-      console.log("Map init timer fired, container:", mapContainer.current);
+    const initializeMap = () => {
       if (!mapContainer.current) {
-        console.error("mapContainer.current is null!");
-        setMapLoading(false);
+        // Retry if container not ready yet
+        setTimeout(initializeMap, 50);
         return;
       }
       
       try {
-        console.log("Creating Leaflet map...");
         map.current = L.map(mapContainer.current, {
           preferCanvas: true,
         }).setView([currentLat, currentLng], 13);
-        console.log("Map created:", map.current);
         
-        const tileLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution: '&copy; OpenStreetMap',
           maxZoom: 19,
         }).addTo(map.current);
-        console.log("Tile layer added");
         
         // Add marker for current location
         L.marker([currentLat, currentLng], {
@@ -207,23 +200,18 @@ export default function DeliveryPage() {
             iconAnchor: [16, 16],
           })
         }).addTo(map.current).bindPopup(language === "ar" ? "📍 موقعك الحالي" : "📍 Your Location");
-        console.log("Driver location marker added");
         
-        if (map.current) {
-          map.current.invalidateSize();
-          console.log("Map invalidateSize called");
-        }
+        map.current.invalidateSize();
         setMapLoading(false);
-        console.log("Map ready!");
       } catch (error) {
         console.error("Map init error:", error);
         setMapLoading(false);
       }
-    }, 100);
-    
-    return () => {
-      clearTimeout(timer);
     };
+    
+    const timer = setTimeout(initializeMap, 50);
+    
+    return () => clearTimeout(timer);
   }, [viewMode, currentLat, currentLng]);
 
   // Add order markers to map
