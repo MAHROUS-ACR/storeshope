@@ -176,6 +176,28 @@ export default function DeliveryPage() {
     }
   }, [viewMode, currentLat, currentLng]);
 
+  // Add order markers to map
+  useEffect(() => {
+    if (viewMode === "map" && map.current && orders.length > 0) {
+      orders.forEach((order, idx) => {
+        const lat = order.latitude || order.deliveryLat || 30.0444;
+        const lng = order.longitude || order.deliveryLng || 31.2357;
+        
+        const markerIcon = L.divIcon({
+          html: `<div style="font-size: 18px; text-align: center; line-height: 28px; width: 28px; height: 28px; background-color: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">${idx + 1}</div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+          popupAnchor: [0, -14],
+          className: ''
+        });
+        
+        L.marker([lat, lng], { icon: markerIcon })
+          .addTo(map.current!)
+          .bindPopup(`Order #${order.orderNumber || "N/A"}<br/>${order.shippingAddress || "No address"}`);
+      });
+    }
+  }, [viewMode, orders, map.current]);
+
   useEffect(() => {
     const unsubscribe = setupOrdersListener();
     return () => {
