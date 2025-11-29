@@ -58,6 +58,7 @@ export const translations = {
     helpSupport: "Help & Support",
     logout: "Logout",
     language: "Language",
+    delivery: "Delivery",
     
     // Admin Panel
     orders: "Orders",
@@ -508,6 +509,7 @@ export const translations = {
     helpSupport: "المساعدة والدعم",
     logout: "تسجيل الخروج",
     language: "اللغة",
+    delivery: "التسليم",
     
     // Admin Panel
     orders: "الطلبات",
