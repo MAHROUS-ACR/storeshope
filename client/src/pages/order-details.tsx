@@ -549,11 +549,11 @@ export default function OrderDetailsPage() {
               {/* Customer & Delivery Details */}
               {(order.customerName || order.customerPhone || order.deliveryAddress || order.shippingAddress || order.shippingPhone || order.shippingZone || order.deliveryUsername || order.recipientName || order.deliveryRemarks) && (
                 <div className="bg-white rounded-2xl border border-gray-100 p-4">
-                  <h3 className="font-semibold text-sm mb-3">👤 {language === "ar" ? "بيانات التوصيل" : "Delivery Information"}</h3>
+                  <h3 className="font-semibold text-sm mb-3">👤 {t("deliveryInformationLabel", language)}</h3>
                   <div className="space-y-3">
                     {(order.customerName || order.shippingAddress) && (
                       <div>
-                        <p className="text-xs text-muted-foreground">{language === "ar" ? "الاسم" : "Name"}</p>
+                        <p className="text-xs text-muted-foreground">{t("nameLabel", language)}</p>
                         <p className="text-sm font-medium">{order.customerName || order.shippingAddress || "N/A"}</p>
                       </div>
                     )}
@@ -583,19 +583,19 @@ export default function OrderDetailsPage() {
                     )}
                     {order.recipientName && (
                       <div>
-                        <p className="text-xs text-muted-foreground">{language === "ar" ? "المستلم" : "Recipient"}</p>
+                        <p className="text-xs text-muted-foreground">{t("recipient", language)}</p>
                         <p className="text-sm font-medium">{order.recipientName}</p>
                       </div>
                     )}
                     {order.deliveryUsername && (
                       <div>
-                        <p className="text-xs text-muted-foreground">{language === "ar" ? "اسم الدليفرى" : "Delivery Driver"}</p>
+                        <p className="text-xs text-muted-foreground">{t("driver", language)}</p>
                         <p className="text-sm font-medium">{order.deliveryUsername}</p>
                       </div>
                     )}
                     {order.deliveryRemarks && (
                       <div>
-                        <p className="text-xs text-muted-foreground">{language === "ar" ? "ملاحظات التسليم" : "Delivery Remarks"}</p>
+                        <p className="text-xs text-muted-foreground">{t("remarks", language)}</p>
                         <p className="text-sm font-medium">{order.deliveryRemarks}</p>
                       </div>
                     )}
@@ -606,7 +606,7 @@ export default function OrderDetailsPage() {
               {/* Order Notes */}
               {order.notes && (
                 <div className="bg-white rounded-2xl border border-gray-100 p-4">
-                  <h3 className="font-semibold text-sm mb-3">📝 {language === "ar" ? "ملاحظات" : "Notes"}</h3>
+                  <h3 className="font-semibold text-sm mb-3">📝 {t("notesLabel", language)}</h3>
                   <p className="text-sm text-gray-900">{order.notes}</p>
                 </div>
               )}
@@ -624,11 +624,11 @@ export default function OrderDetailsPage() {
                   {order.discountedTotal !== undefined && order.subtotal !== undefined && order.discountedTotal < order.subtotal && (
                     <>
                       <div className="flex justify-between text-sm text-green-600 font-semibold">
-                        <span>{language === "ar" ? "الخصم" : "Discount"}</span>
+                        <span>{t("discountLabel", language)}</span>
                         <span>-{(order.subtotal - order.discountedTotal).toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm font-semibold text-green-600">
-                        <span>{language === "ar" ? "بعد الخصم" : "After Discount"}</span>
+                        <span>{t("afterDiscountLabel", language)}</span>
                         <span>{order.discountedTotal.toFixed(2)}</span>
                       </div>
                     </>
@@ -649,7 +649,7 @@ export default function OrderDetailsPage() {
               {/* User Information */}
               {(orderUser?.username || order?.userId) && (
                 <div className="bg-white rounded-2xl border border-gray-100 p-5">
-                  <h3 className="font-semibold text-sm mb-5">{language === "ar" ? "بيانات المستخدم" : "Customer Information"}</h3>
+                  <h3 className="font-semibold text-sm mb-5">{t("customerInformationLabel", language)}</h3>
                   
                   <div className="flex items-center gap-6">
                     {/* User Avatar or Profile Image */}
@@ -669,13 +669,13 @@ export default function OrderDetailsPage() {
                     {/* User Details */}
                     <div className="flex-1 min-w-0">
                       <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{language === "ar" ? "الاسم" : "Name"}</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">{t("nameLabel", language)}</p>
                         <p className="font-semibold text-sm mb-3" data-testid="text-username">{orderUser?.username || "-"}</p>
                       </div>
                       
                       {orderUser?.email && (
                         <div>
-                          <p className="text-xs text-muted-foreground uppercase tracking-wider">{language === "ar" ? "البريد الإلكتروني" : "Email"}</p>
+                          <p className="text-xs text-muted-foreground uppercase tracking-wider">{t("emailLabel", language)}</p>
                           <p className="font-medium text-sm text-blue-600 break-all" data-testid="text-email">{orderUser?.email}</p>
                         </div>
                       )}
@@ -687,16 +687,16 @@ export default function OrderDetailsPage() {
               {/* Admin Statistics (Admin View) */}
               {user?.role === 'admin' && (
                 <div className="bg-white rounded-2xl border border-gray-100 p-5">
-                  <h3 className="font-semibold text-sm mb-4">{language === "ar" ? "إحصائيات الطلب" : "Order Statistics"}</h3>
+                  <h3 className="font-semibold text-sm mb-4">{t("orderStatisticsLabel", language)}</h3>
                   
                   {/* Order Statistics */}
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     <div className="bg-emerald-50 rounded-xl p-3">
-                      <p className="text-xs text-emerald-600 font-semibold uppercase tracking-wider">{language === "ar" ? "الأوردرات المكتملة" : "Completed Orders"}</p>
+                      <p className="text-xs text-emerald-600 font-semibold uppercase tracking-wider">{t("completedOrdersLabel", language)}</p>
                       <p className="text-2xl font-bold text-emerald-700 mt-1" data-testid="text-completed-orders">{completedOrders}</p>
                     </div>
                     <div className="bg-blue-50 rounded-xl p-3">
-                      <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider">{language === "ar" ? "إجمالي الأوردرات" : "Total Orders"}</p>
+                      <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider">{t("totalOrdersLabel", language)}</p>
                       <p className="text-2xl font-bold text-blue-700 mt-1" data-testid="text-total-orders">{totalOrders}</p>
                     </div>
                   </div>
@@ -704,7 +704,7 @@ export default function OrderDetailsPage() {
                   {/* Completed Orders Value */}
                   {completedOrdersValue > 0 && (
                     <div className="pt-4 border-t border-gray-100">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider">{language === "ar" ? "قيمة الأوردرات المكتملة" : "Completed Orders Value"}</p>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider">{t("completedOrdersValueLabel", language)}</p>
                       <p className="text-3xl font-bold text-emerald-600 mt-2" data-testid="text-completed-orders-value">L.E {completedOrdersValue.toFixed(2)}</p>
                     </div>
                   )}
