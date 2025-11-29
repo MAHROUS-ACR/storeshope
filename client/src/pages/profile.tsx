@@ -681,13 +681,13 @@ export default function ProfilePage() {
         });
       }
       
-      toast.success(language === "ar" ? "تم تحديث الحالة!" : "Order status updated!");
+      toast.success(t("statusUpdated", language));
       setEditingOrderId(null);
       setNewStatus("");
       setSelectedDeliveryUserId("");
       setupOrdersListener();
     } catch (error: any) {
-      toast.error(language === "ar" ? "فشل تحديث الطلب" : "Failed to update order");
+      toast.error(t("failedToUpdateOrder", language));
     }
   };
 
@@ -884,7 +884,7 @@ export default function ProfilePage() {
                         onClick={() => setShowMapSelector(!showMapSelector)}
                         className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition text-sm mb-3"
                       >
-                        {showMapSelector ? (language === "ar" ? "❌ إغلاق الخريطة" : "❌ Close Map") : (language === "ar" ? "🗺️ اختر من الخريطة" : "🗺️ Choose from Map")}
+                        {showMapSelector ? (`{language === "ar" ? "❌ " : "❌ "}` + t("closeMap", language)) : (`{language === "ar" ? "🗺️ " : "🗺️ "}` + t("chooseFromMap", language))}
                       </button>
                       
                       {showMapSelector && (
@@ -894,7 +894,7 @@ export default function ProfilePage() {
                               setUserAddress(address);
                               setUserLocationCoords({ lat, lng });
                               setShowMapSelector(false);
-                              toast.success(language === "ar" ? "✅ تم تحديد الموقع" : "✅ Location set");
+                              toast.success(`(language === "ar" ? "✅ " : "✅ ")` + t("locationSet", language));
                             }}
                             initialAddress={userAddress}
                             initialLat={userLocationCoords?.lat}
@@ -1110,7 +1110,7 @@ export default function ProfilePage() {
                           {editingOrderId === order.id ? (
                             <div className="space-y-3">
                               <div>
-                                <label className="text-xs font-semibold text-gray-700 block mb-2">{language === "ar" ? "تغيير الحالة" : "Change Status"}</label>
+                                <label className="text-xs font-semibold text-gray-700 block mb-2">{t("changeStatus", language)}</label>
                                 <select
                                   value={newStatus}
                                   onChange={(e) => {
@@ -1122,18 +1122,18 @@ export default function ProfilePage() {
                                   className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                   data-testid={`select-order-status-${order.id}`}
                                 >
-                                  <option value="pending">{language === "ar" ? "⏳ قيد الانتظار" : "⏳ Pending"}</option>
-                                  <option value="confirmed">{language === "ar" ? "✓ مؤكد" : "✓ Confirmed"}</option>
-                                  <option value="processing">{language === "ar" ? "⚙️ قيد المعالجة" : "⚙️ Processing"}</option>
-                                  <option value="shipped">{language === "ar" ? "🚚 تم الشحن" : "🚚 Shipped"}</option>
-                                  <option value="completed">{language === "ar" ? "✅ مكتمل" : "✅ Completed"}</option>
-                                  <option value="cancelled">{language === "ar" ? "❌ ملغي" : "❌ Cancelled"}</option>
+                                  <option value="pending">{t("pending", language)}</option>
+                                  <option value="confirmed">{t("confirmed", language)}</option>
+                                  <option value="processing">{t("processing", language)}</option>
+                                  <option value="shipped">{t("shipped", language)}</option>
+                                  <option value="completed">{t("completedOrder", language)}</option>
+                                  <option value="cancelled">{t("cancelledOrder", language)}</option>
                                 </select>
                               </div>
 
                               {newStatus === "shipped" && (
                                 <div>
-                                  <label className="text-xs font-semibold text-gray-700 block mb-2">{language === "ar" ? "🚚 اختر الديليفري" : "🚚 Select Delivery"}</label>
+                                  <label className="text-xs font-semibold text-gray-700 block mb-2">{`"🚚 " + t("selectDelivery", language)}</label>
                                   <select
                                     value={selectedDeliveryUserId}
                                     onChange={(e) => setSelectedDeliveryUserId(e.target.value)}
@@ -1145,7 +1145,7 @@ export default function ProfilePage() {
                                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-300"
                                     data-testid={`select-delivery-${order.id}`}
                                   >
-                                    <option value="">{language === "ar" ? "-- اختر ديليفري --" : "-- Select Delivery --"}</option>
+                                    <option value="">{`"-- " + t("selectDelivery", language) + " --"`}</option>
                                     {deliveryUsers.map((du) => (
                                       <option key={du.id} value={du.id}>
                                         🚚 {du.username || du.email}
@@ -1153,7 +1153,7 @@ export default function ProfilePage() {
                                     ))}
                                   </select>
                                   {deliveryUsers.length === 0 && (
-                                    <p className="text-xs text-orange-600 mt-1">{language === "ar" ? "لا توجد ديليفري متاحة" : "No delivery users available"}</p>
+                                    <p className="text-xs text-orange-600 mt-1">{t("noDeliveryAvailable", language)}</p>
                                   )}
                                 </div>
                               )}
@@ -1165,7 +1165,7 @@ export default function ProfilePage() {
                                   className="flex-1 px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 disabled:bg-gray-400 transition"
                                   data-testid={`button-save-order-status-${order.id}`}
                                 >
-                                  {language === "ar" ? "✓ حفظ" : "✓ Save"}
+                                  {`"✓ " + t("save", language)}
                                 </button>
                                 <button
                                   onClick={() => {
@@ -1176,7 +1176,7 @@ export default function ProfilePage() {
                                   className="flex-1 px-3 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-400 transition"
                                   data-testid={`button-cancel-order-edit-${order.id}`}
                                 >
-                                  {language === "ar" ? "✕ إلغاء" : "✕ Cancel"}
+                                  {`"✕ " + t("cancel", language)}
                                 </button>
                               </div>
                             </div>
@@ -1218,7 +1218,7 @@ export default function ProfilePage() {
                                       className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-semibold hover:bg-blue-200 transition"
                                       data-testid={`button-edit-order-${order.id}`}
                                     >
-                                      {language === "ar" ? "✎ تعديل" : "✎ Edit"}
+                                      {`"✎ " + t("edit", language)}
                                     </button>
                                   </div>
                                   {order.deliveryUsername && (
@@ -1474,10 +1474,10 @@ export default function ProfilePage() {
                                 : "bg-gray-100 text-gray-700"
                             }`} data-testid={`badge-role-${u.id}`}>
                               {u.role === "delivery" 
-                                ? language === "ar" ? "🚚 ديليفري" : "🚚 Delivery"
+                                ? t("deliveryRole", language)
                                 : u.role === "admin"
-                                ? language === "ar" ? "👑 ادمن" : "👑 Admin"
-                                : language === "ar" ? "👤 يوزر" : "👤 User"}
+                                ? t("adminRole", language)
+                                : t("userRole", language)}
                             </span>
                           </div>
 
@@ -1489,9 +1489,9 @@ export default function ProfilePage() {
                                 className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                 data-testid={`select-user-role-${u.id}`}
                               >
-                                <option value="user">{language === "ar" ? "👤 يوزر" : "👤 User"}</option>
-                                <option value="admin">{language === "ar" ? "👑 ادمن" : "👑 Admin"}</option>
-                                <option value="delivery">{language === "ar" ? "🚚 ديليفري" : "🚚 Delivery"}</option>
+                                <option value="user">{t("userRole", language)}</option>
+                                <option value="admin">{t("adminRole", language)}</option>
+                                <option value="delivery">{t("deliveryRole", language)}</option>
                               </select>
                               <button
                                 onClick={() => handleUserRoleUpdate(u.id, newUserRole)}
@@ -1717,7 +1717,7 @@ export default function ProfilePage() {
                   >
                     <h3 className={`text-sm font-bold mb-3 ${editingItemId ? "text-amber-700" : ""}`}>
                       {editingItemId ? t("editProduct", language) : t("addNewProduct", language)}
-                      {editingItemId && <span className="ml-2 text-xs text-amber-600">{language === "ar" ? "(وضع التعديل)" : "(Edit Mode)"}</span>}
+                      {editingItemId && <span className="ml-2 text-xs text-amber-600">{`"(" + t("editMode", language) + ")"`}</span>}
                     </h3>
                     <div className="space-y-3">
                       {/* Product Main Image */}
@@ -1743,7 +1743,7 @@ export default function ProfilePage() {
 
                       {/* Additional Images Gallery */}
                       <div>
-                        <label className="text-xs font-semibold mb-2 block">{language === "ar" ? "صور إضافية" : "Additional Images"}</label>
+                        <label className="text-xs font-semibold mb-2 block">{t("additionalImages", language)}</label>
                         <div className="mb-2">
                           <input
                             type="file"
@@ -1762,7 +1762,7 @@ export default function ProfilePage() {
                                 <button
                                   onClick={() => removeProductImage(idx)}
                                   className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/50 transition-all rounded-lg"
-                                  title={language === "ar" ? "انقر لحذف الصورة" : "Click to delete image"}
+                                  title={t("clickToDeleteImage", language)}
                                   data-testid={`button-remove-image-${idx}`}
                                 >
                                   <span className="bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1971,14 +1971,14 @@ export default function ProfilePage() {
                                   await updateDoc(itemRef, productData);
                                   console.log("Product updated successfully");
                                   setItems(items.map(i => i.id === editingItemId ? { id: editingItemId, ...productData } : i));
-                                  toast.success(language === "ar" ? "تم تحديث المنتج!" : "Product updated!");
+                                  toast.success(t("productUpdated", language));
                                   setEditingItemId(null);
                                 } else {
                                   console.log("Adding new product");
                                   const productsRef = collection(db, "products");
                                   const docRef = await addDoc(productsRef, productData);
                                   setItems([...items, { id: docRef.id, ...productData }]);
-                                  toast.success(language === "ar" ? "تم إضافة المنتج!" : "Product added!");
+                                  toast.success(t("productAdded", language));
                                 }
                                 setNewItemForm({ title: "", description: "", price: "", category: "", image: "", images: [], units: [], sizes: [], colors: [], available: true });
                                 setUnitInput("");
@@ -1987,13 +1987,13 @@ export default function ProfilePage() {
                                 setCurrentColorHex("#000000");
                               } catch (error) {
                                 console.error("Error saving product:", error);
-                                toast.error(language === "ar" ? "فشل حفظ المنتج" : "Failed to save product");
+                                toast.error(t("failedToSaveProduct", language));
                               } finally {
                                 setIsSavingItem(false);
                               }
                             } else {
                               console.log("Validation failed - Missing fields", { title: newItemForm.title, price: newItemForm.price, category: newItemForm.category });
-                              toast.error(language === "ar" ? "الرجاء ملء جميع الحقول" : "Please fill all fields");
+                              toast.error(t("fillAllFields", language));
                             }
                           }}
                           disabled={isSavingItem}
@@ -2007,7 +2007,7 @@ export default function ProfilePage() {
                           {isSavingItem ? (
                             <>
                               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              {editingItemId ? (language === "ar" ? "جاري التحديث..." : "Updating...") : (language === "ar" ? "جاري الإضافة..." : "Adding...")}
+                              {editingItemId ? t("updating", language) : t("adding", language)}
                             </>
                           ) : (
                             <>
