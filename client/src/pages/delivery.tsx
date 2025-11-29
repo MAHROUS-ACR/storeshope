@@ -197,11 +197,11 @@ export default function DeliveryPage() {
       console.log("Pending orders:", pendingOrders.length);
       
       pendingOrders.forEach((order, idx) => {
-        // Use deliveryLat/deliveryLng for delivery location (destination)
-        const lat = order.deliveryLat;
-        const lng = order.deliveryLng;
+        // Use latitude/longitude for delivery location (destination)
+        const lat = order.latitude;
+        const lng = order.longitude;
         
-        console.log(`Order ${order.orderNumber}: deliveryLat=${lat}, deliveryLng=${lng}`);
+        console.log(`Order ${order.orderNumber}: latitude=${lat}, longitude=${lng}`);
         
         // Only add marker if coordinates exist
         if (lat && lng) {
