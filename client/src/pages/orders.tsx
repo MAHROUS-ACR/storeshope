@@ -362,7 +362,7 @@ export default function OrdersPage() {
                   {selectedOrder?.id === order.id && (
                     <>
                       {/* Map Section */}
-                      {(selectedOrder.shippingAddress || selectedOrder.deliveryAddress) && selectedOrder?.status !== "completed" && selectedOrder?.status !== "received" && (
+                      {(selectedOrder.shippingAddress || selectedOrder.deliveryAddress) && selectedOrder?.status !== "completed" && selectedOrder?.status !== "received" && selectedOrder?.status !== "cancelled" && (
                         <div className="mt-3 w-full">
                           {mapLoading ? (
                             <div className="w-full bg-blue-50 border border-blue-200 rounded-2xl flex items-center justify-center gap-2 py-3">
@@ -379,10 +379,10 @@ export default function OrdersPage() {
                           )}
                         </div>
                       )}
-                      {(selectedOrder.shippingAddress || selectedOrder.deliveryAddress) && (selectedOrder?.status === "completed" || selectedOrder?.status === "received") && (
+                      {(selectedOrder.shippingAddress || selectedOrder.deliveryAddress) && (selectedOrder?.status === "completed" || selectedOrder?.status === "received" || selectedOrder?.status === "cancelled") && (
                         <div className="mt-3 w-full bg-green-50 border border-green-300 rounded-2xl py-6 flex items-center justify-center gap-2">
                           <MapPin size={16} className="text-green-600" />
-                          <span className="text-green-600 font-semibold text-xs">{language === "ar" ? "تم التسليم - الخريطة غير متاحة" : "Delivered - Map unavailable"}</span>
+                          <span className="text-green-600 font-semibold text-xs">{selectedOrder?.status === "cancelled" ? (language === "ar" ? "تم الإلغاء - الخريطة غير متاحة" : "Cancelled - Map unavailable") : (language === "ar" ? "تم التسليم - الخريطة غير متاحة" : "Delivered - Map unavailable")}</span>
                         </div>
                       )}
 

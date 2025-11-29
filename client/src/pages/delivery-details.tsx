@@ -493,7 +493,7 @@ export default function DeliveryDetailsPage() {
         </div>
 
         {/* Map - Full Width at Top */}
-        {showMap && order?.status !== "received" && (
+        {showMap && order?.status !== "received" && order?.status !== "cancelled" && (
           <>
             {mapLoading ? (
               <div className="w-full bg-blue-50 border-b border-blue-200 flex items-center justify-center gap-2 py-3">
