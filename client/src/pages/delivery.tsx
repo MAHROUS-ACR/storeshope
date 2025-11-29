@@ -148,6 +148,7 @@ export default function DeliveryPage() {
     if (viewMode !== "map") return;
 
     setMapError(null);
+    let isMounted = true;
     let shippedOrders = orders.filter(o => o.status === "shipped" && o.deliveryLat && o.deliveryLng);
 
     if (shippedOrders.length === 0 && (!userLat || !userLng)) {
@@ -157,10 +158,12 @@ export default function DeliveryPage() {
 
     // Small delay to ensure DOM is ready
     const timer = setTimeout(() => {
+      if (!isMounted) return;
+      
       try {
         const container = document.getElementById("leaflet-map");
         if (!container) {
-          setMapError("Map container not found");
+          if (isMounted) setMapError("Map container not found");
           return;
         }
 
@@ -214,7 +217,7 @@ export default function DeliveryPage() {
             fetch(url)
               .then(res => res.json())
               .then(data => {
-                if (data.routes && data.routes[0] && map) {
+                if (isMounted && data.routes && data.routes[0] && map) {
                   const route = data.routes[0].geometry.coordinates;
                   const latlngs = route.map((coord: [number, number]) => [coord[1], coord[0]]);
                   L.polyline(latlngs, { color: routeColor, weight: 3, opacity: 0.7 }).addTo(map);
@@ -245,13 +248,18 @@ export default function DeliveryPage() {
 
         map.invalidateSize();
       } catch (err) {
-        console.error("Map init error:", err);
-        setMapError("Failed to load map");
+        if (isMounted) {
+          console.error("Map init error:", err);
+          setMapError("Failed to load map");
+        }
       }
     }, 50);
 
-    return () => clearTimeout(timer);
-  }, [viewMode, orders, userLat, userLng, language]);
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [viewMode, userLat, userLng, language]);
 
   useEffect(() => {
     const unsubscribe = setupOrdersListener();
