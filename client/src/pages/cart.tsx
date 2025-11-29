@@ -169,7 +169,7 @@ export default function CartPage() {
         </div>
 
         {/* Bottom Summary - Fixed */}
-        <div className="flex-shrink-0 px-4 py-2 bg-white border-t border-gray-200 shadow-2xl">
+        <div className="flex-shrink-0 px-4 py-2.5 bg-white border-t border-gray-200 shadow-2xl relative z-50">
           <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-3 space-y-1 border border-gray-200 mb-2">
             {totalWithDiscounts < total && (
               <>
