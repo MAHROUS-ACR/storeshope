@@ -290,7 +290,7 @@ export default function DeliveryPage() {
           {/* Content */}
           <div className="flex-1 overflow-hidden flex flex-col">
             {/* List View */}
-            <div style={{ display: viewMode === "list" ? "flex" : "none" }} className="flex-1 overflow-y-auto px-5 py-4 pb-32 flex-col">
+            <div style={{ display: viewMode === "list" ? "flex" : "none", flexDirection: "column" }} className="flex-1 overflow-y-auto px-5 py-4 pb-32">
                 {ordersLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -345,7 +345,7 @@ export default function DeliveryPage() {
             </div>
 
             {/* Map View */}
-            <div style={{ display: viewMode === "map" ? "flex" : "none" }} className="flex-1 overflow-hidden flex-col px-5 py-4">
+            <div style={{ display: viewMode === "map" ? "flex" : "none", flexDirection: "column" }} className="flex-1 overflow-hidden px-5 py-4">
                 {mapError ? (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">{mapError}</div>
                 ) : (
