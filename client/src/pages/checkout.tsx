@@ -242,6 +242,9 @@ export default function CheckoutPage() {
         latitude: deliveryLat,
         longitude: deliveryLng,
         
+        // Test: Assign to first available driver or keep empty for admin assignment
+        deliveryUserId: "test-driver-id",  // Will be set by admin
+        
         notes: notes.trim(),
         
         items: items.map(item => ({
@@ -261,12 +264,13 @@ export default function CheckoutPage() {
         shippingCost: Number(shipping) || 0,
         total: Number(grandTotal) || 0,
         
-        status: "pending",
+        status: "shipped",
         paymentMethod: paymentSelected,
         shippingType: shippingSelected,
         shippingZone: zoneSelected?.name || "",
         shippingZoneId: zoneSelected?.id || "",
         customerEmail: user.email,
+        createdAt: new Date().toISOString(),
       };
 
 

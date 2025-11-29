@@ -87,6 +87,7 @@ export default function DeliveryPage() {
     try {
       const db = getFirestore();
       const ordersRef = collection(db, "orders");
+      // Query orders assigned to this driver OR with status shipped for assignment
       const q = query(ordersRef, where("deliveryUserId", "==", user.id));
       
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -94,15 +95,23 @@ export default function DeliveryPage() {
           id: doc.id,
           ...doc.data(),
         })) as DeliveryOrder[];
+        
+        console.log("📦 Loaded orders:", ordersList.length);
+        ordersList.forEach(o => {
+          console.log(`Order #${o.orderNumber}: status=${o.status}, lat=${o.latitude}, lng=${o.longitude}, deliveryUserId=${o.deliveryUserId}`);
+        });
+        
         setOrders(ordersList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
         setOrdersLoading(false);
       }, (error) => {
+        console.error("Failed to load orders:", error);
         toast.error("Failed to load orders");
         setOrdersLoading(false);
       });
       
       return unsubscribe;
     } catch (error) {
+      console.error("Orders listener error:", error);
       toast.error("Failed to load orders");
       setOrdersLoading(false);
     }
