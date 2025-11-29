@@ -5,6 +5,7 @@ import { useLocation } from "wouter";
 import { useCart } from "@/lib/cartContext";
 import { useUser } from "@/lib/userContext";
 import { useLanguage } from "@/lib/languageContext";
+import { t } from "@/lib/translations";
 import { toast } from "sonner";
 import { getShippingZones, saveOrder, getDiscounts } from "@/lib/firebaseOps";
 import { getActiveDiscount, calculateDiscountedPrice, getDiscountAmount } from "@/lib/discountUtils";
@@ -329,8 +330,8 @@ export default function CheckoutPage() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">🛒 {language === "ar" ? "الدفع" : "Checkout"}</h1>
-            <p className="text-sm text-gray-600">{language === "ar" ? "أتمم عملية الشراء" : "Complete your purchase"}</p>
+            <h1 className="text-2xl font-bold text-gray-900">🛒 {t("checkoutPage", language)}</h1>
+            <p className="text-sm text-gray-600">{t("complete", language)}</p>
           </div>
         </div>
 
@@ -340,7 +341,7 @@ export default function CheckoutPage() {
           {/* Order Summary */}
           <section className="bg-white rounded-xl p-5 mb-5 border border-gray-200 shadow-sm">
             <h2 className="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5" /> {language === "ar" ? "ملخص الطلب" : "Order Summary"}
+              <ShoppingBag className="w-5 h-5" /> {t("orderSummary", language)}
             </h2>
             <div className="space-y-3 mb-4 max-h-40 overflow-y-auto">
               {items.map((item, idx) => (
@@ -353,14 +354,14 @@ export default function CheckoutPage() {
                   </div>
                   {(item.selectedColor || item.selectedSize || item.selectedUnit) && (
                     <div className="mt-2 p-2 bg-white rounded border border-gray-200 text-[10px] space-y-1">
-                      {item.selectedUnit && <div className="font-semibold text-gray-600 flex items-center gap-1">{language === "ar" ? "الوحدة:" : "Unit:"} <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium text-[11px]">{item.selectedUnit}</span></div>}
-                      {item.selectedSize && <div className="font-semibold text-gray-600 flex items-center gap-1">{language === "ar" ? "المقاس:" : "Size:"} <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium text-[11px]">{item.selectedSize}</span></div>}
+                      {item.selectedUnit && <div className="font-semibold text-gray-600 flex items-center gap-1">{t("unit", language)} <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium text-[11px]">{item.selectedUnit}</span></div>}
+                      {item.selectedSize && <div className="font-semibold text-gray-600 flex items-center gap-1">{t("size", language)} <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium text-[11px]">{item.selectedSize}</span></div>}
                       {item.selectedColor && (() => {
                         const [colorName, colorHex] = typeof item.selectedColor === 'string' 
                           ? item.selectedColor.split('|') 
                           : [item.selectedColor, '#000000'];
                         return (
-                          <div className="font-semibold text-gray-600 flex items-center gap-1">{language === "ar" ? "اللون:" : "Color:"} <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-gray-300 bg-white text-[11px] font-medium"><span className="w-2.5 h-2.5 rounded-full border border-gray-300 inline-block" style={{backgroundColor: colorHex || '#000000'}}></span>{colorName}</span></div>
+                          <div className="font-semibold text-gray-600 flex items-center gap-1">{t("color", language)} <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-gray-300 bg-white text-[11px] font-medium"><span className="w-2.5 h-2.5 rounded-full border border-gray-300 inline-block" style={{backgroundColor: colorHex || '#000000'}}></span>{colorName}</span></div>
                         );
                       })()}
                     </div>
