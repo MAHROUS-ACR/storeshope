@@ -320,63 +320,63 @@ export default function DeliveryDetailsPage() {
     const db = getFirestore();
     const orderRef = doc(db, "orders", orderId);
     
+    const processOrderData = (data: DeliveryOrderDetails) => {
+      // Check if status changed and send notification
+      if (lastStatusRef.current && lastStatusRef.current !== data.status) {
+        let notificationTitle = "";
+        let notificationMessage = "";
+
+        if (data.status === "shipped") {
+          notificationTitle = language === "ar" ? "🚚 تم شحن طلبك" : "🚚 Order Shipped";
+          notificationMessage = language === "ar" 
+            ? "تم شحن طلبك! سيصل إليك قريباً."
+            : "Your order has been shipped! It's on the way.";
+        } else if (data.status === "in-transit") {
+          notificationTitle = language === "ar" ? "📍 الطلب في الطريق" : "📍 Out for Delivery";
+          notificationMessage = language === "ar"
+            ? "طلبك في الطريق إليك الآن."
+            : "Your order is out for delivery.";
+        } else if (data.status === "received") {
+          notificationTitle = language === "ar" ? "✅ تم استقبال طلبك" : "✅ Delivered";
+          notificationMessage = language === "ar"
+            ? "شكراً لك! تم استقبال طلبك بنجاح."
+            : "Thank you! Your order has been delivered.";
+        }
+
+        if (notificationTitle && notificationMessage) {
+          sendNotification(notificationTitle, notificationMessage, { orderId, status: data.status });
+        }
+      }
+
+      lastStatusRef.current = data.status;
+      setOrder(data);
+      
+      // Delivery destination location - use deliveryLat/deliveryLng from order
+      if (data.deliveryLat && data.deliveryLng) {
+        setDeliveryLat(data.deliveryLat);
+        setDeliveryLng(data.deliveryLng);
+      } else if (data.latitude && data.longitude) {
+        setDeliveryLat(data.latitude);
+        setDeliveryLng(data.longitude);
+      } else {
+        const addr = data.shippingAddress || (data as any).deliveryAddress || data.shippingZone || "";
+        if (addr) {
+          geocodeAddress(addr);
+        }
+      }
+      
+      // Driver current location - will update in real-time
+      if (data.latitude && data.longitude) {
+        setMapLat(data.latitude);
+        setMapLng(data.longitude);
+      }
+    };
+    
     // Real-time listener for order updates
     const unsubscribe = onSnapshot(orderRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.data() as DeliveryOrderDetails;
-        
-        // Check if status changed and send notification
-        if (lastStatusRef.current && lastStatusRef.current !== data.status) {
-          // Status changed - send notification
-          let notificationTitle = "";
-          let notificationMessage = "";
-
-          if (data.status === "shipped") {
-            notificationTitle = language === "ar" ? "🚚 تم شحن طلبك" : "🚚 Order Shipped";
-            notificationMessage = language === "ar" 
-              ? "تم شحن طلبك! سيصل إليك قريباً."
-              : "Your order has been shipped! It's on the way.";
-          } else if (data.status === "in-transit") {
-            notificationTitle = language === "ar" ? "📍 الطلب في الطريق" : "📍 Out for Delivery";
-            notificationMessage = language === "ar"
-              ? "طلبك في الطريق إليك الآن."
-              : "Your order is out for delivery.";
-          } else if (data.status === "received") {
-            notificationTitle = language === "ar" ? "✅ تم استقبال طلبك" : "✅ Delivered";
-            notificationMessage = language === "ar"
-              ? "شكراً لك! تم استقبال طلبك بنجاح."
-              : "Thank you! Your order has been delivered.";
-          }
-
-          if (notificationTitle && notificationMessage) {
-            sendNotification(notificationTitle, notificationMessage, { orderId, status: data.status });
-          }
-        }
-
-        lastStatusRef.current = data.status;
-        setOrder(data);
-        
-        // Delivery destination location - use deliveryLat/deliveryLng from order
-        if (data.deliveryLat && data.deliveryLng) {
-          setDeliveryLat(data.deliveryLat);
-          setDeliveryLng(data.deliveryLng);
-        } else if (data.latitude && data.longitude) {
-          // Backward compatibility: use latitude/longitude if deliveryLat not available
-          setDeliveryLat(data.latitude);
-          setDeliveryLng(data.longitude);
-        } else {
-          // Fallback: geocode the address if no coordinates
-          const addr = data.shippingAddress || (data as any).deliveryAddress || data.shippingZone || "";
-          if (addr) {
-            geocodeAddress(addr);
-          }
-        }
-        
-        // Driver current location - will update in real-time
-        if (data.latitude && data.longitude) {
-          setMapLat(data.latitude);
-          setMapLng(data.longitude);
-        }
+        processOrderData(data);
       }
       setIsLoading(false);
     }, (error) => {
@@ -384,7 +384,23 @@ export default function DeliveryDetailsPage() {
       setIsLoading(false);
     });
 
-    return () => unsubscribe();
+    // Polling backup - refresh every 2 seconds to catch Firebase updates
+    const pollInterval = setInterval(async () => {
+      try {
+        const snapshot = await getDoc(orderRef);
+        if (snapshot.exists()) {
+          const data = snapshot.data() as DeliveryOrderDetails;
+          processOrderData(data);
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+      }
+    }, 2000);
+
+    return () => {
+      unsubscribe();
+      clearInterval(pollInterval);
+    };
   }, [orderId, language]);
 
   if (isLoading) {

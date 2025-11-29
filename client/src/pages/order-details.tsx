@@ -241,7 +241,25 @@ export default function OrderDetailsPage() {
       setIsLoading(false);
     });
 
-    return () => unsubscribe();
+    // Polling backup - refresh every 3 seconds as failsafe
+    const pollInterval = setInterval(async () => {
+      try {
+        const snapshot = await getDoc(orderRef);
+        if (snapshot.exists()) {
+          const orderData = snapshot.data() as Order;
+          if (user?.role === 'admin' || orderData.userId === user?.id) {
+            setOrder({ ...orderData, id: snapshot.id });
+          }
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+      }
+    }, 3000);
+
+    return () => {
+      unsubscribe();
+      clearInterval(pollInterval);
+    };
   }, [orderId, user?.id, user?.role]);
 
   // Fetch order user data

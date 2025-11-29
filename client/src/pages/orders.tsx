@@ -256,6 +256,24 @@ export default function OrdersPage() {
     }
   }, [orders]);
 
+  // Polling backup - refresh orders every 2 seconds to catch location updates
+  useEffect(() => {
+    const pollInterval = setInterval(async () => {
+      if (user?.id) {
+        try {
+          const updatedOrders = await getOrders(user.id);
+          if (updatedOrders && updatedOrders.length > 0) {
+            setOrders(updatedOrders as Order[]);
+          }
+        } catch (error) {
+          console.error("Polling error:", error);
+        }
+      }
+    }, 2000);
+
+    return () => clearInterval(pollInterval);
+  }, [user?.id]);
+
   // Reset map and geocode when order is selected - use deliveryLat/deliveryLng if available
   useEffect(() => {
     if (selectedOrder?.id) {
