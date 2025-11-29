@@ -12,6 +12,14 @@ import { Check, Map, List, Loader } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+// Fix for Leaflet default markers
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+});
+
 interface DeliveryOrder {
   id: string;
   orderNumber?: number;
@@ -223,11 +231,10 @@ export default function DeliveryPage() {
           zoomControl: true
         }).setView([currentLat, currentLng], 13);
         
-        // Use CartoDB tiles instead of OpenStreetMap
-        L.tileLayer("https://{s}.basemaps.cartocdn.com/rastered/voyager/{z}/{x}/{y}.png", {
-          attribution: '&copy; CartoDB',
+        // Use OpenStreetMap tiles
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; OpenStreetMap',
           maxZoom: 19,
-          subdomains: 'abcd'
         }).addTo(map.current);
         
         console.log("Map initialized successfully");
