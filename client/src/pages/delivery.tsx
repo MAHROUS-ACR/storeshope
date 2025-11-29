@@ -222,18 +222,19 @@ export default function DeliveryPage() {
         }
 
         if (map.current) {
+          const mapInstance = map.current;
           // Clear old markers and route
           markersRef.current.forEach(m => m.remove());
           markersRef.current = [];
           if (routePolylineRef.current) routePolylineRef.current.remove();
 
           // Draw route
-          const coords = route.geometry.coordinates.map((c: [number, number]) => [c[1], c[0]]);
+          const coords = route.geometry.coordinates.map((c: [number, number]): L.LatLngExpression => [c[1], c[0]]);
           routePolylineRef.current = L.polyline(coords, {
             color: '#2563eb',
             weight: 3,
             opacity: 0.7,
-          }).addTo(map.current);
+          }).addTo(mapInstance);
 
           // Add driver marker
           const driverMarker = L.marker([currentLat, currentLng], {
@@ -243,7 +244,7 @@ export default function DeliveryPage() {
               iconAnchor: [25, 25],
               popupAnchor: [0, -25],
             })
-          }).addTo(map.current).bindPopup("Your Location");
+          }).addTo(mapInstance).bindPopup("Your Location");
           markersRef.current.push(driverMarker);
 
           // Add order markers
@@ -255,15 +256,17 @@ export default function DeliveryPage() {
                 iconAnchor: [15, 15],
                 popupAnchor: [0, -15],
               })
-            }).addTo(map.current).bindPopup(`Order #${order.orderNumber}`);
+            }).addTo(mapInstance).bindPopup(`Order #${order.orderNumber}`);
             markersRef.current.push(marker);
           });
 
           // Fit all markers in view
-          const bounds = L.latLngBounds(
-            [[currentLat, currentLng], ...orderLocations.map(o => [o.lat, o.lng])]
-          );
-          map.current.fitBounds(bounds, { padding: [50, 50] });
+          const boundsArray: L.LatLngExpression[] = [
+            [currentLat, currentLng],
+            ...orderLocations.map(o => [o.lat, o.lng] as L.LatLngExpression)
+          ];
+          const bounds = L.latLngBounds(boundsArray);
+          mapInstance.fitBounds(bounds, { padding: [50, 50] });
         }
       }
     } catch (error) {
