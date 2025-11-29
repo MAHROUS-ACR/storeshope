@@ -216,7 +216,7 @@ export default function OrderDetailsPage() {
         geocodeAddress(order.shippingAddress || order.deliveryAddress || "");
       }
     }
-  }, [orderId]);
+  }, [orderId, order?.id]);
 
   // Determine back path based on user role and store tab preference
   const handleBack = () => {
