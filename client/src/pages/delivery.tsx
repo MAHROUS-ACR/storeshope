@@ -145,17 +145,7 @@ export default function DeliveryPage() {
 
   // Load map when viewMode changes
   useEffect(() => {
-    if (viewMode !== "map") {
-      // Clean up map when leaving map view
-      const container = document.getElementById("leaflet-map");
-      if (container) {
-        const existingMap = (container as any)._leaflet_map;
-        if (existingMap) {
-          existingMap.remove();
-        }
-      }
-      return;
-    }
+    if (viewMode !== "map") return;
 
     setMapError(null);
     let isMounted = true;
@@ -166,26 +156,22 @@ export default function DeliveryPage() {
       return;
     }
 
-    // Small delay to ensure DOM is ready
     const timer = setTimeout(() => {
       if (!isMounted) return;
       
       try {
         const container = document.getElementById("leaflet-map");
-        if (!container || !container.offsetParent) {
-          if (isMounted) setMapError("Map container not ready");
+        if (!container) {
+          if (isMounted) setMapError("Map container not found");
           return;
         }
 
-        // Check if map already exists
         const existingMap = (container as any)._leaflet_map;
         if (existingMap) {
           existingMap.remove();
         }
 
-        // Calculate distances for all orders and sort by distance
         let ordersWithDistance: any[] = [];
-        
         if (userLat && userLng) {
           ordersWithDistance = shippedOrders.map(order => ({
             ...order,
@@ -195,7 +181,6 @@ export default function DeliveryPage() {
           ordersWithDistance = shippedOrders;
         }
 
-        // Create new map
         const centerLat = userLat || (shippedOrders[0]?.deliveryLat || 30.0444);
         const centerLng = userLng || (shippedOrders[0]?.deliveryLng || 31.2357);
         const map = L.map(container).setView([centerLat, centerLng], 13);
@@ -205,7 +190,6 @@ export default function DeliveryPage() {
           maxZoom: 19,
         }).addTo(map);
 
-        // Add current user location marker (green)
         if (userLat && userLng) {
           L.marker([userLat, userLng], {
             icon: L.divIcon({
@@ -217,7 +201,6 @@ export default function DeliveryPage() {
           }).addTo(map).bindPopup(language === "ar" ? "موقعك الحالي" : "Your Location");
         }
 
-        // Draw routes
         let startLat = userLat || centerLat;
         let startLng = userLng || centerLng;
         
@@ -239,7 +222,6 @@ export default function DeliveryPage() {
           startLng = order.deliveryLng!;
         });
 
-        // Add markers
         ordersWithDistance.forEach((order, idx) => {
           const isFirst = idx === 0;
           const markerColor = isFirst ? '#ef4444' : '#3B82F6';
@@ -257,10 +239,10 @@ export default function DeliveryPage() {
         setTimeout(() => {
           if (isMounted) map.invalidateSize();
         }, 100);
-      } catch (err: any) {
+      } catch (err) {
         if (isMounted) setMapError("Failed to load map");
       }
-    }, 50);
+    }, 100);
 
     return () => {
       isMounted = false;
@@ -307,8 +289,8 @@ export default function DeliveryPage() {
 
           {/* Content */}
           <div className="flex-1 overflow-hidden flex flex-col">
-            {viewMode === "list" ? (
-              <div className="flex-1 overflow-y-auto px-5 py-4 pb-32">
+            {/* List View */}
+            <div style={{ display: viewMode === "list" ? "flex" : "none" }} className="flex-1 overflow-y-auto px-5 py-4 pb-32 flex-col">
                 {ordersLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -360,16 +342,16 @@ export default function DeliveryPage() {
                     ))}
                   </div>
                 )}
-              </div>
-            ) : (
-              <div className="flex-1 overflow-hidden flex flex-col px-5 py-4">
+            </div>
+
+            {/* Map View */}
+            <div style={{ display: viewMode === "map" ? "flex" : "none" }} className="flex-1 overflow-hidden flex-col px-5 py-4">
                 {mapError ? (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">{mapError}</div>
                 ) : (
-                  <div id="leaflet-map" style={{ flex: 1, borderRadius: "16px", border: "1px solid #e5e7eb" }} />
+                  <div id="leaflet-map" style={{ flex: 1, borderRadius: "16px", border: "1px solid #e5e7eb", minHeight: 0 }} />
                 )}
-              </div>
-            )}
+            </div>
           </div>
         </div>
       )}
