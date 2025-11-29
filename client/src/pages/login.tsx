@@ -180,10 +180,8 @@ export default function LoginPage() {
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   {t("loading", language)}
                 </div>
-              ) : isSignup ? (
-                language === "ar" ? "إنشاء حساب" : "Sign Up"
               ) : (
-                language === "ar" ? "دخول" : "Login"
+                isSignup ? t("signUp", language) : t("login", language)
               )}
             </button>
           </form>
@@ -200,7 +198,7 @@ export default function LoginPage() {
 
           <div className="mt-8 text-center">
             <p className="text-gray-600 text-sm" data-testid="text-toggle-prompt">
-              {isSignup ? (language === "ar" ? "ليس لديك حساب بالفعل؟" : "Don't have an account?") : (language === "ar" ? "هل لديك حساب بالفعل؟" : "Already have an account?")}
+              {isSignup ? t("dontHaveAccount", language) : t("alreadyHaveAccount", language)}
             </p>
             <button
               onClick={() => {
@@ -212,7 +210,7 @@ export default function LoginPage() {
               className="text-primary font-medium hover:underline mt-2"
               data-testid="button-toggle-form"
             >
-              {isSignup ? (language === "ar" ? "دخول" : "Login") : (language === "ar" ? "إنشاء حساب" : "Sign Up")}
+              {isSignup ? t("login", language) : t("signUp", language)}
             </button>
           </div>
         </div>

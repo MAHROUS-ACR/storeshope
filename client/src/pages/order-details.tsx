@@ -362,17 +362,17 @@ export default function OrderDetailsPage() {
           });
         }
 
-        toast.success(language === "ar" ? "تم تحديث الحالة!" : "Status updated!");
+        toast.success(t("statusUpdated", language));
         
         // Update current view with new status
         setOrder(prev => prev ? { ...prev, status } : null);
         setEditingStatus(false);
         setNewStatus("pending");
       } else {
-        toast.error(language === "ar" ? "فشل تحديث الطلب" : "Failed to update order");
+        toast.error(t("statusUpdateFailed", language));
       }
     } catch (error: any) {
-      toast.error(language === "ar" ? "خطأ: " + error?.message : "Error: " + error?.message);
+      toast.error((language === "ar" ? "خطأ: " : "Error: ") + error?.message);
     } finally {
       setIsProcessing(false);
     }

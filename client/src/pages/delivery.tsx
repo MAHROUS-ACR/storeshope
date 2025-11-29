@@ -81,13 +81,13 @@ export default function DeliveryPage() {
         updateData.deliveryRemarks = remarks;
       }
       await updateDoc(orderRef, updateData);
-      toast.success(language === "ar" ? "تم تحديث الحالة بنجاح" : "Status updated successfully");
+      toast.success(t("statusUpdated", language));
       setShowRecipientModal(false);
       setSelectedOrderId(null);
       setRecipientName("");
       setDeliveryRemarks("");
     } catch (error) {
-      toast.error(language === "ar" ? "فشل تحديث الحالة" : "Failed to update status");
+      toast.error(t("statusUpdateFailed", language));
     }
   };
 
@@ -99,7 +99,7 @@ export default function DeliveryPage() {
 
   const handleConfirmDelivery = () => {
     if (!recipientName.trim()) {
-      toast.error(language === "ar" ? "الرجاء إدخال اسم المستلم" : "Please enter recipient name");
+      toast.error(t("enterRecipientName", language));
       return;
     }
     if (selectedOrderId) {
@@ -131,7 +131,7 @@ export default function DeliveryPage() {
       <div className="w-full flex-1 flex flex-col overflow-hidden relative">
         {/* Header */}
         <div className="px-5 pb-4 pt-2 border-b border-gray-100 flex-shrink-0">
-          <h1 className="text-xl font-bold">🚚 {language === "ar" ? "طلبات التسليم" : "Delivery Orders"}</h1>
+          <h1 className="text-xl font-bold">🚚 {t("deliveryOrders", language)}</h1>
         </div>
 
         {/* Content */}
@@ -142,13 +142,13 @@ export default function DeliveryPage() {
             </div>
           ) : orders.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              {language === "ar" ? "لا توجد طلبات للتسليم" : "No orders to deliver"}
+              {t("noOrdersToDeliver", language)}
             </div>
           ) : (
             <div className="space-y-3">
               {/* Status Filters */}
               <div className="bg-white rounded-2xl p-3 border border-gray-200 sticky top-0">
-                <p className="text-xs font-semibold text-gray-500 mb-2">{language === "ar" ? "التصفية" : "Filter"}</p>
+                <p className="text-xs font-semibold text-gray-500 mb-2">{t("filter", language)}</p>
                 <div className="flex gap-2 flex-wrap">
                   <button
                     onClick={() => setSelectedStatusFilter(null)}
@@ -158,7 +158,7 @@ export default function DeliveryPage() {
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    {language === "ar" ? "الكل" : "All"}
+                    {t("allOrders", language)}
                   </button>
                   <button
                     onClick={() => setSelectedStatusFilter("shipped")}
@@ -168,7 +168,7 @@ export default function DeliveryPage() {
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    {language === "ar" ? "🚚 تم الشحن" : "🚚 Shipped"}
+                    {t("shipped", language)}
                   </button>
                   <button
                     onClick={() => setSelectedStatusFilter("received")}
@@ -252,26 +252,26 @@ export default function DeliveryPage() {
       {showRecipientModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-5">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold mb-4">{language === "ar" ? "تأكيد الاستقبال" : "Confirm Delivery"}</h2>
+            <h2 className="text-lg font-bold mb-4">{t("confirmDelivery", language)}</h2>
             
             <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">{language === "ar" ? "اسم المستلم" : "Recipient Name"}</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">{t("recipientName", language)}</label>
               <input
                 type="text"
                 value={recipientName}
                 onChange={(e) => setRecipientName(e.target.value)}
-                placeholder={language === "ar" ? "اسم المستلم" : "Recipient name"}
+                placeholder={t("recipientName", language)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500"
                 data-testid="input-recipient-name"
               />
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">{language === "ar" ? "ملاحظات التسليم (اختياري)" : "Delivery Remarks (Optional)"}</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">{t("deliveryRemarks", language)}</label>
               <textarea
                 value={deliveryRemarks}
                 onChange={(e) => setDeliveryRemarks(e.target.value)}
-                placeholder={language === "ar" ? "مثال: الباب مقفول، تم الاتفاق على المخزن..." : "e.g., Door locked, left at store..."}
+                placeholder={t("deliveryRemarksPlaceholder", language)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 resize-none"
                 rows={3}
                 data-testid="input-delivery-remarks"
@@ -289,14 +289,14 @@ export default function DeliveryPage() {
                 className="flex-1 py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors"
                 data-testid="button-cancel-recipient"
               >
-                {language === "ar" ? "إلغاء" : "Cancel"}
+                {t("cancel", language)}
               </button>
               <button
                 onClick={handleConfirmDelivery}
                 className="flex-1 py-2 px-4 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors"
                 data-testid="button-confirm-delivery"
               >
-                {language === "ar" ? "تأكيد" : "Confirm"}
+                {t("confirm", language)}
               </button>
             </div>
           </div>
