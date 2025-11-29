@@ -216,9 +216,24 @@ export default function DeliveryPage() {
               if (isMounted && data.routes?.[0]) {
                 const route = data.routes[0];
                 const latlngs = route.geometry.coordinates.map((c: [number, number]) => [c[1], c[0]]);
-                L.polyline(latlngs, { color: routeColor, weight: 3, opacity: 0.7 }).addTo(map);
+                const distance = route.distance / 1000;
+                const polyline = L.polyline(latlngs, { color: routeColor, weight: 3, opacity: 0.7 }).addTo(map);
                 
-                accumulatedDistance += route.distance / 1000;
+                // Add distance label on the route
+                const midIndex = Math.floor(latlngs.length / 2);
+                const midPoint = latlngs[midIndex];
+                L.marker(midPoint, {
+                  icon: L.divIcon({
+                    html: `<div style="background: white; padding: 4px 8px; border-radius: 8px; border: 2px solid ${routeColor}; font-weight: bold; font-size: 12px; color: ${routeColor}; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">${distance.toFixed(1)}km</div>`,
+                    iconSize: [70, 24],
+                    iconAnchor: [35, 12],
+                    className: 'distance-label'
+                  })
+                }).addTo(map);
+                
+                polyline.bindPopup(`<strong>${language === "ar" ? "المسافة" : "Distance"}</strong><br/>${distance.toFixed(1)} km`);
+                
+                accumulatedDistance += distance;
                 accumulatedTime += route.duration;
                 routesCount++;
                 
