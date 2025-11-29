@@ -203,10 +203,13 @@ export default function DeliveryPage() {
             })
           }).addTo(map).bindPopup(language === "ar" ? "موقعك الحالي" : "Your Location");
 
-          // Draw real routes to all orders by delivery sequence (async)
+          // Draw routes for delivery sequence (from current location to order 1, order 1 to order 2, etc)
+          let startLat = userLat;
+          let startLng = userLng;
+          
           ordersWithDistance.forEach((order, idx) => {
             const routeColor = idx === 0 ? '#ef4444' : '#ff8c00';
-            const url = `https://router.project-osrm.org/route/v1/driving/${userLng},${userLat};${order.deliveryLng},${order.deliveryLat}?geometries=geojson`;
+            const url = `https://router.project-osrm.org/route/v1/driving/${startLng},${startLat};${order.deliveryLng},${order.deliveryLat}?geometries=geojson`;
             
             fetch(url)
               .then(res => res.json())
@@ -218,6 +221,10 @@ export default function DeliveryPage() {
                 }
               })
               .catch(() => {});
+            
+            // Update start point for next route
+            startLat = order.deliveryLat!;
+            startLng = order.deliveryLng!;
           });
         }
 
