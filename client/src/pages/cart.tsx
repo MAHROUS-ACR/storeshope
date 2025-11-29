@@ -88,8 +88,8 @@ export default function CartPage() {
         </div>
 
         {/* Items List - Scrollable */}
-        <div className="flex-1 overflow-y-auto w-full pr-2" style={{ paddingBottom: "140px" }}>
-          <div className="w-full px-4 py-3 space-y-2.5">
+        <div className="flex-1 overflow-y-auto w-full" style={{ minHeight: 0, paddingBottom: "100px" }}>
+          <div className="w-full px-4 py-3 space-y-2.5 pb-4">
             {items.map((item) => (
               <div
                 key={item._uniqueId}
