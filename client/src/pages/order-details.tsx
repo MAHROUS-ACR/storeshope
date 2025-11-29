@@ -372,7 +372,7 @@ export default function OrderDetailsPage() {
         toast.error(t("statusUpdateFailed", language));
       }
     } catch (error: any) {
-      toast.error((language === "ar" ? "خطأ: " : "Error: ") + error?.message);
+      toast.error(t("errorPrefix", language) + ": " + error?.message);
     } finally {
       setIsProcessing(false);
     }
