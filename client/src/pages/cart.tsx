@@ -163,7 +163,7 @@ export default function CartPage() {
         </div>
 
         {/* Order Summary & Checkout Button - Fixed at bottom */}
-        <div className="fixed bottom-20 left-0 right-0 px-5 py-4 border-t border-gray-100 bg-white space-y-3 max-w-[500px] mx-auto" style={{ width: "100%", boxSizing: "border-box" }}>
+        <div className="fixed left-0 right-0 px-5 py-3 border-t border-gray-100 bg-white space-y-2 max-w-[500px] mx-auto" style={{ bottom: "72px", width: "100%", boxSizing: "border-box" }}>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t("subtotal", language)}</span>
