@@ -219,12 +219,24 @@ export default function DeliveryPage() {
 
     setMapLoading(true);
 
+    // Delay to ensure DOM is ready
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     if (!map.current && mapContainer.current) {
-      map.current = L.map(mapContainer.current).setView([currentLat, currentLng], 13);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; OpenStreetMap',
-        maxZoom: 19,
-      }).addTo(map.current);
+      try {
+        // Ensure container is visible and has proper height
+        mapContainer.current.style.height = "500px";
+        map.current = L.map(mapContainer.current, { preferCanvas: true }).setView([currentLat, currentLng], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; OpenStreetMap',
+          maxZoom: 19,
+        }).addTo(map.current);
+        map.current.invalidateSize();
+      } catch (error) {
+        console.error("Map init error:", error);
+        setMapLoading(false);
+        return;
+      }
     }
 
     if (map.current && orderLocations.length > 0) {
@@ -246,6 +258,7 @@ export default function DeliveryPage() {
 
       const bounds = L.latLngBounds([[currentLat, currentLng], ...orderLocations.map(o => [o.lat, o.lng] as L.LatLngExpression)]);
       map.current.fitBounds(bounds, { padding: [50, 50] });
+      map.current.invalidateSize();
 
       const coordinates = [[currentLng, currentLat], ...orderLocations.map(o => [o.lng, o.lat])];
       const coordsStr = coordinates.map(c => `${c[0]},${c[1]}`).join(";");
@@ -259,10 +272,10 @@ export default function DeliveryPage() {
             duration: Math.round(route.duration / 60)
           });
           const coords = route.geometry.coordinates.map((c: [number, number]) => [c[1], c[0]] as L.LatLngExpression);
-          routePolylineRef.current = L.polyline(coords, { color: '#2563eb', weight: 3, opacity: 0.7 }).addTo(map.current);
+          if (map.current) routePolylineRef.current = L.polyline(coords, { color: '#2563eb', weight: 3, opacity: 0.7 }).addTo(map.current);
         }
       } catch (error) {
-        // Route calculation failed silently
+        console.error("Route error:", error);
       }
     }
 
