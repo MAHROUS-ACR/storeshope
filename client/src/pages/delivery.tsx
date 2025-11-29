@@ -202,11 +202,8 @@ export default function DeliveryPage() {
     
     let markerCount = 0;
     pendingOrders.forEach((order, idx) => {
-      // Try deliveryLat/deliveryLng first, then fallback to latitude/longitude
-      const lat = order.deliveryLat || order.latitude;
-      const lng = order.deliveryLng || order.longitude;
-      
-      console.log(`Processing order #${order.orderNumber}: lat=${lat}, lng=${lng}`);
+      const lat = order.deliveryLat;
+      const lng = order.deliveryLng;
       
       if (typeof lat === "number" && typeof lng === "number" && lat && lng) {
         markerCount++;
