@@ -181,7 +181,12 @@ export default function DeliveryPage() {
 
   // Add order markers to map
   useEffect(() => {
-    if (!map.current) return;
+    if (!map.current) {
+      console.log("Map not initialized");
+      return;
+    }
+    
+    console.log("Adding markers - viewMode:", viewMode, "orders:", orders.length);
     
     // Remove old order markers
     orderMarkersRef.current.forEach(marker => {
@@ -191,12 +196,17 @@ export default function DeliveryPage() {
     
     if (viewMode === "map" && orders.length > 0) {
       const pendingOrders = orders.filter(o => o.status !== "received" && o.status !== "cancelled" && o.status !== "completed");
+      console.log("Pending orders count:", pendingOrders.length);
       
+      let addedCount = 0;
       pendingOrders.forEach((order, idx) => {
         const lat = order.latitude;
         const lng = order.longitude;
         
+        console.log(`Order #${order.orderNumber}: lat=${lat}, lng=${lng}, status=${order.status}`);
+        
         if (lat && lng && map.current) {
+          addedCount++;
           const markerIcon = L.divIcon({
             html: `<div style="font-size: 18px; text-align: center; line-height: 28px; width: 28px; height: 28px; background-color: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">${idx + 1}</div>`,
             iconSize: [28, 28],
@@ -212,6 +222,7 @@ export default function DeliveryPage() {
           orderMarkersRef.current.push(marker);
         }
       });
+      console.log("Successfully added markers:", addedCount);
     }
   }, [viewMode, orders]);
 
