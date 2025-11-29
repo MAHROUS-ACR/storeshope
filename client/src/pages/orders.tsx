@@ -78,6 +78,7 @@ export default function OrdersPage() {
   const map = useRef<L.Map | null>(null);
   const driverMarker = useRef<L.Marker | null>(null);
   const routePolyline = useRef<L.Polyline | null>(null);
+  const userInteractedWithMap = useRef(false);
 
   useEffect(() => {
     if (!authLoading && !isLoggedIn) {
@@ -180,19 +181,25 @@ export default function OrdersPage() {
     }
   };
 
-  // Initialize map
+  // Initialize map only once
   useEffect(() => {
     if (!mapContainer.current || !mapLat || !mapLng) return;
     
-    if (map.current) {
-      map.current.remove();
-    }
-
+    if (map.current) return; // Don't recreate if already exists
+    
     map.current = L.map(mapContainer.current).setView([mapLat, mapLng], 14);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; OpenStreetMap',
       maxZoom: 19,
     }).addTo(map.current);
+
+    // Track user interactions to prevent auto-centering
+    map.current.on('zoom', () => {
+      userInteractedWithMap.current = true;
+    });
+    map.current.on('drag', () => {
+      userInteractedWithMap.current = true;
+    });
 
     // Destination marker (red)
     L.marker([mapLat, mapLng], {
@@ -207,17 +214,19 @@ export default function OrdersPage() {
       .addTo(map.current)
       .bindPopup(`<div style="text-align: center"><strong>${language === "ar" ? "موقع التسليم" : "Delivery Location"}</strong></div>`)
       .openPopup();
+  }, [mapLat, mapLng]);
 
-    // Update driver marker position in real-time when order changes
+  // Update driver marker and route - don't recreate map
+  useEffect(() => {
+    if (!map.current) return;
+    
     const driverLat = selectedOrder?.driverLat;
     const driverLng = selectedOrder?.driverLng;
     
-    if (driverLat !== undefined && driverLat !== null && driverLng !== undefined && driverLng !== null && map.current) {
+    if (driverLat !== undefined && driverLat !== null && driverLng !== undefined && driverLng !== null) {
       if (driverMarker.current) {
-        // Update existing marker position
         driverMarker.current.setLatLng([driverLat, driverLng]);
       } else {
-        // Create new marker
         driverMarker.current = L.marker([driverLat, driverLng], {
           icon: createDeliveryIcon()
         })
@@ -244,7 +253,7 @@ export default function OrdersPage() {
         driverMarker.current = null;
       }
     }
-  }, [mapLat, mapLng, language, selectedOrder?.driverLat, selectedOrder?.driverLng, selectedOrder?.latitude, selectedOrder?.longitude]);
+  }, [selectedOrder?.driverLat, selectedOrder?.driverLng]);
 
   // Update selectedOrder when orders list changes (real-time sync)
   useEffect(() => {
