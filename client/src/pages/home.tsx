@@ -153,9 +153,9 @@ export default function Home() {
             {storeName ? (
               <div className="flex items-center gap-3">
                 {storeLogo ? (
-                  <img src={storeLogo} alt={storeName} className="w-16 h-16 rounded-xl object-cover shadow-md border border-gray-100" />
+                  <img src={storeLogo} alt={storeName} className="w-12 h-12 rounded-lg object-cover shadow-md border border-gray-100" />
                 ) : (
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-5xl shadow-lg leading-none">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-2xl shadow-lg leading-none">
                     {storeName.charAt(0)}
                   </div>
                 )}
