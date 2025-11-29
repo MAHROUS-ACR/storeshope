@@ -261,7 +261,7 @@ export default function CheckoutPage() {
         shippingCost: Number(shipping) || 0,
         total: Number(grandTotal) || 0,
         
-        status: "shipped",
+        status: "pending",
         paymentMethod: paymentSelected,
         shippingType: shippingSelected,
         shippingZone: zoneSelected?.name || "",
