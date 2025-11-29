@@ -199,12 +199,12 @@ export default function DeliveryDetailsPage() {
 
     // Delivery destination marker (RED)
     L.marker([deliveryLat, deliveryLng], {
-      icon: L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
+      icon: L.divIcon({
+        html: '<div style="font-size: 30px; text-align: center; line-height: 35px;">📍</div>',
+        iconSize: [35, 35],
+        iconAnchor: [17, 35],
+        popupAnchor: [0, -35],
+        className: ''
       })
     })
       .addTo(map.current)
