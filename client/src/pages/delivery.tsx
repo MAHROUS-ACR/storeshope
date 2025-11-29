@@ -63,18 +63,29 @@ export default function DeliveryPage() {
     }
   }, [isLoading, user, setLocation]);
 
-  // Get driver current location
+  // Watch driver location continuously
   useEffect(() => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
+      const watchId = navigator.geolocation.watchPosition(
         (position) => {
-          setCurrentLat(position.coords.latitude);
-          setCurrentLng(position.coords.longitude);
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setCurrentLat(lat);
+          setCurrentLng(lng);
+          
+          // Update driver marker on map if it exists
+          if (map.current && markersRef.current.length > 0) {
+            const driverMarker = markersRef.current[0]; // Driver marker is first
+            driverMarker.setLatLng([lat, lng]);
+          }
         },
         () => {
           // Location access denied, use default
-        }
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
       );
+      
+      return () => navigator.geolocation.clearWatch(watchId);
     }
   }, []);
 
@@ -288,8 +299,15 @@ export default function DeliveryPage() {
   useEffect(() => {
     if (viewMode === "map") {
       calculateOptimizedRoute();
+      
+      // Recalculate route every 15 seconds as driver moves
+      const recalculateInterval = setInterval(() => {
+        calculateOptimizedRoute();
+      }, 15000);
+      
+      return () => clearInterval(recalculateInterval);
     }
-  }, [viewMode]);
+  }, [viewMode, orders, currentLat, currentLng]);
 
   if (isLoading) {
     return (
