@@ -1,5 +1,6 @@
 import { calculateDiscountedPrice, type Discount } from "@/lib/discountUtils";
 import { motion } from "framer-motion";
+import { useLocation } from "wouter";
 
 interface FlipCardProps {
   product: {
@@ -13,11 +14,15 @@ interface FlipCardProps {
 }
 
 export function FlipCard({ product, discount }: FlipCardProps) {
+  const [, setLocation] = useLocation();
   const activeDiscount = discount;
   const discountedPrice = activeDiscount ? calculateDiscountedPrice(product.price, activeDiscount.discountPercentage) : product.price;
 
   return (
-    <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl group">
+    <div 
+      onClick={() => setLocation(`/product/${product.id}`)}
+      className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl group cursor-pointer"
+    >
       {/* Background Image */}
       <img
         src={product.image}
