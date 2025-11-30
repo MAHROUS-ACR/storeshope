@@ -147,31 +147,26 @@ export default function SettingsPage() {
     toast.success("Loaded Firebase credentials from environment!");
   };
 
-  // Validate Firebase credentials
+  // Validate Firebase credentials (only 3 required fields)
   const validateFirebaseConfig = async (): Promise<boolean> => {
+    // Only these 3 fields are required
     if (!firebaseApiKey || !firebaseProjectId || !firebaseAppId) {
-      toast.error("Please fill in all required Firebase fields");
+      toast.error("Required fields missing:\n• Firebase API Key\n• Firebase Project ID\n• Firebase App ID");
       return false;
     }
 
-    try {
-      // Try to validate by checking if the config format is correct
-      if (!firebaseApiKey.startsWith("AIza")) {
-        toast.error("Invalid Firebase API Key format");
-        return false;
-      }
-
-      if (!firebaseAppId.includes(":")) {
-        toast.error("Invalid Firebase App ID format");
-        return false;
-      }
-
-      // If validation passes, return true
-      return true;
-    } catch (error) {
-      toast.error("Firebase configuration validation failed");
+    // Validate format of required fields
+    if (!firebaseApiKey.startsWith("AIza")) {
+      toast.error("Invalid Firebase API Key (must start with 'AIza')");
       return false;
     }
+
+    if (!firebaseAppId.includes(":")) {
+      toast.error("Invalid Firebase App ID format");
+      return false;
+    }
+
+    return true;
   };
 
   const handleSaveAllSettings = async () => {

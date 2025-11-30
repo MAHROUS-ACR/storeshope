@@ -63,6 +63,18 @@ function getFirebaseConfig() {
   return DEMO_CONFIG;
 }
 
+// Check if required Firebase fields are valid
+function isValidFirebaseConfig(config: any): boolean {
+  return (
+    config?.apiKey &&
+    config?.projectId &&
+    config?.appId &&
+    config.apiKey.startsWith("AIza") &&
+    config.projectId !== DEMO_CONFIG.projectId &&
+    config.appId.includes(":")
+  );
+}
+
 // Load Firebase config from Firestore (async)
 export async function loadFirebaseConfigFromFirestore() {
   try {
@@ -73,29 +85,60 @@ export async function loadFirebaseConfigFromFirestore() {
 
     if (firebaseConfigSnap.exists()) {
       const serverConfig = firebaseConfigSnap.data();
-      cachedConfig = {
-        apiKey: serverConfig.firebaseApiKey || import.meta.env.VITE_FIREBASE_API_KEY || DEMO_CONFIG.apiKey,
-        authDomain: serverConfig.firebaseAuthDomain || import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || DEMO_CONFIG.authDomain,
-        projectId: serverConfig.firebaseProjectId || import.meta.env.VITE_FIREBASE_PROJECT_ID || DEMO_CONFIG.projectId,
-        storageBucket: serverConfig.firebaseStorageBucket || import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || DEMO_CONFIG.storageBucket,
-        messagingSenderId: serverConfig.firebaseMessagingSenderId || import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || DEMO_CONFIG.messagingSenderId,
-        appId: serverConfig.firebaseAppId || import.meta.env.VITE_FIREBASE_APP_ID || DEMO_CONFIG.appId,
-      };
-      hasValidConfig = true;
-      isInitialized = true;
-      return;
+      
+      // Check if Firestore has valid config (3 required fields: apiKey, projectId, appId)
+      if (
+        serverConfig.firebaseApiKey &&
+        serverConfig.firebaseProjectId &&
+        serverConfig.firebaseAppId &&
+        isValidFirebaseConfig({
+          apiKey: serverConfig.firebaseApiKey,
+          projectId: serverConfig.firebaseProjectId,
+          appId: serverConfig.firebaseAppId,
+        })
+      ) {
+        // Firestore has valid config, use it
+        cachedConfig = {
+          apiKey: serverConfig.firebaseApiKey,
+          authDomain: serverConfig.firebaseAuthDomain || import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || DEMO_CONFIG.authDomain,
+          projectId: serverConfig.firebaseProjectId,
+          storageBucket: serverConfig.firebaseStorageBucket || import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || DEMO_CONFIG.storageBucket,
+          messagingSenderId: serverConfig.firebaseMessagingSenderId || import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || DEMO_CONFIG.messagingSenderId,
+          appId: serverConfig.firebaseAppId,
+        };
+        hasValidConfig = true;
+        isInitialized = true;
+        return;
+      }
     }
   } catch (error) {
     // Firestore load failed, will use env variables
-    hasValidConfig = false;
   }
   
-  // Use env as fallback
-  const fallbackConfig = getFirebaseConfig();
-  cachedConfig = fallbackConfig;
-  // Check if fallback config is valid (not demo)
-  hasValidConfig = fallbackConfig.projectId !== DEMO_CONFIG.projectId && 
-                   fallbackConfig.apiKey !== DEMO_CONFIG.apiKey;
+  // Use env as fallback (highest priority for validity)
+  const envConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  };
+  
+  if (isValidFirebaseConfig(envConfig)) {
+    cachedConfig = {
+      apiKey: envConfig.apiKey,
+      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || DEMO_CONFIG.authDomain,
+      projectId: envConfig.projectId,
+      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || DEMO_CONFIG.storageBucket,
+      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || DEMO_CONFIG.messagingSenderId,
+      appId: envConfig.appId,
+    };
+    hasValidConfig = true;
+    isInitialized = true;
+    return;
+  }
+
+  // Last resort: Use demo config
+  cachedConfig = DEMO_CONFIG;
+  hasValidConfig = false;
   isInitialized = true;
 }
 
