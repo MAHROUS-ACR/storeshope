@@ -485,29 +485,30 @@ export default function ProductDetailsPage() {
                     </div>
                   )}
                 </div>
+
+                {/* Quantity - Below Size and Color */}
+                <div className="mb-6">
+                  <p className="text-sm font-semibold mb-2">{t("quantity", language)}</p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 font-semibold"
+                      data-testid="button-decrease-quantity"
+                    >
+                      −
+                    </button>
+                    <span className="text-base font-bold w-8 text-center">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 font-semibold"
+                      data-testid="button-increase-quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
-
-            {/* Quantity */}
-            <div className="mb-6">
-              <p className="text-sm font-semibold mb-2">{t("quantity", language)}: <span className="font-bold text-base">{quantity}</span></p>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 font-semibold"
-                  data-testid="button-decrease-quantity"
-                >
-                  −
-                </button>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 font-semibold"
-                  data-testid="button-increase-quantity"
-                >
-                  +
-                </button>
-              </div>
-            </div>
               </div>
             </div>
 
