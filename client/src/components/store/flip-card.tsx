@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getActiveDiscount, calculateDiscountedPrice, type Discount } from "@/lib/discountUtils";
 import { useLocation } from "wouter";
 
@@ -23,9 +24,7 @@ export function FlipCard({ product, discount }: FlipCardProps) {
 
   return (
     <motion.div
-      className="h-full cursor-pointer"
-      onMouseEnter={() => setIsFlipped(true)}
-      onMouseLeave={() => setIsFlipped(false)}
+      className="h-full relative"
       onClick={() => setLocation(`/product/${product.id}`)}
     >
       <motion.div
@@ -38,7 +37,7 @@ export function FlipCard({ product, discount }: FlipCardProps) {
         {/* Front */}
         <div
           style={{ backfaceVisibility: "hidden" }}
-          className="absolute w-full h-full bg-gray-100 rounded-lg overflow-hidden shadow-sm"
+          className="absolute w-full h-full bg-gray-100 rounded-lg overflow-hidden shadow-sm flex items-center justify-center"
         >
           <img
             src={product.image}
@@ -73,12 +72,32 @@ export function FlipCard({ product, discount }: FlipCardProps) {
                 </div>
               )}
             </div>
-            <div className="text-white text-[8px] md:text-[9px] text-center bg-white/20 py-1 rounded">
-              Click to view details
-            </div>
           </div>
         </div>
       </motion.div>
+
+      {/* Flip Buttons - Positioned on sides */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsFlipped(!isFlipped);
+        }}
+        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 md:-translate-x-4 bg-white/90 hover:bg-white text-gray-800 rounded-full p-1 md:p-1.5 shadow-lg transition-all hover:shadow-xl z-10"
+        data-testid="button-flip-left"
+      >
+        <ChevronLeft className="w-3 h-3 md:w-4 md:h-4" />
+      </button>
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsFlipped(!isFlipped);
+        }}
+        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 md:translate-x-4 bg-white/90 hover:bg-white text-gray-800 rounded-full p-1 md:p-1.5 shadow-lg transition-all hover:shadow-xl z-10"
+        data-testid="button-flip-right"
+      >
+        <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
+      </button>
     </motion.div>
   );
 }
