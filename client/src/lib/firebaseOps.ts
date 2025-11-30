@@ -3,7 +3,7 @@
  * Replaces all Express API endpoints
  */
 
-import { initializeApp, getApps } from "firebase/app";
+import { initializeApp, getApps, deleteApp } from "firebase/app";
 import {
   getFirestore,
   collection,
@@ -94,15 +94,28 @@ export async function loadFirebaseConfigFromFirestore() {
 
 function initDb() {
   const config = getFirebaseConfig();
+  const apps = getApps();
 
-  if (!getApps().length) {
-    initializeApp(config);
+  // If Firebase app is already initialized, delete it first
+  // This is necessary when the config changes (e.g., different projectId)
+  if (apps.length > 0) {
+    deleteApp(apps[0]);
   }
+
+  // Initialize Firebase with the current config
+  initializeApp(config);
   return getFirestore();
 }
 
 // Function to reload config (call after settings are saved)
 export function reloadFirebaseConfig() {
+  // Delete all Firebase apps
+  const apps = getApps();
+  for (const app of apps) {
+    deleteApp(app);
+  }
+  
+  // Clear cache
   cachedConfig = null;
   isInitialized = false;
 }
