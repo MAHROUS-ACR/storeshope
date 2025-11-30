@@ -11,7 +11,7 @@ import { useCart } from "@/lib/cartContext";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
 import { getAllDiscounts, type Discount } from "@/lib/discountUtils";
-import { getProducts, getStoreSettings, isDemoMode } from "@/lib/firebaseOps";
+import { getProducts, getStoreSettings, isDemoMode, isFirebaseConfigInitialized } from "@/lib/firebaseOps";
 import imgHeadphones from "@assets/generated_images/wireless_headphones_product_shot.png";
 import imgWatch from "@assets/generated_images/smart_watch_product_shot.png";
 import imgShoes from "@assets/generated_images/designer_running_shoes_product_shot.png";
@@ -115,8 +115,16 @@ export default function Home() {
   useEffect(() => {
     // Load data only on component mount, not on location changes
     Promise.all([fetchProductsData(), fetchStoreSettings()]);
-    // Check if demo mode
-    setIsDemo(isDemoMode());
+  }, []);
+
+  // Check demo mode AFTER Firebase config is loaded
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isFirebaseConfigInitialized()) {
+        setIsDemo(isDemoMode());
+      }
+    }, 100); // Small delay to ensure config is loaded
+    return () => clearTimeout(timer);
   }, []);
 
   // Fetch discounts after Firebase is initialized (with a small delay to ensure Firebase is ready)

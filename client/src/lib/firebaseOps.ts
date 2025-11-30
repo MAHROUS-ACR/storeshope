@@ -137,6 +137,11 @@ export function isDemoMode() {
   return config.projectId === DEMO_CONFIG.projectId || !hasValidConfig;
 }
 
+// Check if Firebase config has been initialized/loaded
+export function isFirebaseConfigInitialized() {
+  return isInitialized;
+}
+
 // ============= PRODUCTS =============
 export async function getProducts() {
   try {
