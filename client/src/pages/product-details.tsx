@@ -209,7 +209,7 @@ export default function ProductDetailsPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto no-scrollbar pb-28 w-full">
+        <div className="flex-1 overflow-y-auto no-scrollbar w-full">
           <div className="w-full px-5 py-4 max-w-7xl mx-auto">
             {/* Desktop: 2 Column Layout */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -488,28 +488,28 @@ export default function ProductDetailsPage() {
             </div>
               </div>
             </div>
+
+            {/* Bottom Actions - Sticky positioning */}
+            <div className="sticky bottom-0 left-0 right-0 px-5 py-4 bg-white border-t border-gray-100 flex gap-3 z-40 mt-6">
+              <button
+                onClick={() => setLocation("/")}
+                className="flex-1 px-5 py-3 border border-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
+                data-testid="button-continue-shopping"
+              >
+                {t("continueShoppingButton", language)}
+              </button>
+              <button
+                onClick={handleAddToCart}
+                disabled={isAdding || !product.available}
+                className="flex-1 px-5 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors"
+                data-testid="button-add-to-cart"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                {isAdding ? t("addingToCart", language) : t("addToCart", language)}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Bottom Actions - Fixed positioning above BottomNav */}
-      <div className="fixed bottom-20 left-0 right-0 px-5 py-4 bg-white border-t border-gray-100 flex gap-3 z-40">
-        <button
-          onClick={() => setLocation("/")}
-          className="flex-1 px-5 py-3 border border-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
-          data-testid="button-continue-shopping"
-        >
-          {t("continueShoppingButton", language)}
-        </button>
-        <button
-          onClick={handleAddToCart}
-          disabled={isAdding || !product.available}
-          className="flex-1 px-5 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors"
-          data-testid="button-add-to-cart"
-        >
-          <ShoppingCart className="w-4 h-4" />
-          {isAdding ? t("addingToCart", language) : t("addToCart", language)}
-        </button>
       </div>
 
       {/* Bottom Nav */}
