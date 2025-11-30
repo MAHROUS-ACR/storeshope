@@ -488,27 +488,27 @@ export default function ProductDetailsPage() {
             </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Bottom Actions - Fixed between content and nav */}
-        <div className="px-5 py-4 bg-white border-t border-gray-100 flex gap-3 flex-shrink-0">
-          <button
-            onClick={() => setLocation("/")}
-            className="flex-1 px-5 py-3 border border-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
-            data-testid="button-continue-shopping"
-          >
-            {t("continueShoppingButton", language)}
-          </button>
-          <button
-            onClick={handleAddToCart}
-            disabled={isAdding || !product.available}
-            className="flex-1 px-5 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors"
-            data-testid="button-add-to-cart"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            {isAdding ? t("addingToCart", language) : t("addToCart", language)}
-          </button>
+            {/* Bottom Actions */}
+            <div className="flex gap-3 mt-8">
+              <button
+                onClick={() => setLocation("/")}
+                className="flex-1 px-5 py-3 border border-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
+                data-testid="button-continue-shopping"
+              >
+                {t("continueShoppingButton", language)}
+              </button>
+              <button
+                onClick={handleAddToCart}
+                disabled={isAdding || !product.available}
+                className="flex-1 px-5 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors"
+                data-testid="button-add-to-cart"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                {isAdding ? t("addingToCart", language) : t("addToCart", language)}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
