@@ -236,7 +236,7 @@ export default function Home() {
             {/* Products */}
             <div className="px-3 md:px-6 lg:px-8">
               {isLoading ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-2 lg:gap-2">
                   {[1, 2, 3, 4].map((i) => (
                     <div key={i} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
                       <div className="aspect-square bg-gray-200 animate-pulse" />
@@ -248,7 +248,7 @@ export default function Home() {
                   ))}
                 </div>
               ) : filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-2 lg:gap-2">
                   {filteredProducts.map((product, index) => (
                     <ProductCard 
                       key={product.id} 
