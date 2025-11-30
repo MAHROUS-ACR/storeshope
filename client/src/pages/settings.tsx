@@ -37,6 +37,10 @@ export default function SettingsPage() {
   const [brevoFromEmail, setBrevoFromEmail] = useState("");
   const [brevoFromName, setBrevoFromName] = useState("");
   
+  // SN field for access control
+  const [sn, setSN] = useState("");
+  const [snError, setSnError] = useState("");
+  
   const [isLoading, setIsLoading] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
@@ -131,9 +135,50 @@ export default function SettingsPage() {
     }
   };
 
+  // Validate Firebase credentials
+  const validateFirebaseConfig = async (): Promise<boolean> => {
+    if (!firebaseApiKey || !firebaseProjectId || !firebaseAppId) {
+      toast.error("Please fill in all required Firebase fields");
+      return false;
+    }
+
+    try {
+      // Try to validate by checking if the config format is correct
+      if (!firebaseApiKey.startsWith("AIza")) {
+        toast.error("Invalid Firebase API Key format");
+        return false;
+      }
+
+      if (!firebaseAppId.includes(":")) {
+        toast.error("Invalid Firebase App ID format");
+        return false;
+      }
+
+      // If validation passes, return true
+      return true;
+    } catch (error) {
+      toast.error("Firebase configuration validation failed");
+      return false;
+    }
+  };
+
   const handleSaveAllSettings = async () => {
+    // Check SN code
+    if (sn !== "8094") {
+      setSnError("Invalid access code");
+      toast.error("Incorrect access code");
+      return;
+    }
+    
+    setSnError("");
     setIsLoading(true);
     try {
+      // Validate Firebase config before saving
+      const isValid = await validateFirebaseConfig();
+      if (!isValid) {
+        return;
+      }
+
       const db = getFirestore();
       
       // Save Firebase config to Firestore
@@ -244,6 +289,27 @@ export default function SettingsPage() {
         {/* Content */}
         <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
           <div className="w-full px-5 py-6">
+
+            {/* SN Access Code */}
+            <div className="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+              <label className="block text-sm font-semibold mb-2" htmlFor="sn">
+                🔐 Access Code (Required to modify settings)
+              </label>
+              <input
+                id="sn"
+                type="password"
+                value={sn}
+                onChange={(e) => setSN(e.target.value)}
+                placeholder="Enter access code"
+                className={`w-full px-5 py-3 bg-white border rounded-2xl text-sm focus:outline-none focus:ring-2 ${
+                  snError
+                    ? "border-red-300 focus:ring-red-200 focus:border-red-500"
+                    : "border-gray-200 focus:ring-primary/20 focus:border-primary"
+                }`}
+                data-testid="input-sn"
+              />
+              {snError && <p className="text-xs text-red-600 mt-2">{snError}</p>}
+            </div>
 
             {/* Firebase Configuration Section */}
             <div className="mb-8">
