@@ -44,7 +44,7 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
 
       {/* Grid - Same for Mobile and Desktop */}
       <div className="flex justify-center px-3 md:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4 max-w-2xl md:max-w-4xl lg:max-w-5xl w-full">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4 max-w-2xl md:max-w-none w-full">
           {discountedProducts.map((product) => {
             const activeDiscount = getActiveDiscount(String(product.id), discounts);
             return (
