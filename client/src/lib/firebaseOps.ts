@@ -101,16 +101,11 @@ export async function loadFirebaseConfigFromFirestore() {
 
 function initDb() {
   const config = getFirebaseConfig();
-  const apps = getApps();
-
-  // If Firebase app is already initialized, delete it first
-  // This is necessary when the config changes (e.g., different projectId)
-  if (apps.length > 0) {
-    deleteApp(apps[0]);
+  
+  // Only initialize if not already done
+  if (!getApps().length) {
+    initializeApp(config);
   }
-
-  // Initialize Firebase with the current config
-  initializeApp(config);
   return getFirestore();
 }
 

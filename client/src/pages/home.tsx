@@ -62,7 +62,7 @@ export default function Home() {
   const [storeLogo, setStoreLogo] = useState<string>("");
   const [isInitialized, setIsInitialized] = useState(false);
   const [discounts, setDiscounts] = useState<Discount[]>([]);
-  const [isDemo, setIsDemo] = useState(false);
+  const [isDemo, setIsDemo] = useState(isDemoMode());
 
   const fetchStoreSettings = async (): Promise<void> => {
     try {
@@ -114,25 +114,7 @@ export default function Home() {
 
   useEffect(() => {
     // Load data only on component mount, not on location changes
-    Promise.all([fetchProductsData(), fetchStoreSettings()]);
-  }, []);
-
-  // Check demo mode AFTER Firebase config is loaded
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (isFirebaseConfigInitialized()) {
-        setIsDemo(isDemoMode());
-      }
-    }, 100); // Small delay to ensure config is loaded
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Fetch discounts after Firebase is initialized (with a small delay to ensure Firebase is ready)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchDiscounts();
-    }, 500); // Small delay to ensure Firebase client is initialized
-    return () => clearTimeout(timer);
+    Promise.all([fetchProductsData(), fetchStoreSettings(), fetchDiscounts()]);
   }, []);
 
   // Extract unique categories from products
