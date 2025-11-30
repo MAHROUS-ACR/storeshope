@@ -162,33 +162,45 @@ export default function SettingsPage() {
   };
 
   // Load credentials from environment variables
-  const handleLoadFromEnvironment = () => {
-    const apiKey = import.meta.env.VITE_FIREBASE_API_KEY || "";
-    const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID || "";
-    const appId = import.meta.env.VITE_FIREBASE_APP_ID || "";
-    const authDomain = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "";
-    const storageBucket = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "";
-    const messagingSenderId = import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "";
-    const measurementId = import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "";
+  const handleLoadFromEnvironment = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/api/env/firebase");
+      if (!response.ok) {
+        toast.error("Failed to load from server");
+        return;
+      }
+      
+      const env = await response.json();
+      const apiKey = env.VITE_FIREBASE_API_KEY || "";
+      const projectId = env.VITE_FIREBASE_PROJECT_ID || "";
+      const appId = env.VITE_FIREBASE_APP_ID || "";
+      const authDomain = env.VITE_FIREBASE_AUTH_DOMAIN || "";
+      const storageBucket = env.VITE_FIREBASE_STORAGE_BUCKET || "";
+      const messagingSenderId = env.VITE_FIREBASE_MESSAGING_SENDER_ID || "";
+      const measurementId = env.VITE_FIREBASE_MEASUREMENT_ID || "";
 
-    console.log("🔄 Loading from Environment:", {
-      apiKey: apiKey ? "✓ Present" : "✗ Missing",
-      projectId: projectId ? "✓ Present" : "✗ Missing",
-      appId: appId ? "✓ Present" : "✗ Missing",
-    });
+      console.log("🔄 Loading from Environment:", {
+        apiKey: apiKey ? "✓ Present" : "✗ Missing",
+        projectId: projectId ? "✓ Present" : "✗ Missing",
+        appId: appId ? "✓ Present" : "✗ Missing",
+      });
 
-    setFirebaseApiKey(apiKey);
-    setFirebaseProjectId(projectId);
-    setFirebaseAppId(appId);
-    setFirebaseAuthDomain(authDomain);
-    setFirebaseStorageBucket(storageBucket);
-    setFirebaseMessagingSenderId(messagingSenderId);
-    setFirebaseMeasurementId(measurementId);
+      setFirebaseApiKey(apiKey);
+      setFirebaseProjectId(projectId);
+      setFirebaseAppId(appId);
+      setFirebaseAuthDomain(authDomain);
+      setFirebaseStorageBucket(storageBucket);
+      setFirebaseMessagingSenderId(messagingSenderId);
+      setFirebaseMeasurementId(measurementId);
 
-    if (apiKey && projectId && appId) {
-      toast.success("✅ Loaded Firebase credentials from environment!");
-    } else {
-      toast.warning("⚠️ Some environment variables are missing");
+      if (apiKey && projectId && appId) {
+        toast.success("✅ Loaded Firebase credentials from environment!");
+      } else {
+        toast.warning("⚠️ Some environment variables are missing");
+      }
+    } catch (error) {
+      console.error("Error loading environment:", error);
+      toast.error("Could not connect to server to load environment variables");
     }
   };
 
