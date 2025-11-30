@@ -382,6 +382,13 @@ export default function ProductDetailsPage() {
                     </div>
                   </div>
 
+                  {/* Validation Error Message */}
+                  {validationError && (
+                    <div className="mt-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-center">
+                      <p className="text-sm text-red-700 font-semibold" data-testid="error-validation">{validationError}</p>
+                    </div>
+                  )}
+
                   {/* Quantity - Below Buttons */}
                   <div className="flex gap-2 items-center justify-center mt-4">
                     <p className="text-sm font-semibold">{t("quantity", language)}:</p>
