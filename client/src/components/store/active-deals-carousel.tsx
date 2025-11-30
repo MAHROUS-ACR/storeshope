@@ -54,11 +54,8 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
   }, [discountedProducts]);
 
   if (discountedProducts.length === 0) {
-    console.log("No discounted products available");
     return null;
   }
-  
-  console.log("Discounted products:", discountedProducts.length);
 
   const nextSlide = () => {
     setCarouselIndex((prev) => (prev + 1) % discountedProducts.length);
@@ -73,58 +70,6 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
   const goToSlide = (index: number) => {
     setCarouselIndex(index);
     startAutoScroll();
-  };
-
-  const ProductCard = ({ product, index }: { product: Product; index: number }) => {
-    const activeDiscount = getActiveDiscount(String(product.id), discounts);
-    return (
-      <motion.div
-        key={product.id}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.05 }}
-        onClick={() => setLocation(`/product/${product.id}`)}
-        className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow group"
-      >
-        <img
-          src={product.image}
-          alt={product.title || product.name}
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-transparent p-2 lg:p-2.5 flex flex-col justify-between">
-          <div className="flex items-start justify-between gap-1">
-            <h3 className="font-bold text-xs lg:text-sm line-clamp-2 drop-shadow-lg text-white flex-1 pr-1">
-              {product.title || product.name}
-            </h3>
-            <div className="text-white drop-shadow-lg whitespace-nowrap text-right">
-              <div className="text-[9px] lg:text-xs line-through opacity-70">
-                L.E {product.price.toFixed(2)}
-              </div>
-              <div className="text-[9px] lg:text-xs font-bold text-yellow-300">
-                L.E {calculateDiscountedPrice(
-                  product.price,
-                  activeDiscount?.discountPercentage || 0
-                ).toFixed(2)}
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-end justify-start gap-1">
-            {activeDiscount && (
-              <motion.div 
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="relative flex-shrink-0">
-                <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-red-600 to-orange-600 rounded-full blur opacity-50"></div>
-                <div className="relative bg-gradient-to-br from-red-500 to-red-600 text-white px-2 lg:px-3 py-1 lg:py-1.5 rounded-full text-sm lg:text-base font-black shadow-md border border-yellow-300">
-                  -{activeDiscount.discountPercentage}%
-                </div>
-              </motion.div>
-            )}
-          </div>
-        </div>
-      </motion.div>
-    );
   };
 
   return (
@@ -235,13 +180,135 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
         </div>
       </div>
 
-      {/* Desktop Grid */}
-      <div className="max-md:hidden">
-        <div className="flex justify-center px-3 md:px-6 lg:px-8">
-          <div className="grid grid-cols-3 gap-4 lg:gap-6 w-fit">
-            {discountedProducts.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
-            ))}
+      {/* Desktop Grid - Simple and Direct */}
+      <div style={{ display: "none" }} className="md:block">
+        <div style={{ display: "flex", justifyContent: "center", width: "100%", padding: "0 1.5rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
+            {discountedProducts.map((product, index) => {
+              const activeDiscount = getActiveDiscount(String(product.id), discounts);
+              return (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={() => setLocation(`/product/${product.id}`)}
+                  style={{
+                    position: "relative",
+                    aspectRatio: "4 / 3",
+                    borderRadius: "0.5rem",
+                    overflow: "hidden",
+                    cursor: "pointer",
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
+                  }}
+                >
+                  <img
+                    src={product.image}
+                    alt={product.title || product.name}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover"
+                    }}
+                  />
+                  <div style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "linear-gradient(to bottom, rgba(0,0,0,0.7), transparent)",
+                    padding: "0.5rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between"
+                  }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.25rem" }}>
+                      <h3 style={{ fontWeight: "bold", fontSize: "0.75rem", lineHeight: 1.5, color: "white", flex: 1, marginRight: "0.25rem" }}>
+                        {product.title || product.name}
+                      </h3>
+                      <div style={{ color: "white", textAlign: "right", whiteSpace: "nowrap" }}>
+                        <div style={{ fontSize: "0.5625rem", textDecoration: "line-through", opacity: 0.7 }}>
+                          L.E {product.price.toFixed(2)}
+                        </div>
+                        <div style={{ fontSize: "0.5625rem", fontWeight: "bold", color: "#FBBF24" }}>
+                          L.E {calculateDiscountedPrice(product.price, activeDiscount?.discountPercentage || 0).toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {activeDiscount && (
+                      <div style={{ display: "flex", alignItems: "flex-end" }}>
+                        <div style={{
+                          background: "linear-gradient(to bottom right, #EF4444, #DC2626)",
+                          color: "white",
+                          padding: "0.25rem 0.5rem",
+                          borderRadius: "9999px",
+                          fontSize: "0.875rem",
+                          fontWeight: "900",
+                          boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+                          border: "1px solid #FBBF24"
+                        }}>
+                          -{activeDiscount.discountPercentage}%
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Grid - Tailwind */}
+      <div className="hidden md:block px-3 md:px-6 lg:px-8">
+        <div className="flex justify-center">
+          <div className="grid grid-cols-3 gap-4">
+            {discountedProducts.map((product, index) => {
+              const activeDiscount = getActiveDiscount(String(product.id), discounts);
+              return (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={() => setLocation(`/product/${product.id}`)}
+                  className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <img
+                    src={product.image}
+                    alt={product.title || product.name}
+                    className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-transparent p-2 flex flex-col justify-between">
+                    <div className="flex items-start justify-between gap-1">
+                      <h3 className="font-bold text-xs line-clamp-2 drop-shadow-lg text-white flex-1 pr-1">
+                        {product.title || product.name}
+                      </h3>
+                      <div className="text-white drop-shadow-lg whitespace-nowrap text-right">
+                        <div className="text-[9px] line-through opacity-70">
+                          L.E {product.price.toFixed(2)}
+                        </div>
+                        <div className="text-[9px] font-bold text-yellow-300">
+                          L.E {calculateDiscountedPrice(product.price, activeDiscount?.discountPercentage || 0).toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {activeDiscount && (
+                      <motion.div 
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="flex items-end">
+                        <div className="bg-gradient-to-br from-red-500 to-red-600 text-white px-2 py-1 rounded-full text-sm font-black shadow-md border border-yellow-300">
+                          -{activeDiscount.discountPercentage}%
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </div>
