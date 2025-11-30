@@ -209,7 +209,7 @@ export default function ProductDetailsPage() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto no-scrollbar pb-40 w-full">
+        <div className="flex-1 overflow-y-auto no-scrollbar pb-28 w-full">
           <div className="w-full px-5 py-4 max-w-7xl mx-auto">
             {/* Desktop: 2 Column Layout */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
