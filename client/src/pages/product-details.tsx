@@ -275,10 +275,9 @@ export default function ProductDetailsPage() {
               )}
             </div>
 
-                {/* Share Button and Bottom Actions - Responsive layout */}
+                {/* Share Button and Bottom Actions - All in one row */}
                 <div className="mb-4">
-                  {/* Mobile: Horizontal layout (flex row) */}
-                  <div className="flex md:flex-col gap-2 md:gap-3">
+                  <div className="flex gap-2 items-center">
                     {/* Share Button */}
                     <div className="relative">
                       <button
@@ -342,24 +341,25 @@ export default function ProductDetailsPage() {
                       )}
                     </div>
 
-                    {/* Bottom Actions - Mobile: next to share, Desktop: below */}
-                    <div className="flex gap-2 md:flex-col md:gap-3">
+                    {/* Bottom Actions - Next to share button */}
+                    <div className="flex gap-2 flex-1">
                       <button
                         onClick={() => setLocation("/")}
-                        className="flex-1 px-3 py-2 md:px-5 md:py-3 border border-gray-200 rounded-lg font-semibold text-xs md:text-sm hover:bg-gray-50 transition-colors"
+                        className="flex-1 px-2 py-2 md:px-4 md:py-2 border border-gray-200 rounded-lg font-semibold text-xs md:text-sm hover:bg-gray-50 transition-colors"
                         data-testid="button-continue-shopping"
                       >
-                        {t("continueShoppingButton", language)}
+                        <span className="hidden md:inline">{t("continueShoppingButton", language)}</span>
+                        <span className="md:hidden">{language === "ar" ? "تابع" : "Continue"}</span>
                       </button>
                       <button
                         onClick={handleAddToCart}
                         disabled={isAdding || !product.available}
-                        className="flex-1 px-3 py-2 md:px-5 md:py-3 bg-black text-white rounded-lg font-semibold text-xs md:text-sm disabled:opacity-50 flex items-center justify-center gap-1 md:gap-2 hover:bg-gray-900 transition-colors"
+                        className="flex-1 px-2 py-2 md:px-4 md:py-2 bg-black text-white rounded-lg font-semibold text-xs md:text-sm disabled:opacity-50 flex items-center justify-center gap-1 md:gap-2 hover:bg-gray-900 transition-colors"
                         data-testid="button-add-to-cart"
                       >
                         <ShoppingCart className="w-4 h-4" />
                         <span className="hidden md:inline">{isAdding ? t("addingToCart", language) : t("addToCart", language)}</span>
-                        <span className="md:hidden">{isAdding ? "جاري..." : "اشتري"}</span>
+                        <span className="md:hidden">{isAdding ? (language === "ar" ? "جاري..." : "Adding...") : (language === "ar" ? "اشتري" : "Buy")}</span>
                       </button>
                     </div>
                   </div>
