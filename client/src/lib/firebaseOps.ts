@@ -33,6 +33,7 @@ const DEMO_CONFIG = {
 
 let cachedConfig: any = null;
 let isInitialized = false;
+let hasValidConfig = false; // Track if we have valid credentials
 
 // Get Firebase config synchronously (uses cached or env)
 function getFirebaseConfig() {
@@ -80,15 +81,21 @@ export async function loadFirebaseConfigFromFirestore() {
         messagingSenderId: serverConfig.firebaseMessagingSenderId || import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || DEMO_CONFIG.messagingSenderId,
         appId: serverConfig.firebaseAppId || import.meta.env.VITE_FIREBASE_APP_ID || DEMO_CONFIG.appId,
       };
+      hasValidConfig = true;
       isInitialized = true;
       return;
     }
   } catch (error) {
     // Firestore load failed, will use env variables
+    hasValidConfig = false;
   }
   
   // Use env as fallback
-  cachedConfig = getFirebaseConfig();
+  const fallbackConfig = getFirebaseConfig();
+  cachedConfig = fallbackConfig;
+  // Check if fallback config is valid (not demo)
+  hasValidConfig = fallbackConfig.projectId !== DEMO_CONFIG.projectId && 
+                   fallbackConfig.apiKey !== DEMO_CONFIG.apiKey;
   isInitialized = true;
 }
 
@@ -118,12 +125,16 @@ export function reloadFirebaseConfig() {
   // Clear cache
   cachedConfig = null;
   isInitialized = false;
+  hasValidConfig = false;
 }
 
-// Check if using demo config
+// Check if using demo config or invalid credentials
 export function isDemoMode() {
   const config = cachedConfig || getFirebaseConfig();
-  return config.projectId === DEMO_CONFIG.projectId;
+  // Show demo indicator if:
+  // 1. Using demo projectId OR
+  // 2. Haven't successfully loaded from Firestore AND not using valid env config
+  return config.projectId === DEMO_CONFIG.projectId || !hasValidConfig;
 }
 
 // ============= PRODUCTS =============
