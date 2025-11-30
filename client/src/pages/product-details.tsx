@@ -274,36 +274,14 @@ export default function ProductDetailsPage() {
               )}
             </div>
 
-                {/* Share Buttons - Under Image */}
-                <div className="bg-gray-50 rounded-xl p-4 mb-4">
-                  <p className="text-xs font-semibold text-gray-600 mb-3 flex items-center gap-2">
-                    <Share2 className="w-4 h-4" />
-                    {language === "ar" ? "شارك المنتج" : "Share Product"}
-                  </p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => shareProduct("facebook")}
-                      className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
-                      data-testid="button-share-facebook"
-                    >
-                      Facebook
-                    </button>
-                    <button
-                      onClick={() => shareProduct("whatsapp")}
-                      className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
-                      data-testid="button-share-whatsapp"
-                    >
-                      WhatsApp
-                    </button>
-                    <button
-                      onClick={() => shareProduct("twitter")}
-                      className="flex-1 px-3 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-sm font-medium transition-colors"
-                      data-testid="button-share-twitter"
-                    >
-                      Twitter
-                    </button>
-                  </div>
-                </div>
+                {/* Share Button - Under Image */}
+                <button
+                  onClick={() => shareProduct("facebook")}
+                  className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors mb-4"
+                  data-testid="button-share"
+                >
+                  {language === "ar" ? "شارك المنتج" : "Share Product"}
+                </button>
               </div>
 
               {/* Right: Product Info (1 column on mobile, 1.5 on desktop) */}
