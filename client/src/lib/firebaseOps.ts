@@ -120,6 +120,12 @@ export function reloadFirebaseConfig() {
   isInitialized = false;
 }
 
+// Check if using demo config
+export function isDemoMode() {
+  const config = cachedConfig || getFirebaseConfig();
+  return config.projectId === DEMO_CONFIG.projectId;
+}
+
 // ============= PRODUCTS =============
 export async function getProducts() {
   try {

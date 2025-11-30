@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { MobileWrapper } from "@/components/mobile-wrapper";
 import { BottomNav } from "@/components/bottom-nav";
-import { Search, ShoppingCart, AlertCircle, Globe } from "lucide-react";
+import { Search, ShoppingCart, AlertCircle, Globe, Settings } from "lucide-react";
 import { PromoBanner } from "@/components/store/promo-banner";
 import { ActiveDealsCarousel } from "@/components/store/active-deals-carousel";
 import { CategoryFilter } from "@/components/store/category-filter";
@@ -11,7 +11,7 @@ import { useCart } from "@/lib/cartContext";
 import { useLanguage } from "@/lib/languageContext";
 import { t } from "@/lib/translations";
 import { getAllDiscounts, type Discount } from "@/lib/discountUtils";
-import { getProducts, getStoreSettings } from "@/lib/firebaseOps";
+import { getProducts, getStoreSettings, isDemoMode } from "@/lib/firebaseOps";
 import imgHeadphones from "@assets/generated_images/wireless_headphones_product_shot.png";
 import imgWatch from "@assets/generated_images/smart_watch_product_shot.png";
 import imgShoes from "@assets/generated_images/designer_running_shoes_product_shot.png";
@@ -62,6 +62,7 @@ export default function Home() {
   const [storeLogo, setStoreLogo] = useState<string>("");
   const [isInitialized, setIsInitialized] = useState(false);
   const [discounts, setDiscounts] = useState<Discount[]>([]);
+  const [isDemo, setIsDemo] = useState(false);
 
   const fetchStoreSettings = async (): Promise<void> => {
     try {
@@ -114,6 +115,8 @@ export default function Home() {
   useEffect(() => {
     // Load data only on component mount, not on location changes
     Promise.all([fetchProductsData(), fetchStoreSettings()]);
+    // Check if demo mode
+    setIsDemo(isDemoMode());
   }, []);
 
   // Fetch discounts after Firebase is initialized (with a small delay to ensure Firebase is ready)
@@ -170,6 +173,16 @@ export default function Home() {
               <div className="w-32 h-7 bg-gray-200 rounded-lg animate-pulse" />
             )}
             <div className="flex items-center gap-1 md:gap-2">
+              {isDemo && (
+                <button 
+                  onClick={() => setLocation("/settings")}
+                  className="w-7 md:w-8 lg:w-10 h-7 md:h-8 lg:h-10 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center hover:bg-blue-100 flex-shrink-0 transition-colors"
+                  data-testid="button-open-settings"
+                  title="Demo mode - Configure Firebase"
+                >
+                  <Settings className="w-4 md:w-5 text-blue-600" />
+                </button>
+              )}
               <button 
                 onClick={() => setLanguage(language === "en" ? "ar" : "en")}
                 className="w-7 md:w-8 lg:w-10 h-7 md:h-8 lg:h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50 flex-shrink-0"
