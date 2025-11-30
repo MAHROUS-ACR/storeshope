@@ -22,7 +22,6 @@ interface ActiveDealsCarouselProps {
 export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarouselProps) {
   const { language } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
 
   const discountedProducts = useMemo(() => {
     return products.filter(product => {
@@ -39,12 +38,10 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
   const activeDiscount = getActiveDiscount(String(currentProduct.id), discounts);
 
   const handleNext = () => {
-    setIsFlipped(false);
     setCurrentIndex((prev) => (prev + 1) % discountedProducts.length);
   };
 
   const handlePrev = () => {
-    setIsFlipped(false);
     setCurrentIndex((prev) => (prev - 1 + discountedProducts.length) % discountedProducts.length);
   };
 
@@ -61,7 +58,7 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
         <div className="max-w-2xl md:max-w-3xl mx-auto relative">
           {/* Card Container */}
           <div className="aspect-[4/3] md:aspect-video">
-            <FlipCard product={currentProduct} discount={activeDiscount} isFlipped={isFlipped} />
+            <FlipCard product={currentProduct} discount={activeDiscount} />
           </div>
 
           {/* Navigation Buttons */}
@@ -81,22 +78,12 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
             <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
           </button>
 
-          {/* Flip Button - Bottom Center */}
-          <button
-            onClick={() => setIsFlipped(!isFlipped)}
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-12 md:translate-y-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 md:px-6 py-2 shadow-lg transition-all hover:shadow-xl font-semibold text-xs md:text-sm"
-            data-testid="button-flip-card"
-          >
-            {isFlipped ? t("viewImage", language) || "View Image" : t("viewPrice", language) || "View Price"}
-          </button>
-
           {/* Pagination Dots */}
-          <div className="flex justify-center gap-1.5 mt-14 md:mt-16">
+          <div className="flex justify-center gap-1.5 mt-4 md:mt-6">
             {discountedProducts.map((_, index) => (
               <button
                 key={index}
                 onClick={() => {
-                  setIsFlipped(false);
                   setCurrentIndex(index);
                 }}
                 className={`transition-all rounded-full ${
