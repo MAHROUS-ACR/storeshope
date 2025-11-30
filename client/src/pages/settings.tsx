@@ -179,20 +179,18 @@ export default function SettingsPage() {
         measurementId: firebaseMeasurementId,
       });
 
+      // Clear localStorage to ensure new config is loaded
+      localStorage.removeItem("firebase_client_config");
+      
       toast.success("All settings saved successfully!");
 
-      
-      // If Firebase config changed, reload app to apply new config
-      const currentApiKey = import.meta.env.VITE_FIREBASE_API_KEY;
-      if (firebaseApiKey !== currentApiKey) {
-        toast.info("Firebase project changed. Reloading app...");
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-      }
+      // Reload page to apply new Firebase config
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error: any) {
-
-      toast.error(`Error: L.E error.message || "Failed to save settings"}`);
+      console.error("Save error:", error);
+      toast.error(error.message || "Failed to save settings");
     } finally {
       setIsLoading(false);
     }
