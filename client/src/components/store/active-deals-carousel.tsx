@@ -83,9 +83,10 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
         <h3 className="text-xs md:text-xs lg:text-xs font-semibold text-gray-900">{t("activeDeals", language)}</h3>
       </div>
 
-      {/* Mobile: Carousel View */}
-      <div className="block md:hidden px-3">
-        <div className="relative">
+      {/* Mobile: Carousel View + Desktop Grid Container */}
+      <div className="block md:flex md:justify-center md:px-3 lg:px-8">
+        <div className="block md:hidden px-3">
+          <div className="relative">
           <motion.div
             key={carouselIndex}
             initial={{ opacity: 0, x: 20 }}
@@ -180,11 +181,11 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
               ))}
             </div>
           )}
+          </div>
         </div>
-      </div>
 
-      {/* Desktop: Grid View */}
-      <div className="hidden md:grid grid-cols-3 gap-4 lg:gap-6 mx-auto w-fit">
+        {/* Desktop: Grid View */}
+        <div className="hidden md:grid grid-cols-3 gap-4 lg:gap-6">
           {discountedProducts.map((product, index) => (
             <motion.div
               key={product.id}
@@ -238,6 +239,7 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
               </div>
             </motion.div>
           ))}
+        </div>
       </div>
     </div>
   );
