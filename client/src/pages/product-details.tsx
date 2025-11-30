@@ -26,6 +26,7 @@ export default function ProductDetailsPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [showShareMenu, setShowShareMenu] = useState(false);
 
   useEffect(() => {
     const loadProductAndDiscounts = async () => {
@@ -275,13 +276,54 @@ export default function ProductDetailsPage() {
             </div>
 
                 {/* Share Button - Under Image */}
-                <button
-                  onClick={() => shareProduct("facebook")}
-                  className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors mb-4"
-                  data-testid="button-share"
-                >
-                  {language === "ar" ? "شارك المنتج" : "Share Product"}
-                </button>
+                <div className="relative mb-4">
+                  <button
+                    onClick={() => setShowShareMenu(!showShareMenu)}
+                    className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                    data-testid="button-share"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </button>
+                  
+                  {/* Share Menu */}
+                  {showShareMenu && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                      <button
+                        onClick={() => {
+                          shareProduct("facebook");
+                          setShowShareMenu(false);
+                        }}
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 text-blue-600 font-medium border-b border-gray-100 flex items-center gap-2"
+                        data-testid="button-share-facebook"
+                      >
+                        <Facebook className="w-4 h-4" />
+                        Facebook
+                      </button>
+                      <button
+                        onClick={() => {
+                          shareProduct("whatsapp");
+                          setShowShareMenu(false);
+                        }}
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 text-green-600 font-medium border-b border-gray-100 flex items-center gap-2"
+                        data-testid="button-share-whatsapp"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        WhatsApp
+                      </button>
+                      <button
+                        onClick={() => {
+                          shareProduct("twitter");
+                          setShowShareMenu(false);
+                        }}
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 text-sky-600 font-medium flex items-center gap-2"
+                        data-testid="button-share-twitter"
+                      >
+                        <span className="text-lg">𝕏</span>
+                        Twitter
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Right: Product Info (1 column on mobile, 1.5 on desktop) */}
