@@ -184,58 +184,60 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
       </div>
 
       {/* Desktop: Grid View */}
-      <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 gap-2 lg:gap-2">
-        {discountedProducts.map((product, index) => (
-          <motion.div
-            key={product.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-            onClick={() => setLocation(`/product/${product.id}`)}
-            className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow group"
-          >
-            <img
-              src={product.image}
-              alt={product.title || product.name}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-transparent p-1.5 flex flex-col justify-between">
-              <h3 className="font-bold text-[10px] line-clamp-1 drop-shadow-lg text-white">
-                {product.title || product.name}
-              </h3>
-              
-              <div className="flex items-end justify-between gap-0.5">
-                <div className="text-white drop-shadow-lg whitespace-nowrap">
-                  <div className="text-[8px] line-through opacity-70">
-                    L.E {product.price.toFixed(2)}
+      <div className="hidden md:flex md:justify-center">
+        <div className="grid grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4 max-w-6xl w-full">
+          {discountedProducts.map((product, index) => (
+            <motion.div
+              key={product.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              onClick={() => setLocation(`/product/${product.id}`)}
+              className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow group"
+            >
+              <img
+                src={product.image}
+                alt={product.title || product.name}
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-transparent p-2 lg:p-2.5 flex flex-col justify-between">
+                <h3 className="font-bold text-xs lg:text-sm line-clamp-2 drop-shadow-lg text-white">
+                  {product.title || product.name}
+                </h3>
+                
+                <div className="flex items-end justify-between gap-1">
+                  <div className="text-white drop-shadow-lg whitespace-nowrap">
+                    <div className="text-[9px] lg:text-xs line-through opacity-70">
+                      L.E {product.price.toFixed(2)}
+                    </div>
+                    <div className="text-[9px] lg:text-xs font-bold text-yellow-300">
+                      L.E {calculateDiscountedPrice(
+                        product.price,
+                        getActiveDiscount(String(product.id), discounts)
+                          ?.discountPercentage || 0
+                      ).toFixed(2)}
+                    </div>
                   </div>
-                  <div className="text-[8px] font-bold text-yellow-300">
-                    L.E {calculateDiscountedPrice(
-                      product.price,
-                      getActiveDiscount(String(product.id), discounts)
-                        ?.discountPercentage || 0
-                    ).toFixed(2)}
-                  </div>
-                </div>
 
-                {(() => {
-                  const activeDiscount = getActiveDiscount(String(product.id), discounts);
-                  return activeDiscount ? (
-                    <motion.div 
-                      animate={{ scale: [1, 1.05, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="relative flex-shrink-0">
-                      <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-red-600 to-orange-600 rounded-full blur opacity-50"></div>
-                      <div className="relative bg-gradient-to-br from-red-500 to-red-600 text-white px-1 py-0.5 rounded-full text-[7px] font-black shadow-md border border-yellow-300">
-                        {activeDiscount.discountPercentage}%
-                      </div>
-                    </motion.div>
-                  ) : null;
-                })()}
+                  {(() => {
+                    const activeDiscount = getActiveDiscount(String(product.id), discounts);
+                    return activeDiscount ? (
+                      <motion.div 
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="relative flex-shrink-0">
+                        <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-red-600 to-orange-600 rounded-full blur opacity-50"></div>
+                        <div className="relative bg-gradient-to-br from-red-500 to-red-600 text-white px-1.5 py-0.5 lg:px-2 lg:py-1 rounded-full text-[8px] lg:text-xs font-black shadow-md border border-yellow-300">
+                          {activeDiscount.discountPercentage}%
+                        </div>
+                      </motion.div>
+                    ) : null;
+                  })()}
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   );
