@@ -283,26 +283,24 @@ export default function ProductDetailsPage() {
                   <div className="flex gap-3">
                     <button
                       onClick={() => shareProduct("facebook")}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                      className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
                       data-testid="button-share-facebook"
                     >
-                      <Facebook className="w-4 h-4" />
-                      <span className="hidden sm:inline">Facebook</span>
+                      Facebook
                     </button>
                     <button
                       onClick={() => shareProduct("whatsapp")}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
+                      className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
                       data-testid="button-share-whatsapp"
                     >
-                      <MessageCircle className="w-4 h-4" />
-                      <span className="hidden sm:inline">WhatsApp</span>
+                      WhatsApp
                     </button>
                     <button
                       onClick={() => shareProduct("twitter")}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-sm font-medium transition-colors"
+                      className="flex-1 px-3 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-sm font-medium transition-colors"
                       data-testid="button-share-twitter"
                     >
-                      𝕏
+                      Twitter
                     </button>
                   </div>
                 </div>
