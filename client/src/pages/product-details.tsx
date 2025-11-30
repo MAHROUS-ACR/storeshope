@@ -275,67 +275,94 @@ export default function ProductDetailsPage() {
               )}
             </div>
 
-                {/* Share Button - Under Image */}
-                <div className="relative mb-4">
-                  <button
-                    onClick={() => setShowShareMenu(!showShareMenu)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                    data-testid="button-share"
-                  >
-                    <Share2 className="w-6 h-6 text-gray-700" />
-                  </button>
-                  
-                  {/* Share Menu */}
-                  {showShareMenu && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                {/* Share Button and Bottom Actions - Responsive layout */}
+                <div className="mb-4">
+                  {/* Mobile: Horizontal layout (flex row) */}
+                  <div className="flex md:flex-col gap-2 md:gap-3">
+                    {/* Share Button */}
+                    <div className="relative">
                       <button
-                        onClick={() => {
-                          shareProduct("facebook");
-                          setShowShareMenu(false);
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 text-blue-600 font-medium border-b border-gray-100 flex items-center gap-2"
-                        data-testid="button-share-facebook"
+                        onClick={() => setShowShareMenu(!showShareMenu)}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        data-testid="button-share"
                       >
-                        <Facebook className="w-4 h-4" />
-                        Facebook
+                        <Share2 className="w-6 h-6 text-gray-700" />
+                      </button>
+                      
+                      {/* Share Menu */}
+                      {showShareMenu && (
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                          <button
+                            onClick={() => {
+                              shareProduct("facebook");
+                              setShowShareMenu(false);
+                            }}
+                            className="w-full px-4 py-3 text-left hover:bg-gray-50 text-blue-600 font-medium border-b border-gray-100 flex items-center gap-2"
+                            data-testid="button-share-facebook"
+                          >
+                            <Facebook className="w-4 h-4" />
+                            Facebook
+                          </button>
+                          <button
+                            onClick={() => {
+                              shareProduct("whatsapp");
+                              setShowShareMenu(false);
+                            }}
+                            className="w-full px-4 py-3 text-left hover:bg-gray-50 text-green-600 font-medium border-b border-gray-100 flex items-center gap-2"
+                            data-testid="button-share-whatsapp"
+                          >
+                            <MessageCircle className="w-4 h-4" />
+                            WhatsApp
+                          </button>
+                          <button
+                            onClick={() => {
+                              shareProduct("twitter");
+                              setShowShareMenu(false);
+                            }}
+                            className="w-full px-4 py-3 text-left hover:bg-gray-50 text-sky-600 font-medium border-b border-gray-100 flex items-center gap-2"
+                            data-testid="button-share-twitter"
+                          >
+                            <span className="text-lg">𝕏</span>
+                            Twitter
+                          </button>
+                          <button
+                            onClick={() => {
+                              const shareUrl = `${window.location.origin}${window.location.pathname}`;
+                              navigator.clipboard.writeText(shareUrl);
+                              toast.success(language === "ar" ? "تم نسخ الرابط" : "Link copied!");
+                              setShowShareMenu(false);
+                            }}
+                            className="w-full px-4 py-3 text-left hover:bg-gray-50 text-gray-600 font-medium flex items-center gap-2"
+                            data-testid="button-copy-link"
+                          >
+                            <Copy className="w-4 h-4" />
+                            {language === "ar" ? "نسخ الرابط" : "Copy Link"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Bottom Actions - Mobile: next to share, Desktop: below */}
+                    <div className="flex gap-2 md:flex-col md:gap-3">
+                      <button
+                        onClick={() => setLocation("/")}
+                        className="flex-1 px-3 py-2 md:px-5 md:py-3 border border-gray-200 rounded-lg font-semibold text-xs md:text-sm hover:bg-gray-50 transition-colors"
+                        data-testid="button-continue-shopping"
+                      >
+                        {t("continueShoppingButton", language)}
                       </button>
                       <button
-                        onClick={() => {
-                          shareProduct("whatsapp");
-                          setShowShareMenu(false);
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 text-green-600 font-medium border-b border-gray-100 flex items-center gap-2"
-                        data-testid="button-share-whatsapp"
+                        onClick={handleAddToCart}
+                        disabled={isAdding || !product.available}
+                        className="flex-1 px-3 py-2 md:px-5 md:py-3 bg-black text-white rounded-lg font-semibold text-xs md:text-sm disabled:opacity-50 flex items-center justify-center gap-1 md:gap-2 hover:bg-gray-900 transition-colors"
+                        data-testid="button-add-to-cart"
                       >
-                        <MessageCircle className="w-4 h-4" />
-                        WhatsApp
-                      </button>
-                      <button
-                        onClick={() => {
-                          shareProduct("twitter");
-                          setShowShareMenu(false);
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 text-sky-600 font-medium border-b border-gray-100 flex items-center gap-2"
-                        data-testid="button-share-twitter"
-                      >
-                        <span className="text-lg">𝕏</span>
-                        Twitter
-                      </button>
-                      <button
-                        onClick={() => {
-                          const shareUrl = `${window.location.origin}${window.location.pathname}`;
-                          navigator.clipboard.writeText(shareUrl);
-                          toast.success(language === "ar" ? "تم نسخ الرابط" : "Link copied!");
-                          setShowShareMenu(false);
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 text-gray-600 font-medium flex items-center gap-2"
-                        data-testid="button-copy-link"
-                      >
-                        <Copy className="w-4 h-4" />
-                        {language === "ar" ? "نسخ الرابط" : "Copy Link"}
+                        <ShoppingCart className="w-4 h-4" />
+                        <span className="hidden md:inline">{isAdding ? t("addingToCart", language) : t("addToCart", language)}</span>
+                        <span className="md:hidden">{isAdding ? "جاري..." : "اشتري"}</span>
                       </button>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
 
@@ -489,25 +516,8 @@ export default function ProductDetailsPage() {
               </div>
             </div>
 
-            {/* Bottom Actions */}
-            <div className="flex gap-3 mt-2 pb-24">
-              <button
-                onClick={() => setLocation("/")}
-                className="flex-1 px-5 py-3 border border-gray-200 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-colors"
-                data-testid="button-continue-shopping"
-              >
-                {t("continueShoppingButton", language)}
-              </button>
-              <button
-                onClick={handleAddToCart}
-                disabled={isAdding || !product.available}
-                className="flex-1 px-5 py-3 bg-black text-white rounded-lg font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors"
-                data-testid="button-add-to-cart"
-              >
-                <ShoppingCart className="w-4 h-4" />
-                {isAdding ? t("addingToCart", language) : t("addToCart", language)}
-              </button>
-            </div>
+            {/* Spacing for mobile bottom nav */}
+            <div className="pb-24"></div>
           </div>
         </div>
       </div>
