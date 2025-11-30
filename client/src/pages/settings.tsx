@@ -54,19 +54,28 @@ export default function SettingsPage() {
         
         const db = getFirestore();
         
-        // Load Firebase config from Firestore
+        // Load Firebase config from Firestore (only required fields)
         const firebaseConfigRef = doc(db, "settings", "firebase");
         const firebaseConfigSnap = await getDoc(firebaseConfigRef);
         
         if (firebaseConfigSnap.exists()) {
           const serverConfig = firebaseConfigSnap.data();
-          setFirebaseApiKey(serverConfig.firebaseApiKey || "");
-          setFirebaseProjectId(serverConfig.firebaseProjectId || "");
-          setFirebaseAppId(serverConfig.firebaseAppId || "");
-          setFirebaseAuthDomain(serverConfig.firebaseAuthDomain || "");
-          setFirebaseStorageBucket(serverConfig.firebaseStorageBucket || "");
-          setFirebaseMessagingSenderId((serverConfig.firebaseMessagingSenderId || "").trim());
-          setFirebaseMeasurementId(serverConfig.firebaseMeasurementId || "");
+          // Load only the 3 required fields from Firestore
+          if (serverConfig.firebaseApiKey) setFirebaseApiKey(serverConfig.firebaseApiKey);
+          if (serverConfig.firebaseProjectId) setFirebaseProjectId(serverConfig.firebaseProjectId);
+          if (serverConfig.firebaseAppId) setFirebaseAppId(serverConfig.firebaseAppId);
+          
+          // Optional fields: try to get from environment if Firestore doesn't have them
+          setFirebaseAuthDomain(serverConfig.firebaseAuthDomain || import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "");
+          setFirebaseStorageBucket(serverConfig.firebaseStorageBucket || import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "");
+          setFirebaseMessagingSenderId((serverConfig.firebaseMessagingSenderId || import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "").trim());
+          setFirebaseMeasurementId(serverConfig.firebaseMeasurementId || import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "");
+        } else {
+          // If Firestore doesn't have config, load from environment
+          setFirebaseAuthDomain(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "");
+          setFirebaseStorageBucket(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "");
+          setFirebaseMessagingSenderId((import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "").trim());
+          setFirebaseMeasurementId(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "");
         }
 
         // Fetch Store settings from Firestore
@@ -188,18 +197,14 @@ export default function SettingsPage() {
 
       const db = getFirestore();
       
-      // Save Firebase config to Firestore
+      // Save ONLY the 3 required Firebase fields (ignore optional ones)
       const firebaseConfigRef = doc(db, "settings", "firebase");
       await setDoc(firebaseConfigRef, {
         firebaseApiKey,
         firebaseProjectId,
         firebaseAppId,
-        firebaseAuthDomain,
-        firebaseStorageBucket,
-        firebaseMessagingSenderId,
-        firebaseMeasurementId,
         updatedAt: new Date(),
-      });
+      }, { merge: false }); // Replace entire document with only required fields
 
       // Save Store settings to Firestore
       const storeConfigRef = doc(db, "settings", "store");
