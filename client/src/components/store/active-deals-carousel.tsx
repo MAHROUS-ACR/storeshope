@@ -26,20 +26,17 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
   const [carouselIndex, setCarouselIndex] = useState(0);
   const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Get products with active discounts (memoized to prevent re-filtering on every render)
   const discountedProducts = useMemo(() => {
     return products.filter(product => {
       const activeDiscount = getActiveDiscount(String(product.id), discounts);
       return activeDiscount !== null;
-    }).slice(0, 6); // Limit to 6 products
+    }).slice(0, 6);
   }, [products, discounts]);
 
   const startAutoScroll = () => {
-    // Clear existing timer
     if (autoScrollRef.current) {
       clearInterval(autoScrollRef.current);
     }
-    // Set new timer - auto scroll every 5 seconds
     if (discountedProducts.length > 1) {
       autoScrollRef.current = setInterval(() => {
         setCarouselIndex((prev) => (prev + 1) % discountedProducts.length);
@@ -47,7 +44,6 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
     }
   };
 
-  // Start auto scroll on mount and when discountedProducts changes
   useEffect(() => {
     startAutoScroll();
     return () => {
@@ -76,17 +72,69 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
     startAutoScroll();
   };
 
+  const ProductCard = ({ product, index }: { product: Product; index: number }) => {
+    const activeDiscount = getActiveDiscount(String(product.id), discounts);
+    return (
+      <motion.div
+        key={product.id}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05 }}
+        onClick={() => setLocation(`/product/${product.id}`)}
+        className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow group"
+      >
+        <img
+          src={product.image}
+          alt={product.title || product.name}
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-transparent p-2 lg:p-2.5 flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-1">
+            <h3 className="font-bold text-xs lg:text-sm line-clamp-2 drop-shadow-lg text-white flex-1 pr-1">
+              {product.title || product.name}
+            </h3>
+            <div className="text-white drop-shadow-lg whitespace-nowrap text-right">
+              <div className="text-[9px] lg:text-xs line-through opacity-70">
+                L.E {product.price.toFixed(2)}
+              </div>
+              <div className="text-[9px] lg:text-xs font-bold text-yellow-300">
+                L.E {calculateDiscountedPrice(
+                  product.price,
+                  activeDiscount?.discountPercentage || 0
+                ).toFixed(2)}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-end justify-start gap-1">
+            {activeDiscount && (
+              <motion.div 
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="relative flex-shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-red-600 to-orange-600 rounded-full blur opacity-50"></div>
+                <div className="relative bg-gradient-to-br from-red-500 to-red-600 text-white px-2 lg:px-3 py-1 lg:py-1.5 rounded-full text-sm lg:text-base font-black shadow-md border border-yellow-300">
+                  -{activeDiscount.discountPercentage}%
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
+
   return (
     <div className="mb-2 md:mb-3 lg:mb-3">
+      {/* Header */}
       <div className="flex items-center gap-2 mb-1.5 md:mb-2 lg:mb-2 px-3 md:px-6 lg:px-8">
-        <Zap className="w-4 md:w-4 lg:w-4 h-4 md:h-4 lg:h-4 text-yellow-500" />
-        <h3 className="text-xs md:text-xs lg:text-xs font-semibold text-gray-900">{t("activeDeals", language)}</h3>
+        <Zap className="w-4 h-4 text-yellow-500" />
+        <h3 className="text-xs font-semibold text-gray-900">{t("activeDeals", language)}</h3>
       </div>
 
-      {/* Mobile: Carousel View + Desktop Grid Container */}
-      <div className="block md:flex md:justify-center md:px-3 lg:px-8">
-        <div className="block md:hidden px-3">
-          <div className="relative">
+      {/* Mobile Carousel */}
+      <div className="block md:hidden px-3">
+        <div className="relative">
           <motion.div
             key={carouselIndex}
             initial={{ opacity: 0, x: 20 }}
@@ -181,64 +229,17 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
               ))}
             </div>
           )}
-          </div>
         </div>
+      </div>
 
-        {/* Desktop: Grid View */}
-        <div className="hidden md:grid grid-cols-3 gap-4 lg:gap-6">
-          {discountedProducts.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              onClick={() => setLocation(`/product/${product.id}`)}
-              className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow group"
-            >
-              <img
-                src={product.image}
-                alt={product.title || product.name}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-transparent p-2 lg:p-2.5 flex flex-col justify-between">
-                <div className="flex items-start justify-between gap-1">
-                  <h3 className="font-bold text-xs lg:text-sm line-clamp-2 drop-shadow-lg text-white flex-1 pr-1">
-                    {product.title || product.name}
-                  </h3>
-                  
-                  <div className="text-white drop-shadow-lg whitespace-nowrap text-right">
-                    <div className="text-[9px] lg:text-xs line-through opacity-70">
-                      L.E {product.price.toFixed(2)}
-                    </div>
-                    <div className="text-[9px] lg:text-xs font-bold text-yellow-300">
-                      L.E {calculateDiscountedPrice(
-                        product.price,
-                        getActiveDiscount(String(product.id), discounts)
-                          ?.discountPercentage || 0
-                      ).toFixed(2)}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-end justify-start gap-1">
-                  {(() => {
-                    const activeDiscount = getActiveDiscount(String(product.id), discounts);
-                    return activeDiscount ? (
-                      <motion.div 
-                        animate={{ scale: [1, 1.05, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="relative flex-shrink-0">
-                        <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-red-600 to-orange-600 rounded-full blur opacity-50"></div>
-                        <div className="relative bg-gradient-to-br from-red-500 to-red-600 text-white px-2 lg:px-3 py-1 lg:py-1.5 rounded-full text-sm lg:text-base font-black shadow-md border border-yellow-300">
-                          -{activeDiscount.discountPercentage}%
-                        </div>
-                      </motion.div>
-                    ) : null;
-                  })()}
-                </div>
-              </div>
-            </motion.div>
-          ))}
+      {/* Desktop Grid */}
+      <div className="hidden md:block px-3 md:px-6 lg:px-8">
+        <div className="flex justify-center">
+          <div className="grid grid-cols-3 gap-4 lg:gap-6 max-w-4xl">
+            {discountedProducts.map((product, index) => (
+              <ProductCard key={product.id} product={product} index={index} />
+            ))}
+          </div>
         </div>
       </div>
     </div>
