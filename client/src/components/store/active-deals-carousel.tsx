@@ -31,6 +31,28 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
     });
   }, [products, discounts]);
 
+  // Auto-play carousel
+  useEffect(() => {
+    if (!shouldAutoPlay || discountedProducts.length === 0) return;
+
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % discountedProducts.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [shouldAutoPlay, discountedProducts.length]);
+
+  // Resume auto-play after 5 seconds of user interaction
+  useEffect(() => {
+    if (shouldAutoPlay) return;
+
+    const timer = setTimeout(() => {
+      setShouldAutoPlay(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [shouldAutoPlay]);
+
   if (discountedProducts.length === 0) {
     return null;
   }
@@ -47,28 +69,6 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
     setShouldAutoPlay(false);
     setCurrentIndex((prev) => (prev - 1 + discountedProducts.length) % discountedProducts.length);
   };
-
-  // Auto-play carousel
-  useEffect(() => {
-    if (!shouldAutoPlay || discountedProducts.length === 0) return;
-
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % discountedProducts.length);
-    }, 4000); // Change every 4 seconds
-
-    return () => clearInterval(timer);
-  }, [shouldAutoPlay, discountedProducts.length]);
-
-  // Resume auto-play after 5 seconds of user interaction
-  useEffect(() => {
-    if (shouldAutoPlay) return;
-
-    const timer = setTimeout(() => {
-      setShouldAutoPlay(true);
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, [shouldAutoPlay]);
 
   return (
     <div className="mb-4 md:mb-6 lg:mb-6">
