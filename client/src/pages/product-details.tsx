@@ -437,51 +437,54 @@ export default function ProductDetailsPage() {
                   </div>
                 )}
                 
-                {product.sizes && product.sizes.length > 0 && (
-                  <div className="mb-4">
-                    <p className="text-sm font-semibold mb-2">{t("selectSize", language)}</p>
-                    <select
-                      value={selectedSize}
-                      onChange={(e) => setSelectedSize(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-                      data-testid="select-size"
-                    >
-                      <option value="">{t("selectSize", language)}</option>
-                      {product.sizes.map((size: string) => (
-                        <option key={size} value={size || ""}>{size}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                
-                {product.colors && product.colors.length > 0 && (
-                  <div className="mb-4">
-                    <p className="text-sm font-semibold mb-2">{t("selectColor", language)}</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      {product.colors.map((color: string) => {
-                        const colorName = typeof color === 'string' ? color.split('|')[0] : (color || '');
-                        const colorHex = typeof color === 'string' ? color.split('|')[1] || '#000000' : '#000000';
-                        return (
-                          <button
-                            key={colorName}
-                            onClick={() => setSelectedColor(color || '')}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${
-                              selectedColor === color
-                                ? 'border-gray-800 bg-gray-50'
-                                : 'border-gray-200 bg-white hover:border-gray-300'
-                            }`}
-                            data-testid={`button-color-${colorName}`}
-                          >
-                            <span 
-                              style={{width: '20px', height: '20px', backgroundColor: colorHex, borderRadius: '4px', border: '1px solid rgba(0,0,0,0.1)'}}
-                            ></span>
-                            <span className="text-sm font-medium">{colorName}</span>
-                          </button>
-                        );
-                      })}
+                {/* Size and Color side by side */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  {product.sizes && product.sizes.length > 0 && (
+                    <div>
+                      <p className="text-sm font-semibold mb-2">{t("selectSize", language)}</p>
+                      <select
+                        value={selectedSize}
+                        onChange={(e) => setSelectedSize(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                        data-testid="select-size"
+                      >
+                        <option value="">{t("selectSize", language)}</option>
+                        {product.sizes.map((size: string) => (
+                          <option key={size} value={size || ""}>{size}</option>
+                        ))}
+                      </select>
                     </div>
-                  </div>
-                )}
+                  )}
+                  
+                  {product.colors && product.colors.length > 0 && (
+                    <div>
+                      <p className="text-sm font-semibold mb-2">{t("selectColor", language)}</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {product.colors.map((color: string) => {
+                          const colorName = typeof color === 'string' ? color.split('|')[0] : (color || '');
+                          const colorHex = typeof color === 'string' ? color.split('|')[1] || '#000000' : '#000000';
+                          return (
+                            <button
+                              key={colorName}
+                              onClick={() => setSelectedColor(color || '')}
+                              className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${
+                                selectedColor === color
+                                  ? 'border-gray-800 bg-gray-50'
+                                  : 'border-gray-200 bg-white hover:border-gray-300'
+                              }`}
+                              data-testid={`button-color-${colorName}`}
+                            >
+                              <span 
+                                style={{width: '20px', height: '20px', backgroundColor: colorHex, borderRadius: '4px', border: '1px solid rgba(0,0,0,0.1)'}}
+                              ></span>
+                              <span className="text-sm font-medium">{colorName}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
