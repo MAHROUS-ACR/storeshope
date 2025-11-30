@@ -79,50 +79,48 @@ export function ActiveDealsCarousel({ products, discounts }: ActiveDealsCarousel
       </div>
 
       {/* Single Large Card with Navigation */}
-      <div className="px-3 md:px-6 lg:px-8 overflow-hidden">
-        <div className="max-w-2xl md:max-w-3xl mx-auto">
-          {/* Card with Navigation Buttons */}
-          <div className="relative flex justify-center mb-4 md:mb-6">
-            {/* Navigation Buttons */}
-            <button
-              onClick={handlePrev}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white hover:bg-gray-100 text-gray-800 rounded-full p-1.5 md:p-3 shadow-lg transition-all hover:shadow-xl flex-shrink-0"
-              data-testid="button-deals-prev"
-            >
-              <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
-            </button>
+      <div className="overflow-hidden px-2 md:px-4 lg:px-6">
+        {/* Card with Navigation Buttons */}
+        <div className="relative flex justify-center mb-4 md:mb-6">
+          {/* Navigation Buttons */}
+          <button
+            onClick={handlePrev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white hover:bg-gray-100 text-gray-800 rounded-full p-1.5 md:p-3 shadow-lg transition-all hover:shadow-xl flex-shrink-0"
+            data-testid="button-deals-prev"
+          >
+            <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
+          </button>
 
-            {/* Card Container */}
-            <div className="aspect-[24/7] w-full max-w-lg md:max-w-4xl">
-              <FlipCard product={currentProduct} discount={activeDiscount} />
-            </div>
-
-            <button
-              onClick={handleNext}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white hover:bg-gray-100 text-gray-800 rounded-full p-1.5 md:p-3 shadow-lg transition-all hover:shadow-xl flex-shrink-0"
-              data-testid="button-deals-next"
-            >
-              <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
-            </button>
+          {/* Card Container */}
+          <div className="aspect-[24/7] w-full">
+            <FlipCard product={currentProduct} discount={activeDiscount} />
           </div>
 
-          {/* Pagination Dots */}
-          <div className="flex justify-center gap-1.5">
-            {discountedProducts.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setCurrentIndex(index);
-                }}
-                className={`transition-all rounded-full ${
-                  index === currentIndex
-                    ? "bg-blue-600 w-3 h-3"
-                    : "bg-gray-300 hover:bg-gray-400 w-2 h-2"
-                }`}
-                data-testid={`button-dot-${index}`}
-              />
-            ))}
-          </div>
+          <button
+            onClick={handleNext}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white hover:bg-gray-100 text-gray-800 rounded-full p-1.5 md:p-3 shadow-lg transition-all hover:shadow-xl flex-shrink-0"
+            data-testid="button-deals-next"
+          >
+            <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
+          </button>
+        </div>
+
+        {/* Pagination Dots */}
+        <div className="flex justify-center gap-1.5">
+          {discountedProducts.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                setCurrentIndex(index);
+              }}
+              className={`transition-all rounded-full ${
+                index === currentIndex
+                  ? "bg-blue-600 w-3 h-3"
+                  : "bg-gray-300 hover:bg-gray-400 w-2 h-2"
+              }`}
+              data-testid={`button-dot-${index}`}
+            />
+          ))}
         </div>
       </div>
     </div>
