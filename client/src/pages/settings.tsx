@@ -163,14 +163,33 @@ export default function SettingsPage() {
 
   // Load credentials from environment variables
   const handleLoadFromEnvironment = () => {
-    setFirebaseApiKey(import.meta.env.VITE_FIREBASE_API_KEY || "");
-    setFirebaseProjectId(import.meta.env.VITE_FIREBASE_PROJECT_ID || "");
-    setFirebaseAppId(import.meta.env.VITE_FIREBASE_APP_ID || "");
-    setFirebaseAuthDomain(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "");
-    setFirebaseStorageBucket(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "");
-    setFirebaseMessagingSenderId(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "");
-    setFirebaseMeasurementId(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "");
-    toast.success("Loaded Firebase credentials from environment!");
+    const apiKey = import.meta.env.VITE_FIREBASE_API_KEY || "";
+    const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID || "";
+    const appId = import.meta.env.VITE_FIREBASE_APP_ID || "";
+    const authDomain = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "";
+    const storageBucket = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "";
+    const messagingSenderId = import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "";
+    const measurementId = import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "";
+
+    console.log("🔄 Loading from Environment:", {
+      apiKey: apiKey ? "✓ Present" : "✗ Missing",
+      projectId: projectId ? "✓ Present" : "✗ Missing",
+      appId: appId ? "✓ Present" : "✗ Missing",
+    });
+
+    setFirebaseApiKey(apiKey);
+    setFirebaseProjectId(projectId);
+    setFirebaseAppId(appId);
+    setFirebaseAuthDomain(authDomain);
+    setFirebaseStorageBucket(storageBucket);
+    setFirebaseMessagingSenderId(messagingSenderId);
+    setFirebaseMeasurementId(measurementId);
+
+    if (apiKey && projectId && appId) {
+      toast.success("✅ Loaded Firebase credentials from environment!");
+    } else {
+      toast.warning("⚠️ Some environment variables are missing");
+    }
   };
 
   // Validate Firebase credentials (only 3 required fields)
