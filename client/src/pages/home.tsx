@@ -148,19 +148,19 @@ export default function Home() {
     <MobileWrapper>
       <div className="w-full flex-1 flex flex-col overflow-hidden bg-white">
         {/* Header */}
-        <div className="px-5 pt-2 pb-2 flex-shrink-0 border-b border-gray-100">
+        <div className="px-3 md:px-6 lg:px-8 pt-2 pb-2 flex-shrink-0 border-b border-gray-100">
           <div className="flex items-center justify-between gap-2 mb-2">
             {storeName ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3 lg:gap-4">
                 {storeLogo ? (
-                  <img src={storeLogo} alt={storeName} className="w-12 h-12 rounded-lg object-cover shadow-md border border-gray-100" />
+                  <img src={storeLogo} alt={storeName} className="w-10 md:w-14 lg:w-16 h-10 md:h-14 lg:h-16 rounded-lg object-cover shadow-md border border-gray-100" />
                 ) : (
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-2xl shadow-lg leading-none">
+                  <div className="w-10 md:w-14 lg:w-16 h-10 md:h-14 lg:h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-lg md:text-2xl lg:text-3xl shadow-lg leading-none">
                     {storeName.charAt(0)}
                   </div>
                 )}
                 <h1 
-                  className="text-2xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-sm tracking-tight"
+                  className="text-xl md:text-2xl lg:text-3xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-sm tracking-tight"
                   data-testid="text-store-name"
                 >
                   {storeName}
@@ -169,23 +169,23 @@ export default function Home() {
             ) : (
               <div className="w-32 h-7 bg-gray-200 rounded-lg animate-pulse" />
             )}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 md:gap-2">
               <button 
                 onClick={() => setLanguage(language === "en" ? "ar" : "en")}
-                className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50"
+                className="w-7 md:w-8 lg:w-10 h-7 md:h-8 lg:h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-50 flex-shrink-0"
                 data-testid="button-toggle-language"
                 title={language === "en" ? "عربي" : "English"}
               >
-                <Globe className="w-4 h-4 text-gray-600" />
+                <Globe className="w-3.5 md:w-4 lg:w-5 h-3.5 md:h-4 lg:h-5 text-gray-600" />
               </button>
               <button 
                 onClick={() => setLocation("/cart")}
-                className="w-8 h-8 bg-black text-white rounded flex items-center justify-center relative hover:bg-gray-900 transition-colors flex-shrink-0"
+                className="w-7 md:w-8 lg:w-10 h-7 md:h-8 lg:h-10 bg-black text-white rounded flex items-center justify-center relative hover:bg-gray-900 transition-colors flex-shrink-0"
                 data-testid="button-cart"
               >
-                <ShoppingCart className="w-3.5 h-3.5" />
+                <ShoppingCart className="w-3.5 md:w-4 lg:w-5 h-3.5 md:h-4 lg:h-5" />
                 {items.length > 0 && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[8px] font-bold text-white">
+                  <div className="absolute -top-1 -right-1 w-4 md:w-5 h-4 md:h-5 bg-red-500 rounded-full flex items-center justify-center text-[7px] md:text-[8px] font-bold text-white">
                     {items.length}
                   </div>
                 )}
@@ -195,13 +195,13 @@ export default function Home() {
 
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 md:w-4 h-3.5 md:h-4 text-gray-400" />
             <input 
               type="text" 
               placeholder={t("searchPlaceholder", language)}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-black/10"
+              className="w-full pl-9 pr-3 py-1.5 md:py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-black/10"
               data-testid="input-search"
             />
           </div>
@@ -209,12 +209,12 @@ export default function Home() {
 
         {/* Firebase Status Banner */}
         {!firebaseConfigured && isInitialized && (
-          <div className="px-5 py-1.5 flex-shrink-0 bg-yellow-50 border-b border-yellow-100">
-            <div className="flex items-start gap-1.5">
-              <AlertCircle className="w-3.5 h-3.5 text-yellow-600 flex-shrink-0 mt-0.5" />
+          <div className="px-3 md:px-6 lg:px-8 py-1.5 md:py-2 flex-shrink-0 bg-yellow-50 border-b border-yellow-100">
+            <div className="flex items-start gap-1.5 md:gap-2">
+              <AlertCircle className="w-3.5 md:w-4 h-3.5 md:h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-yellow-900">Demo Mode</p>
-                <p className="text-[11px] text-yellow-800">Configure Firebase in Profile to use your products</p>
+                <p className="text-xs md:text-sm font-semibold text-yellow-900">Demo Mode</p>
+                <p className="text-[11px] md:text-xs text-yellow-800">Configure Firebase in Profile to use your products</p>
               </div>
             </div>
           </div>
@@ -228,19 +228,19 @@ export default function Home() {
             
             {/* Categories */}
             {categories.length > 0 && (
-              <div className="mt-2 mb-3">
+              <div className="mt-2 md:mt-3 mb-3 md:mb-4">
                 <CategoryFilter active={activeCategory} onChange={setActiveCategory} categories={categories} />
               </div>
             )}
 
             {/* Products */}
-            <div className="px-5">
+            <div className="px-3 md:px-6 lg:px-8">
               {isLoading ? (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4">
                   {[1, 2, 3, 4].map((i) => (
                     <div key={i} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
                       <div className="aspect-square bg-gray-200 animate-pulse" />
-                      <div className="p-1.5">
+                      <div className="p-1.5 md:p-2">
                         <div className="h-2 bg-gray-200 rounded animate-pulse mb-1 w-3/4" />
                         <div className="h-2 bg-gray-200 rounded animate-pulse w-1/2" />
                       </div>
@@ -248,7 +248,7 @@ export default function Home() {
                   ))}
                 </div>
               ) : filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4">
                   {filteredProducts.map((product, index) => (
                     <ProductCard 
                       key={product.id} 
@@ -260,10 +260,10 @@ export default function Home() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <div className="text-4xl mb-2">📦</div>
-                  <p className="text-xs text-gray-600 font-semibold mb-0.5">No products found</p>
-                  <p className="text-[11px] text-gray-500">Try a different search</p>
+                <div className="text-center py-8 md:py-12">
+                  <div className="text-4xl md:text-6xl mb-2">📦</div>
+                  <p className="text-xs md:text-sm text-gray-600 font-semibold mb-0.5">No products found</p>
+                  <p className="text-[11px] md:text-xs text-gray-500">Try a different search</p>
                 </div>
               )}
             </div>
