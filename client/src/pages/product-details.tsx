@@ -437,25 +437,8 @@ export default function ProductDetailsPage() {
                   </div>
                 )}
                 
-                {/* Size and Color side by side */}
+                {/* Color and Size side by side */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  {product.sizes && product.sizes.length > 0 && (
-                    <div>
-                      <p className="text-sm font-semibold mb-2">{t("selectSize", language)}</p>
-                      <select
-                        value={selectedSize}
-                        onChange={(e) => setSelectedSize(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-                        data-testid="select-size"
-                      >
-                        <option value="">{t("selectSize", language)}</option>
-                        {product.sizes.map((size: string) => (
-                          <option key={size} value={size || ""}>{size}</option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                  
                   {product.colors && product.colors.length > 0 && (
                     <div>
                       <p className="text-sm font-semibold mb-2">{t("selectColor", language)}</p>
@@ -484,32 +467,41 @@ export default function ProductDetailsPage() {
                       </div>
                     </div>
                   )}
+                  
+                  {product.sizes && product.sizes.length > 0 && (
+                    <div>
+                      <p className="text-sm font-semibold mb-2">{t("selectSize", language)}</p>
+                      <select
+                        value={selectedSize}
+                        onChange={(e) => setSelectedSize(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                        data-testid="select-size"
+                      >
+                        <option value="">{t("selectSize", language)}</option>
+                        {product.sizes.map((size: string) => (
+                          <option key={size} value={size || ""}>{size}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
             {/* Quantity */}
             <div className="mb-6">
-              <p className="text-sm font-semibold mb-2">{t("quantity", language)}</p>
-              <div className="flex items-center gap-3">
+              <p className="text-sm font-semibold mb-2">{t("quantity", language)}: <span className="font-bold text-base">{quantity}</span></p>
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50"
+                  className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 font-semibold"
                   data-testid="button-decrease-quantity"
                 >
                   −
                 </button>
-                <input
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-12 text-center border border-gray-200 rounded-lg py-2"
-                  min="1"
-                  data-testid="input-quantity"
-                />
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50"
+                  className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 font-semibold"
                   data-testid="button-increase-quantity"
                 >
                   +
