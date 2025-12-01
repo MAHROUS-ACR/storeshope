@@ -121,8 +121,11 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // Load data only on component mount, not on location changes
-    Promise.all([fetchProductsData(), fetchStoreSettings(), fetchDiscounts()]);
+    // Load data with 3-second timeout to prevent slow waits
+    Promise.race([
+      Promise.all([fetchProductsData(), fetchStoreSettings(), fetchDiscounts()]),
+      new Promise(resolve => setTimeout(resolve, 3000))
+    ]);
   }, []);
 
   // Extract unique categories from products

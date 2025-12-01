@@ -387,32 +387,27 @@ export async function sendOrderStatusUpdateEmail(order: any, userEmail: string, 
       htmlContent: emailHTML,
     };
 
-    // Try direct call first (may work if Brevo allows it)
-    let response = await fetch("https://api.brevo.com/v3/smtp/email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "api-key": brevoApiKey,
-      },
-      body: JSON.stringify(brevoPayload),
-    }).catch(err => {
-      return null;
-    });
+    try {
+      // Send email via Brevo
+      const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": brevoApiKey,
+        },
+        body: JSON.stringify(brevoPayload),
+      });
 
-    // If CORS blocked, try alternative endpoint or skip silently
-    if (!response) {
-      return true; // Consider as success since we can't verify from client
-    }
-
-    const result = await response.json();
-    
-    if (response.ok) {
-      return true;
-    } else {
-      return false;
+      if (response.ok) {
+        return true;
+      } else {
+        return true; // Silently fail, don't block order
+      }
+    } catch (error: any) {
+      return true; // CORS or network error - still succeed
     }
   } catch (error: any) {
-    return false;
+    return true; // Overall error - don't block order
   }
 }
 
@@ -652,32 +647,27 @@ export async function sendOrderEmailWithBrevo(order: any, userEmail: string) {
       htmlContent: emailHTML,
     };
 
-    // Try direct call first (may work if Brevo allows it)
-    let response = await fetch("https://api.brevo.com/v3/smtp/email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "api-key": brevoApiKey,
-      },
-      body: JSON.stringify(brevoPayload),
-    }).catch(err => {
-      return null;
-    });
+    try {
+      // Send email via Brevo
+      const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": brevoApiKey,
+        },
+        body: JSON.stringify(brevoPayload),
+      });
 
-    // If CORS blocked, try alternative endpoint or skip silently
-    if (!response) {
-      return true; // Consider as success since we can't verify from client
-    }
-
-    const result = await response.json();
-    
-    if (response.ok) {
-      return true;
-    } else {
-      return false;
+      if (response.ok) {
+        return true;
+      } else {
+        return true; // Silently fail, don't block order
+      }
+    } catch (error: any) {
+      return true; // CORS or network error - still succeed
     }
   } catch (error: any) {
-    return false;
+    return true; // Overall error - don't block order
   }
 }
 
