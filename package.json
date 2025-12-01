@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "concurrently "tsx server/index.ts" "vite dev --port 5000"",
+    "dev": "concurrently 'tsx server/index.ts' 'vite dev --port 5000'",
     "build": "vite build",
     "preview": "vite preview"
   },
