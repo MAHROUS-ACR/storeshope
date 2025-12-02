@@ -1,0 +1,8 @@
+{
+  "name": "store",
+  "compatibility_date": "2025-12-02",
+  "main": "worker.js",
+  "assets": {
+    "directory": "./dist/public"
+  }
+}
